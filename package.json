@@ -1,0 +1,66 @@
+{
+  "name": "logia",
+  "productName": "Logia",
+  "version": "0.1.0",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx .",
+    "build:python": ".venv/bin/pyinstaller py_backend.spec --noconfirm"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.3.0",
+    "@electron-forge/maker-deb": "^7.3.0",
+    "@electron-forge/maker-rpm": "^7.3.0",
+    "@electron-forge/maker-squirrel": "^7.3.0",
+    "@electron-forge/maker-zip": "^7.3.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.3.0",
+    "@electron-forge/plugin-fuses": "^7.2.0",
+    "@electron-forge/plugin-vite": "^7.3.0",
+    "@electron/fuses": "^1.7.0",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "electron": "29.1.0",
+    "eslint": "^8.0.1",
+    "eslint-plugin-import": "^2.25.0",
+    "ts-node": "^10.0.0",
+    "typescript": "~4.5.4",
+    "vite": "^5.0.12"
+  },
+  "keywords": [],
+  "author": {
+    "name": "mzsm",
+    "email": "mizushimaj@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@mantine/core": "^7.6.1",
+    "@mantine/dates": "^7.6.1",
+    "@mantine/hooks": "^7.6.1",
+    "@mantine/nprogress": "^7.6.1",
+    "@tabler/icons-react": "^3.0.0",
+    "@xzdarcy/react-timeline-editor": "^0.1.9",
+    "dayjs": "^1.11.10",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.2.0",
+    "esbuild-plugin-react-virtualized": "^1.0.4",
+    "is-apple-silicon": "^1.1.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-selecto": "^1.26.3"
+  },
+  "packageManager": "yarn@4.1.1",
+  "build": {
+    "files": [
+      "!out/",
+      "!README.md"
+    ]
+  }
+}

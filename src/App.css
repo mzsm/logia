@@ -1,0 +1,156 @@
+.App {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0;
+  overflow: hidden;
+}
+
+.App > * {
+  position: relative;
+}
+
+.App > * > span {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  margin-right: 0.25rem;
+  white-space: nowrap;
+}
+
+.tool-bar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.video-panel {
+  resize: vertical;
+  overflow: hidden;
+  box-shadow: var(--el-box-shadow-light);
+  width: 100%;
+  min-height: 180px;
+  max-height: calc(100vh - 36px);
+  background-color: var(--el-fill-color-darker);
+  flex-shrink: 0;
+}
+
+.preview-player {
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+  background-color: var(--el-fill-color-darker);
+
+}
+
+.timeSlider, .rangeSlider {
+  padding: 0 2rem;
+}
+
+.timeSlider .mantine-Slider-thumb {
+  opacity: 0;
+  transition: 0.2s opacity;
+}
+.timeSlider .mantine-Slider-track:hover .mantine-Slider-thumb {
+  opacity: 1;
+}
+
+.rangeSlider {
+  margin-bottom: 0.5rem;
+}
+
+.controls {
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.bottom-panel {
+  overflow: scroll;
+  flex-grow: 1;
+}
+
+.footer-panel {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0.25rem;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+@keyframes moveAbc {
+  from {
+    translate: 60% 25%;
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+  }
+  to {
+    translate: 60% -40%;
+    opacity: 0;
+  }
+}
+
+.abc {
+  display: inline-block;
+  animation: 1s ease-out infinite normal;
+  animation-name: moveAbc;
+}
+
+@keyframes movePencil {
+  from {
+    translate: 50% 0;
+  }
+  10% {
+    translate: 40% 0;
+  }
+  20% {
+    translate: 50% 0;
+  }
+  30% {
+    translate: 40% 0;
+  }
+  40% {
+    translate: 50% 0;
+  }
+  to {
+    translate: 50% 0;
+  }
+}
+
+.pencil {
+  display: inline-block;
+  animation: 1s linear infinite forwards;
+  animation-name: movePencil;
+}
+
+.transcript-list tr .player-actions {
+  visibility: hidden;
+}
+.transcript-list tr:hover .player-actions {
+  visibility: visible;
+}
+
+.transcript-text {
+  user-select: text;
+}
+
+
+input[type=time] {
+  width: 6rem;
+  text-align: right;
+}
+input[type=time][data-variant=unstyled] {
+  width: 5rem;
+}
+.withIcon input[type=time] {
+  width: 7rem;
+}
