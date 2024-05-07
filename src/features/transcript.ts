@@ -43,12 +43,14 @@ export const abortTranscription = () => {
 export const transcribe = async (wavPath: string, lang?: string, model = 'medium', start?: number, end?: number, onProgress?: (data: string) => unknown): Promise<void> => {
   return new Promise((resolve) => {
     const args = [
-        app.isPackaged ? '' : path.join(app.getAppPath(), 'py_src', 'py_backend.py'),
-        'transcribe',
-        wavPath,
-        '-m', model,
-        '-l', lang || app.getLocale().slice(0, 2),
-      ]
+      'transcribe',
+      wavPath,
+      '-m', model,
+      '-l', lang || app.getLocale().slice(0, 2),
+    ]
+    if (!app.isPackaged) {
+      args.unshift(path.join(app.getAppPath(), '.venv', 'bin', 'python'))
+    }
     if (start !== undefined) {
       args.push('-s', start.toString())
     }
@@ -60,7 +62,7 @@ export const transcribe = async (wavPath: string, lang?: string, model = 'medium
     }
 
     currentProcess = spawn(
-      app.isPackaged ? '' : path.join(app.getAppPath(), '.venv', 'bin', 'python'),
+      app.isPackaged ? path.join(path.dirname(app.getAppPath()), 'py_backend', 'py_backend') : path.join(app.getAppPath(), '.venv', 'bin', 'python'),
       args,
     )
     currentProcess.on('exit', () => {
