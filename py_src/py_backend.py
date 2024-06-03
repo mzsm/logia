@@ -1,5 +1,7 @@
 import argparse
 import multiprocessing
+import ujson
+import sys
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
@@ -19,6 +21,7 @@ if __name__ == '__main__':
     transcribe_parser.add_argument('--language', '-l', type=str)
     transcribe_parser.add_argument('--start', '-s', type=float, help='Start time in seconds')
     transcribe_parser.add_argument('--end', '-e', type=float, help='End time in seconds')
+    transcribe_parser.add_argument('--id', '-i', type=str)
 
     media_info_parser = subparsers.add_parser("media_info")
     media_info_parser.add_argument('media_file', type=str)
@@ -52,23 +55,28 @@ if __name__ == '__main__':
                 'large-v2': "mlx-community/whisper-large-v2-mlx",
                 'large-v3': "mlx-community/whisper-large-v3-mlx",
             }
-            apple_silicon.transcribe(args.media_file,
-                                     path_or_hf_repo=default_models.get(args.model, args.model),
-                                     word_timestamps=True,
-                                     language=args.language,
-                                     clip_timestamps=clip_timestamps or '0',
-                                     condition_on_previous_text=False
-                                     )
+            generator = apple_silicon.transcribe(args.media_file,
+                                                 path_or_hf_repo=default_models.get(args.model, args.model),
+                                                 word_timestamps=True,
+                                                 language=args.language,
+                                                 clip_timestamps=clip_timestamps or '0',
+                                                 condition_on_previous_text=False,
+                                                 )
         else:
             from backends import general
 
-            general.transcribe(args.media_file,
-                               model_path=args.model,
-                               device=args.device,
-                               compute_type=args.compute_type,
-                               language=args.language,
-                               clip_timestamps=clip_timestamps or '0'
-                               )
+            generator = general.transcribe(args.media_file,
+                                           model_path=args.model,
+                                           device=args.device,
+                                           compute_type=args.compute_type,
+                                           language=args.language,
+                                           clip_timestamps=clip_timestamps or '0',
+                                           )
+
+        for data in generator:
+            sys.stdout.write(ujson.dumps(data))
+            sys.stdout.write('\n')
+            sys.stdout.flush()
 
     if args.subcommand == 'media_info':
         from media import info

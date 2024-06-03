@@ -11,49 +11,35 @@
   position: relative;
 }
 
-.App > * > span {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 0.5rem;
-  margin-right: 0.25rem;
-  white-space: nowrap;
-}
-
-.tool-bar {
-  display: flex;
-  justify-content: space-between;
-}
-
 .video-panel {
-  resize: vertical;
   overflow: hidden;
-  box-shadow: var(--el-box-shadow-light);
+}
+
+.player-wrapper {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+
+  height: 100%;
   width: 100%;
-  min-height: 180px;
-  max-height: calc(100vh - 36px);
-  background-color: var(--el-fill-color-darker);
-  flex-shrink: 0;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 .preview-player {
   height: 100%;
   width: 100%;
-  margin: 0 auto;
-  object-fit: contain;
-  background-color: var(--el-fill-color-darker);
+}
 
+.timeSlider {
+  flex-shrink: 1;
 }
 
 .timeSlider, .rangeSlider {
   padding: 0 2rem;
-}
-
-.timeSlider .mantine-Slider-thumb {
-  opacity: 0;
-  transition: 0.2s opacity;
-}
-.timeSlider .mantine-Slider-track:hover .mantine-Slider-thumb {
-  opacity: 1;
 }
 
 .rangeSlider {
@@ -66,23 +52,32 @@
   align-items: center;
 }
 
-.bottom-panel {
+.right-panel {
   overflow: scroll;
   flex-grow: 1;
+  align-items: stretch;
+  height: 100%;
 }
 
-.footer-panel {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 0.25rem;
+[data-panel-group-direction='vertical'] > .resize-handle {
+  height: 2px;
+}
+[data-panel-group-direction='horizontal'] > .resize-handle {
+  width: 2px;
+}
+
+[data-mantine-color-scheme='light'] .resize-handle {
+  background-color: #424242;
+}
+[data-mantine-color-scheme='dark'] .resize-handle {
+  background-color: #424242;
 }
 
 .loader {
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  margin-left: -0.5rem;
 }
 
 @keyframes moveAbc {
@@ -153,4 +148,66 @@ input[type=time][data-variant=unstyled] {
 }
 .withIcon input[type=time] {
   width: 7rem;
+}
+
+.timeline-panel {
+  display: flex;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+.timeline-header {
+  height: 100%;
+  max-height: 100%;
+  width: 15rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-header .mantine-SegmentedControl-label {
+  height: 2rem;
+}
+.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar-corner {
+  display: none;
+}
+
+.timeline-editor {
+  flex: 1 1 auto;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  font-family: inherit;
+  overflow-y: hidden;
+}
+
+.timeline-editor .timeline-editor-edit-area .ReactVirtualized__Grid::-webkit-scrollbar {
+  width: 0;
+  height: 0.75rem;
+}
+
+.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar-thumb,
+.timeline-editor .timeline-editor-edit-area .ReactVirtualized__Grid::-webkit-scrollbar-thumb {
+  background-color: #424242;
+  border-radius: 0.75rem;
+  /*width: 1rem;*/
+  /*height: 1rem;*/
+}
+
+.timeline-editor .timeline-editor-action {
+  height: 28px !important;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prompt {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 28px !important;
+  margin: 0 0.5rem;
 }

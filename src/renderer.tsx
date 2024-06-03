@@ -34,13 +34,14 @@ import App from './App'
 import '@mantine/core/styles.css'
 import '@mantine/nprogress/styles.css'
 import '@mantine/dates/styles.css'
+import 'mantine-react-table/styles.css'
 import './index.css'
 import { NavigationProgress } from '@mantine/nprogress'
 
 
 const root = createRoot(document.getElementById('app'))
 root.render(
-  <MantineProvider>
+  <MantineProvider defaultColorScheme="dark">
     <NavigationProgress size={4}/>
     <App/>
   </MantineProvider>,

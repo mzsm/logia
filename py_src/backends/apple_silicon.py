@@ -168,13 +168,11 @@ def transcribe(
                 )
 
     # info output to stdout
-    sys.stdout.write(ujson.dumps({
+    yield {
         'type': 0,
         'language': decode_options["language"],
         'duration': content_duration
-    }))
-    sys.stdout.write('\n')
-    sys.stdout.flush()
+    }
 
     language: str = decode_options["language"]
     task: str = decode_options.get("task", "transcribe")
@@ -505,8 +503,11 @@ def transcribe(
                     if segment["start"] == segment["end"] or segment["text"].strip() == "":
                         segment["tokens"] = []
 
-                sys.stdout.write('\n'.join([
-                    ujson.dumps({
+                for segment in current_segments:
+                    if not segment["tokens"]:
+                        continue
+
+                    yield {
                         'type': 1,
                         'text': segment["text"].strip(),
                         'begin': segment["start"],
@@ -520,11 +521,7 @@ def transcribe(
                             }
                             for word in segment.get("words", [])
                         ]
-                    })
-                    for segment in current_segments if segment["tokens"]
-                ]))
-                sys.stdout.write('\n')
-                sys.stdout.flush()
+                    }
 
                 all_tokens.extend(
                     [token for segment in current_segments for token in segment["tokens"]]

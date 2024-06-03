@@ -5,7 +5,7 @@ import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 
 let currentProcess: ChildProcessWithoutNullStreams | null = null
 
-export const startTranscription = async (mainWindow: BrowserWindow, filePath: string, lang='en', model='medium', start?: number, end?: number) => {
+export const startTranscription = async (mainWindow: BrowserWindow, filePath: string, id: string, lang='en', model='medium', start?: number, end?: number) => {
   let leftover = ''
 
   const onProgress = (data: string) => {
@@ -15,18 +15,21 @@ export const startTranscription = async (mainWindow: BrowserWindow, filePath: st
     }
     mainWindow.webContents.send(
       'progress',
-      (leftover + data).trim().split('\n').map((line) => {
-        if (!line.length) {
-          return null
-        }
-        try {
-          data = JSON.parse(line)
-          leftover = ''
-          return data
-        } catch (e) {
-          // pass
-        }
-      }).filter(line => line)
+      {
+        id,
+        data: (leftover + data).trim().split('\n').map((line) => {
+          if (!line.length) {
+            return null
+          }
+          try {
+            data = JSON.parse(line)
+            leftover = ''
+            return data
+          } catch (e) {
+            // pass
+          }
+        }).filter(line => line)
+      }
     )
     leftover = ''
   }
@@ -49,7 +52,7 @@ export const transcribe = async (wavPath: string, lang?: string, model = 'medium
       '-l', lang || app.getLocale().slice(0, 2),
     ]
     if (!app.isPackaged) {
-      args.unshift(path.join(app.getAppPath(), '.venv', 'bin', 'python'))
+      args.unshift(path.join(app.getAppPath(), 'py_src', 'py_backend.py'))
     }
     if (start !== undefined) {
       args.push('-s', start.toString())

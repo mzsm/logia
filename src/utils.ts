@@ -10,7 +10,12 @@ export const formatTime = (time: number, withMs=false, isMs=false) => {
 
 export const parseTimeCode = (timeCode: string) => {
   const weights = [1, 60, 3600]
-  return timeCode.split(':').reverse().reduce((previousValue, currentValue, currentIndex) => {
-    return previousValue + (parseInt(currentValue, 10) * weights[currentIndex])
-  }, 0)
+  let val = 0
+  const [_timeCode, ms] = timeCode.split('.')
+  if (ms) {
+    val = parseInt((ms + '000').slice(0, 3), 10) / 1000
+  }
+  return _timeCode.split(':').reverse().reduce((previousValue, currentValue, currentIndex) => {
+    return previousValue + (parseInt(currentValue, 10) * (weights[currentIndex]))
+  }, val)
 }

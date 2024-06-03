@@ -46,15 +46,18 @@
     "@mantine/hooks": "^7.6.1",
     "@mantine/nprogress": "^7.6.1",
     "@tabler/icons-react": "^3.0.0",
-    "@xzdarcy/react-timeline-editor": "^0.1.9",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.10",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.2.0",
     "esbuild-plugin-react-virtualized": "^1.0.4",
     "is-apple-silicon": "^1.1.2",
+    "mantine-react-table": "^2.0.0-beta.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-selecto": "^1.26.3"
+    "react-resizable-panels": "^2.0.19",
+    "react-selecto": "^1.26.3",
+    "react-timeline-editor": "https://github.com/mzsm/react-timeline-editor.git#develop"
   },
   "packageManager": "yarn@4.1.1",
   "build": {

@@ -11,17 +11,17 @@ if (require('electron-squirrel-startup')) {
 }
 
 const createWindow = () => {
-  // const mainWindowState = windowStateKeeper({
-  //   defaultWidth: 800,
-  //   defaultHeight: 600,
-  // })
+  const windowPosition = store.get('windowPosition')
+  const windowSize = store.get('windowSize')
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    // x: mainWindowState.x,
-    // y: mainWindowState.y,
-    width: 800,
-    height: 600,
+    x: windowPosition.x,
+    y: windowPosition.y,
+    width: windowSize.width,
+    height: windowSize.height,
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webSecurity: app.isPackaged,
@@ -33,6 +33,19 @@ const createWindow = () => {
     mainWindow.show()
   })
   // createLogFile()
+
+  mainWindow.addListener('moved', () => {
+    const [x, y] = mainWindow.getPosition()
+    store.set('windowPosition', {x, y})
+  })
+  mainWindow.addListener('resize', (e: unknown) => {
+    const [width, height] = mainWindow.getSize()
+    mainWindow.webContents.send('resize', {width, height})
+  })
+  mainWindow.addListener('resized', (e: unknown) => {
+    const [width, height] = mainWindow.getSize()
+    store.set('windowSize', {width, height})
+  })
 
   // Menu
   const isMac = process.platform === 'darwin'
@@ -96,10 +109,10 @@ const createWindow = () => {
 
   ipcMain.handle(
     'startTranscription',
-    async (event, args: { filePath: string; language?: string; model?: string; begin?: number; end?: number },
+    async (event, args: { filePath: string; id?: string; language?: string; model?: string; begin?: number; end?: number },
     ) => {
       try {
-        await startTranscription(mainWindow, args.filePath, args.language, args.model, args.begin, args.end, )
+        await startTranscription(mainWindow, args.filePath, args.id, args.language, args.model, args.begin, args.end)
       } catch (e) {
         // pass
       }
@@ -143,8 +156,8 @@ app.on('activate', () => {
 ipcMain.handle('getConfig', async (event, key: string) => {
   return await store.get(key)
 })
-ipcMain.handle('setConfig', async (event, key: string, value: any) => {
-  store.set(key, value)
+ipcMain.handle('setConfig', async (event, value: object) => {
+  store.set(value)
 })
 
 ipcMain.handle('open:mediaFile', async () => {
@@ -156,7 +169,7 @@ ipcMain.handle('save:ccFile', async () => {
 })
 
 ipcMain.handle('save', async (event, {path, content}) => {
-  console.log(event, path, content)
+  // console.log(event, path, content)
   return await saveFile(path, content)
 })
 

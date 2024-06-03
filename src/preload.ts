@@ -12,12 +12,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   exportCC: () => ipcRenderer.invoke('save:ccFile'),
   saveFile: (args: {path: string, content: string}) => ipcRenderer.invoke('save', args),
   getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),
-  startTranscription: (args: {filePath: string; language?: string; model?: string; begin?: number; end?: number}) => ipcRenderer.invoke('startTranscription', args),
+  startTranscription: (args: {filePath: string; id?: string; language?: string; model?: string; begin?: number; end?: number}) => ipcRenderer.invoke('startTranscription', args),
   abortTranscription: () => ipcRenderer.invoke('abortTranscription'),
 
   // Main => Renderer
   onOpenMedia: (callback: (value: {filePath: string, mediaInfo: FfmpegMediaInfo}) => unknown) => ipcRenderer.on('open_media', (_event, value) => callback(value)),
-  onTranscriptionProgress: (callback: (value: {offsets: {from: number; to: number}; text: string}[]) => unknown) => ipcRenderer.on('progress', (_event, value) => callback(value))
+  onTranscriptionProgress: (callback: (value: {offsets: {from: number; to: number}; text: string}[]) => unknown) => ipcRenderer.on('progress', (_event, value) => callback(value)),
+  onResizeWindow: (callback: (value: {width: number, height: number}) => unknown) => ipcRenderer.on('resize', (_event, value) => callback(value))
 })
 
 

@@ -8,16 +8,20 @@ export interface IElectronAPI {
   exportCC: () => Promise<string | null>,
   saveFile: (args: {path: string, content: string}) => Promise<string | null>,
   getMediaInfo: (filePath: string) => Promise<FfmpegMediaInfo | null>,
-  startTranscription: (args: { filePath: string; language?: string; model?: string; begin?: number; end?: number }) => Promise<unknown | null>,
+  startTranscription: (args: { filePath: string; id?: string;  language?: string; model?: string; begin?: number; end?: number }) => Promise<unknown | null>,
   abortTranscription: () => Promise<unknown>,
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) => unknown,
   onTranscriptionProgress: (callback: (value: {
-    type: number;
-    begin?: number;
-    end?: number;
-    text?: string
-  }[]) => unknown) => unknown,
+    id: string;
+    data: Array<{
+      type: number;
+      begin?: number;
+      end?: number;
+      text?: string
+    }>
+  }) => unknown) => unknown,
+  onResizeWindow: (callback: (value: {width: number, height: number}) => unknown) => unknown,
 }
 
 declare global {
@@ -26,4 +30,3 @@ declare global {
   }
 }
 
-declare module 'react-subtitle-editor'

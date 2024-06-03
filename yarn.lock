@@ -236,12 +236,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.20.13":
   version: 7.24.0
   resolution: "@babel/runtime@npm:7.24.0"
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10c0/3495eed727bf4a4f84c35bb51ab53317ae38f4bbc3b1d0a8303751f9dfa0ce6f5fb2afced72b76c3dd0d8bb2ccb84787559a4dee9886291a36b26f02f0f759b4
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.7":
+  version: 7.24.5
+  resolution: "@babel/runtime@npm:7.24.5"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/05730e43e8ba6550eae9fd4fb5e7d9d3cb91140379425abcb2a1ff9cebad518a280d82c4c4b0f57ada26a863106ac54a748d90c775790c0e2cd0ddd85ccdf346
   languageName: node
   linkType: hard
 
@@ -1091,10 +1100,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interactjs/types@npm:1.10.26, @interactjs/types@npm:^1.10.11":
-  version: 1.10.26
-  resolution: "@interactjs/types@npm:1.10.26"
-  checksum: 10c0/4c94d1d567ddedc8069223b7eba674bb43afa705eac7cdf5a6b2c33f13297e42171ec397f4a99bdb377da3e93adfd2253b2c2015306fc406853798b7353b1e2f
+"@interactjs/types@npm:1.10.27, @interactjs/types@npm:^1.10.11":
+  version: 1.10.27
+  resolution: "@interactjs/types@npm:1.10.27"
+  checksum: 10c0/767afe37cd932ed248712dc0aa9c912b18af1104ec26829d655daaeef57d13c8e9e973c9f59e4be978d66fe7e86b77f58dec4688bb2e5d38b838d5a38cb27cf4
   languageName: node
   linkType: hard
 
@@ -1476,6 +1485,53 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/match-sorter-utils@npm:8.15.1":
+  version: 8.15.1
+  resolution: "@tanstack/match-sorter-utils@npm:8.15.1"
+  dependencies:
+    remove-accents: "npm:0.5.0"
+  checksum: 10c0/a947c280093ed0214c3b1c6d9219b1a98cd000815891cb313f2a3e8cc01505a6d3bf358ba8273556804e0580a51e110a43ececabf0eec7386450662d827b0fa9
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-table@npm:8.17.3":
+  version: 8.17.3
+  resolution: "@tanstack/react-table@npm:8.17.3"
+  dependencies:
+    "@tanstack/table-core": "npm:8.17.3"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 10c0/d1ab321f189f1c7e20336c0516f8155a3d46aea74cc7ec849239b7323cf3e4fe919585489de3512eab36fceb7c4eae245e58235e6fcb5f112379411d801605fd
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-virtual@npm:3.5.0":
+  version: 3.5.0
+  resolution: "@tanstack/react-virtual@npm:3.5.0"
+  dependencies:
+    "@tanstack/virtual-core": "npm:3.5.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/0e0389dcae02cb3a6dc31644be6fedc9c635f66b747136149b065351ef23995e131b01c85348875a8c8c7bade28a2bb8bbc9c7b66a995051d6be08aec60d07c4
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.17.3":
+  version: 8.17.3
+  resolution: "@tanstack/table-core@npm:8.17.3"
+  checksum: 10c0/e45f0f74b645689c762dd8c1042726d804726a488130fb2d36e24384bd813a601ed4d20abff3b4ba1bb1a648d14029f65d7fa8728099e0fd9f2702b51dc586c2
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.5.0":
+  version: 3.5.0
+  resolution: "@tanstack/virtual-core@npm:3.5.0"
+  checksum: 10c0/21a12049df81ce282054e8406cb74dd21d867aac077f31568ffdb08acd9aa171ae0666ceb43654895e73907acf5db02c7d651a66960da8acceeb2e034885e605
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -1653,12 +1709,12 @@ __metadata:
   linkType: hard
 
 "@types/react-virtualized@npm:^9.21.14":
-  version: 9.21.29
-  resolution: "@types/react-virtualized@npm:9.21.29"
+  version: 9.21.30
+  resolution: "@types/react-virtualized@npm:9.21.30"
   dependencies:
     "@types/prop-types": "npm:*"
     "@types/react": "npm:*"
-  checksum: 10c0/13cb3a55bbf662ebc76e0653274a51f62dbc6574a641a4ec6f0c258658e444eabff05680983b4b0a70bc2ac0a20fb88d4e5e0be949f3db4068b434a42e0f267e
+  checksum: 10c0/267fd00de3fe1f93ba535e1b98b1106d61c9172a6741d8a65aa4f16720177edb359bf997518f3deb2c078b4b275e512bccd3ee941ae4019b5c7836aa16b8ed8e
   languageName: node
   linkType: hard
 
@@ -1852,22 +1908,6 @@ __metadata:
   version: 0.8.10
   resolution: "@xmldom/xmldom@npm:0.8.10"
   checksum: 10c0/c7647c442502720182b0d65b17d45d2d95317c1c8c497626fe524bda79b4fb768a9aa4fae2da919f308e7abcff7d67c058b102a9d641097e9a57f0b80187851f
-  languageName: node
-  linkType: hard
-
-"@xzdarcy/react-timeline-editor@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "@xzdarcy/react-timeline-editor@npm:0.1.9"
-  dependencies:
-    "@interactjs/types": "npm:^1.10.11"
-    "@types/react-virtualized": "npm:^9.21.14"
-    framework-utils: "npm:^1.1.0"
-    interactjs: "npm:^1.10.11"
-    react-virtualized: "npm:^9.22.3"
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-  checksum: 10c0/3a5bd6f4ac1a1dfdaa3512fde348fa6e00fc7d8f80893632121d67188f8dc4576694cb8c4c4b78cbce9957d7f8e2706cf6b8c840feed00ec88389952bac25004
   languageName: node
   linkType: hard
 
@@ -2583,6 +2623,13 @@ __metadata:
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 10c0/34dead8bee24f5e96f6e7937d711978380647e936a22e76380290e35486afd8634966ce300fc4b74a32f3762c7d4c0303f442c3e259f4ce02374eb0c82834f27
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "clsx@npm:2.1.1"
+  checksum: 10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839
   languageName: node
   linkType: hard
 
@@ -4620,11 +4667,11 @@ __metadata:
   linkType: hard
 
 "interactjs@npm:^1.10.11":
-  version: 1.10.26
-  resolution: "interactjs@npm:1.10.26"
+  version: 1.10.27
+  resolution: "interactjs@npm:1.10.27"
   dependencies:
-    "@interactjs/types": "npm:1.10.26"
-  checksum: 10c0/fc439b6eac21a8415762fde7a452232f5d768f99ccecf81875b7a54c1f66050863f3c563e56c99df816ef3858642f81d8d283fea2c6c9269cc014d0006d31c6e
+    "@interactjs/types": "npm:1.10.27"
+  checksum: 10c0/35532c636fc7cf8273999d314c9738994bfc4a1a384fd64658420055e93456aa6333a865e04b1765d39ee4e29f898854c3f3451a7a88a09141e32115cc6112e2
   languageName: node
   linkType: hard
 
@@ -5278,7 +5325,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^5.0.0"
     "@typescript-eslint/parser": "npm:^5.0.0"
     "@vitejs/plugin-react": "npm:^4.2.1"
-    "@xzdarcy/react-timeline-editor": "npm:^0.1.9"
+    clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.10"
     electron: "npm:29.1.0"
     electron-squirrel-startup: "npm:^1.0.0"
@@ -5287,9 +5334,12 @@ __metadata:
     eslint: "npm:^8.0.1"
     eslint-plugin-import: "npm:^2.25.0"
     is-apple-silicon: "npm:^1.1.2"
+    mantine-react-table: "npm:^2.0.0-beta.4"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
+    react-resizable-panels: "npm:^2.0.19"
     react-selecto: "npm:^1.26.3"
+    react-timeline-editor: "https://github.com/mzsm/react-timeline-editor.git#develop"
     ts-node: "npm:^10.0.0"
     typescript: "npm:~4.5.4"
     vite: "npm:^5.0.12"
@@ -5393,6 +5443,26 @@ __metadata:
     promise-retry: "npm:^2.0.1"
     ssri: "npm:^10.0.0"
   checksum: 10c0/43b9f6dcbc6fe8b8604cb6396957c3698857a15ba4dbc38284f7f0e61f248300585ef1eb8cc62df54e9c724af977e45b5cdfd88320ef7f53e45070ed3488da55
+  languageName: node
+  linkType: hard
+
+"mantine-react-table@npm:^2.0.0-beta.4":
+  version: 2.0.0-beta.4
+  resolution: "mantine-react-table@npm:2.0.0-beta.4"
+  dependencies:
+    "@tanstack/match-sorter-utils": "npm:8.15.1"
+    "@tanstack/react-table": "npm:8.17.3"
+    "@tanstack/react-virtual": "npm:3.5.0"
+  peerDependencies:
+    "@mantine/core": ^7.9
+    "@mantine/dates": ^7.9
+    "@mantine/hooks": ^7.9
+    "@tabler/icons-react": ">=2.23.0"
+    clsx: ">=2"
+    dayjs: ">=1.11"
+    react: ">=18.0"
+    react-dom: ">=18.0"
+  checksum: 10c0/70dd888eae8187c8158f3476751b272db378abb4538614748f1fefef6aed013dcaca4caacce316352934fc6e207814f41c1365dc5dcb4bed587aa1e6db32b25e
   languageName: node
   linkType: hard
 
@@ -6536,6 +6606,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-resizable-panels@npm:^2.0.19":
+  version: 2.0.19
+  resolution: "react-resizable-panels@npm:2.0.19"
+  peerDependencies:
+    react: ^16.14.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/eb9cb511aec917895dba842cb933c9885ea510f752b4f3b8c358bf33be8b7b6bf2fc4a81db7a16977e6b09f614a14c6652f15232ff03bce68a8845dcf179abf7
+  languageName: node
+  linkType: hard
+
 "react-selecto@npm:^1.26.3":
   version: 1.26.3
   resolution: "react-selecto@npm:1.26.3"
@@ -6572,6 +6652,22 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/33d38a6d96cf584842695b50c341980944ece23a42155bf0bd1958f02396adb185c7720b88678dc677817fe111783059c0ebcdf7761644006892583b10e258ee
+  languageName: node
+  linkType: hard
+
+"react-timeline-editor@https://github.com/mzsm/react-timeline-editor.git#develop":
+  version: 0.1.9
+  resolution: "react-timeline-editor@https://github.com/mzsm/react-timeline-editor.git#commit=aef43818c253c7a9271fc6ef70cf0131969bd741"
+  dependencies:
+    "@interactjs/types": "npm:^1.10.11"
+    "@types/react-virtualized": "npm:^9.21.14"
+    framework-utils: "npm:^1.1.0"
+    interactjs: "npm:^1.10.11"
+    react-virtualized: "npm:^9.22.3"
+  peerDependencies:
+    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+  checksum: 10c0/560c04713a3ba8e3576819754f8bb85343f6ad2191dc8027b400915cf137ada83bf55655cec6f9773e93b46a445e83aba253ebcc4ab4025c809c1dd5420bd252
   languageName: node
   linkType: hard
 
@@ -6669,6 +6765,13 @@ __metadata:
     es-errors: "npm:^1.3.0"
     set-function-name: "npm:^2.0.1"
   checksum: 10c0/0f3fc4f580d9c349f8b560b012725eb9c002f36daa0041b3fbf6f4238cb05932191a4d7d5db3b5e2caa336d5150ad0402ed2be81f711f9308fe7e1a9bf9bd552
+  languageName: node
+  linkType: hard
+
+"remove-accents@npm:0.5.0":
+  version: 0.5.0
+  resolution: "remove-accents@npm:0.5.0"
+  checksum: 10c0/a75321aa1b53d9abe82637115a492770bfe42bb38ed258be748bf6795871202bc8b4badff22013494a7029f5a241057ad8d3f72adf67884dbe15a9e37e87adc4
   languageName: node
   linkType: hard
 
