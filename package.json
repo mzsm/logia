@@ -60,7 +60,7 @@
     "react-selecto": "^1.26.3",
     "react-timeline-editor": "https://github.com/mzsm/react-timeline-editor.git#develop"
   },
-  "packageManager": "yarn@4.2.2",
+  "packageManager": "yarn@4.3.0",
   "build": {
     "files": [
       "!out/",
