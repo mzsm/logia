@@ -12,7 +12,8 @@ const config: ForgeConfig = {
     asar: true,
     extraResource: [
       'dist/py_backend/'
-    ]
+    ],
+    icon: 'images/icon'
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
