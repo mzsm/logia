@@ -30,6 +30,17 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
   const [language, setLanguage] = useState<string>(navigator.language.split('-')[0])
   const [model, setModel] = useState<string>('medium')
 
+  const onChangeRangeSlider = (value: [number, number]) => {
+    setTimeRange((prevValue) => {
+      if (prevValue[0] !== value[0]) {
+        videoTag.current.currentTime = value[0]
+      } else if (prevValue[1] !== value[1]) {
+        videoTag.current.currentTime = value[1]
+      }
+      return value
+    })
+  }
+
   const _setLanguage = (value: string) => {
     setLanguage(value)
     if (value) {
@@ -108,7 +119,7 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
               value={timeRange}
               max={duration}
               size="xs"
-              onChange={setTimeRange}
+              onChange={onChangeRangeSlider}
               step={0.001}
               label={null}
             />
@@ -116,12 +127,12 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
               <TimeStampInput
                 value={timeRange[0]}
                 max={duration}
-                onChange={(val) => setTimeRange([val, Math.max(val, timeRange[1])])}
+                onChange={(val) => onChangeRangeSlider([val, Math.max(val, timeRange[1])])}
               />
               <TimeStampInput
                 value={timeRange[1]}
                 max={duration}
-                onChange={(val) => setTimeRange([Math.min(timeRange[0], val), val])}
+                onChange={(val) => onChangeRangeSlider([Math.min(timeRange[0], val), val])}
               />
             </Group>
           </Input.Wrapper>
