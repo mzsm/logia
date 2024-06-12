@@ -5289,6 +5289,7 @@ __metadata:
     eslint-plugin-import: "npm:^2.29.1"
     is-apple-silicon: "npm:^1.1.2"
     mantine-react-table: "npm:^2.0.0-beta.4"
+    pretty-bytes: "npm:^6.1.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-resizable-panels: "npm:^2.0.19"
@@ -6366,6 +6367,13 @@ __metadata:
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
   checksum: 10c0/b00d617431e7886c520a6f498a2e14c75ec58f6d93ba48c3b639cf241b54232d90daa05d83a9e9b9fef6baa63cb7e1e4602c2372fea5bc169668401eb127d0cd
+  languageName: node
+  linkType: hard
+
+"pretty-bytes@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "pretty-bytes@npm:6.1.1"
+  checksum: 10c0/c7a660b933355f3b4587ad3f001c266a8dd6afd17db9f89ebc50812354bb142df4b9600396ba5999bdb1f9717300387dc311df91895c5f0f2a1780e22495b5f8
   languageName: node
   linkType: hard
 

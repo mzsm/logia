@@ -1,41 +1,53 @@
-import { Stack, TextInput } from '@mantine/core'
+import { Container, Group, Stack, Textarea } from '@mantine/core'
 import TimeStampInput from './timeStampInput'
 import { TranscriptionText } from '../declare'
 import { useEffect, useState } from 'react'
 
 interface Props {
   text: TranscriptionText
-  onChange?: (text: TranscriptionText) => unknown
+  onChange?: () => unknown
 }
 
 function TextEditArea({text, onChange}: Props) {
-  const [tempText, setTempText] = useState(text)
   const [start, setStart] = useState(text.start)
   const [end, setEnd] = useState(text.end)
   const [textString, setTextString] = useState(text.text)
   const _onChange = () => {
-    onChange && onChange(tempText)
+    onChange && onChange()
   }
 
   useEffect(() => {
-    setTempText(text)
+    setStart(text.start)
+    setEnd(text.end)
+    setTextString(text.text)
   }, [text])
 
   return (
-    <Stack>
-      <TimeStampInput
-        value={start}
-        onChange={setStart}
-      />
-      <TimeStampInput
-        value={end}
-        onChange={setEnd}
-      />
-      <TextInput
-        value={textString}
-        onInput={(e) => { setTextString(e.currentTarget.value) }}
-      />
-    </Stack>
+    <Container
+      pt={16}
+      pb={16}
+      style={{maxHeight: '100%', overflow: 'scroll'}}
+    >
+      <Stack>
+        <Group>
+          <TimeStampInput
+            label="開始時間"
+            value={start}
+            onChange={(v) => {setStart(v); text.start = v; _onChange()}}
+          />
+          <TimeStampInput
+            label="終了時間"
+            value={end}
+            onChange={(v) => {setEnd(v); text.end = v; _onChange()}}
+          />
+        </Group>
+        <Textarea
+          value={textString}
+          autosize={true}
+          onChange={(e) => { setTextString(e.target.value); text.text = e.target.value as string; _onChange() }}
+        />
+      </Stack>
+    </Container>
   )
 }
 

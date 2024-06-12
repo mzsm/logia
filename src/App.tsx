@@ -1,23 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  ImperativePanelGroupHandle,
-  ImperativePanelHandle,
-  Panel,
-  PanelGroup,
-  PanelResizeHandle,
-} from 'react-resizable-panels'
+import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useDisclosure } from '@mantine/hooks'
-import { ActionIcon, Divider, Group, SegmentedControl, Slider, Stack, Table, Text } from '@mantine/core'
-import { useResizeObserver } from '@mantine/hooks'
+import { ActionIcon, Divider, Group, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
 import TimeStampInput from './components/timeStampInput'
 import {
   IconAbc,
-  IconArrowBigDownLines,
+  IconArrowBigRightLines,
   IconBadgeCc,
   IconBan,
   IconClockPlay,
   IconFileTextAi,
   IconFolderOpen,
+  IconMovieOff,
   IconPencil,
   IconPlayerPause,
   IconPlayerPlay,
@@ -34,12 +28,13 @@ import TranscriptionModal from './components/transcriptionModal'
 import VideoEngine from './components/timelineEngine'
 import TimelineTable from './components/timelineTable'
 import TextEditArea from './components/textEditArea'
-import { Timeline, TimelineAction, TimelineEngine, TimelineRow, TimelineState } from 'react-timeline-editor'
+import { Timeline, TimelineEngine, TimelineState } from 'react-timeline-editor'
 import { FfmpegMediaInfo } from './features/file'
 // import { exportCCFile } from './features/output'
 import { formatTime } from './utils'
-import { TranscriptionText, TranscriptionRow } from './declare'
+import { TranscriptionRow, TranscriptionText } from './declare'
 import './App.css'
+import MediaInfo from './components/mediaInfo'
 
 const START_LEFT = 30
 
@@ -49,11 +44,13 @@ function App() {
   const timelineState = useRef<TimelineState>(null)
   const [mediaFilePath, setMediaFilePath] = useState<string>(null)
   const [mediaInfo, setMediaInfo] = useState<FfmpegMediaInfo>(null)
+  const [audioOnly, setAudioOnly] = useState<boolean>(false)
   const [duration, setDuration] = useState<number>(0)
   const [currentTime, setCurrentTime] = useState(0)
   const [isPaused, setIsPaused] = useState<boolean>(true)
   const [speed, setSpeed] = useState<number>(1.0)
   const [autoScroll, setAutoScroll] = useState(false)
+  const _autoScroll = useRef(autoScroll)
   const [isOpenedTranscriptionDialog, {
     open: openTranscriptionDialog,
     close: closeTranscriptionDialog,
@@ -61,7 +58,8 @@ function App() {
   const [timelineData, setTimelineData] = useState<TranscriptionRow[]>([])
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null)
   const [selectedRow, setSelectedRow] = useState<TranscriptionRow>(null)
-  const [selectedTextList, setSselectedTextList] = useState<TranscriptionText[]>([])
+  // const [selectedTextList, setSelectedTextList] = useState<TranscriptionText[]>([])
+  const [activeTextId, setActiveTextId] = useState<string>(null)
   const [activeText, setActiveText] = useState<TranscriptionText>(null)
 
   const [engine, setEngine] = useState<TimelineEngine>(null)
@@ -86,8 +84,10 @@ function App() {
 
   useEffect(() => {
     const _d = Math.max(1, duration / 2)
-    setScales([1, 2, 3, 4, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600]
-      .filter((x) => x <= _d).reverse())
+    const _scales = [1, 2, 3, 4, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600]
+      .filter((x) => x <= _d).reverse()
+    setScaleLevel((v) => Math.min(_scales.length - 1, v))
+    setScales(_scales)
   }, [duration])
 
   useEffect(() => {
@@ -95,17 +95,44 @@ function App() {
   }, [scales, scaleLevel])
 
   useEffect(() => {
+    _autoScroll.current = autoScroll
+  }, [autoScroll])
+
+  useEffect(() => {
     _scale.current = scale
   }, [scale])
 
   useEffect(() => {
+    setAudioOnly(mediaInfo && mediaInfo.video.length === 0)
+  }, [mediaInfo])
+
+  useEffect(() => {
+    let found = false
     timelineData.map((timeline) => {
       if (timeline.id == selectedRowId) {
         setSelectedRow(timeline)
+        found = true
       }
     })
+    if (!found) {
+      setSelectedRow(null)
+    }
     _scale.current = scale
   }, [selectedRowId, timelineData])
+
+  useEffect(() => {
+    for (let i = 0; i < timelineData.length; i++) {
+      let _timeline = timelineData[i]
+      for (let l = 0; l < _timeline.actions.length; l++) {
+        let text = _timeline.actions[l]
+        if (activeTextId == text.id) {
+          setActiveText(text)
+          return
+        }
+      }
+    }
+    setActiveText(null)
+  }, [timelineData, activeTextId])
 
   // パネルの幅・高さを保存する
   useEffect(() => {
@@ -130,6 +157,16 @@ function App() {
   }, [sideVerticalGridRatio])
 
   const openMedia = (filePath: string) => {
+    // 初期化
+    pauseMedia()
+    setIsPaused(true)
+    setTime(0)
+    engine?.setTime(0)
+    timelineState.current?.setTime(0)
+    timelineState.current?.setScrollLeft(0)
+    setTimelineData([])
+    setActiveTextId(null)
+    setSelectedRowId(null)
     window.electronAPI.getMediaInfo(filePath).then((_mediaInfo) => {
       setMediaInfo(_mediaInfo)
       setDuration(_mediaInfo.duration / 1000)
@@ -143,12 +180,10 @@ function App() {
   }
 
   const playMedia = () => {
-    engine.play({})
-    // videoTag.current.play()
+    engine?.play({})
   }
   const pauseMedia = () => {
-    engine.pause()
-    // videoTag.current.pause()
+    engine?.pause()
   }
   const rawMedia = (time: number) => {
     setTime(videoTag.current.currentTime - time)
@@ -216,13 +251,16 @@ function App() {
     setSideVerticalGridRatio(sizes)
   }
 
+  const updateTimelineData = () => {
+    setTimelineData((c) => structuredClone(c))
+  }
+
   useEffect(() => {
     if (!engine) {
       // メニューから開かれた場合
       window.electronAPI.onOpenMedia(openMedia)
 
       window.electronAPI.onTranscriptionProgress(({id, data}) => {
-
         setTimelineData((timelineData) => {
           const _timeline = timelineData.filter(({id: _id}) => _id === id)
           if (_timeline.length === 0) {
@@ -247,11 +285,6 @@ function App() {
         // setLatestTranscript(data as {type: number; begin: number; end: number; text: string })
       })
 
-      // window.electronAPI.onResizeWindow(({width, height}) => {
-      //   // pass
-      // })
-
-
       window.electronAPI.getConfig('mainHorizontalGridRatio').then((value: [number, number]) => {
         if (value) {
           setMainHorizontalGridRatio(value)
@@ -274,9 +307,11 @@ function App() {
       const _engine = new VideoEngine(videoTag)
       _engine.on('setTimeByTick', ({time}: { time: number }) => {
         // setTime(time);
-        const autoScrollFrom = timelineState.current.target.clientWidth * 0.75
-        const left = time * (_scaleWidth.current / _scale.current) + START_LEFT - autoScrollFrom
-        timelineState.current.setScrollLeft(left)
+        if (_autoScroll.current) {
+          const autoScrollFrom = timelineState.current.target.clientWidth * 0.75
+          const left = time * (_scaleWidth.current / _scale.current) + START_LEFT - autoScrollFrom
+          timelineState.current.setScrollLeft(left)
+        }
       })
       setEngine(_engine)
     }
@@ -331,6 +366,7 @@ function App() {
                 >
                   <div className="player-wrapper">
                     <video
+                      style={{width: audioOnly ? 0 : '100%'}}
                       className="preview-player"
                       disablePictureInPicture
                       preload="auto"
@@ -340,7 +376,13 @@ function App() {
                       onPlay={() => setIsPaused(false)}
                     >
                     </video>
+                    {
+                      audioOnly ?
+                        <IconMovieOff size={160} stroke={0.5} style={{opacity: 0.3}}/> :
+                        <></>
+                    }
                   </div>
+                  <MediaInfo mediaInfo={mediaInfo} style={{position: 'absolute', top: 0, right: 0, cursor: 'help'}}/>
                 </div>
 
                 <Divider/>
@@ -507,6 +549,21 @@ function App() {
                         justify="center"
                         style={{height: '2.5625rem', flexShrink: 0}}
                       >
+                        <ActionIcon
+                          variant="default"
+                          size="md"
+                          radius="sm"
+                          color="gray"
+                          onClick={() => {
+                            setTimelineData(timelineData.concat([{
+                              id: new Date().getTime().toString(),
+                              progress: false,
+                              actions: [],
+                            } as TranscriptionRow]))
+                          }}
+                        >
+                          <IconPlus size={16} stroke={1.5}/>
+                        </ActionIcon>
                         <Group gap="xs" wrap="nowrap">
                           <ActionIcon
                             variant="subtle"
@@ -542,19 +599,14 @@ function App() {
                           </ActionIcon>
                         </Group>
                         <ActionIcon
-                          variant="default"
+                          variant={autoScroll ? 'filled' : 'default'}
                           size="md"
                           radius="sm"
-                          color="gray"
-                          onClick={() => {
-                            setTimelineData(timelineData.concat([{
-                              id: new Date().getTime().toString(),
-                              progress: false,
-                              actions: [],
-                            } as TranscriptionRow]))
-                          }}
+                          className="mantine-active"
+                          onClick={() => setAutoScroll(v => !v)}
+                          title="再生時間に合わせて自動スクロール"
                         >
-                          <IconPlus size={16} stroke={1.5}/>
+                          <IconArrowBigRightLines size={16} stroke={1.5}/>
                         </ActionIcon>
                       </Group>
                       <Divider/>
@@ -618,7 +670,7 @@ function App() {
                         ref={timelineState}
                         editorData={timelineData}
                         engine={engine}
-                        onChange={(e: TranscriptionRow[]) => setTimelineData(e)}
+                        onChange={(e: TranscriptionRow[]) => updateTimelineData()}
                         effects={{}}
                         scaleSplitCount={10}
                         minScaleCount={Math.ceil(Math.max(duration, 1) / scale)}
@@ -647,14 +699,19 @@ function App() {
                               effectId: null,
                             },
                           ].sort((a, b) => a.start - b.start)
-                          setTimelineData((c) => c.slice())
+                          updateTimelineData()
                         }}
                         // onClickActionOnly={(e, {row, action}) => {
-                        //   e.preventDefault()
                         // }}
-                        onDoubleClickAction={(e, {row, action}: {row: TranscriptionRow, action: TranscriptionText, time: number} ) => {
-                          setActiveText(action)
+                        onDoubleClickAction={(e, {row, action}: {
+                          row: TranscriptionRow,
+                          action: TranscriptionText,
+                          time: number
+                        }) => {
+                          setActiveTextId(action.id)
                         }}
+                        onActionMoveEnd={updateTimelineData}
+                        onActionResizeEnd={updateTimelineData}
                         getActionRender={(action: TranscriptionText) => {
                           return <div className="prompt">{action.text}</div>
                         }}
@@ -681,7 +738,14 @@ function App() {
               >
                 {
                   selectedRow ?
-                    <TimelineTable timeline={selectedRow} parentHeight={sideTop.current.clientHeight}></TimelineTable> :
+                    <TimelineTable
+                      timeline={selectedRow}
+                      parentHeight={sideTop.current.clientHeight}
+                      parentWidth={sideTop.current.clientWidth}
+                      onClick={(text) => {
+                        setActiveTextId(text.id)
+                      }}
+                    /> :
                     <></>
                 }
               </div>
@@ -690,9 +754,7 @@ function App() {
             <Panel order={2}>
               {
                 activeText ?
-                  <TextEditArea text={activeText} onChange={() => {
-                    // pass
-                  }} /> :
+                  <TextEditArea text={activeText} onChange={updateTimelineData}/> :
                   <></>
               }
             </Panel>

@@ -13,12 +13,14 @@ def info(media_path):
         'format_long': media.format.long_name,
         'duration': media.duration // 1000,
         'duration_time': format_timestamp(media.duration / 1000000),
+        'bit_rate': media.bit_rate,
         'video': [
             {
                 'name': stream.codec_context.name,
                 'profile': stream.codec_context.profile,
                 'width': stream.codec_context.width,
                 'height': stream.codec_context.height,
+                'bit_rate': stream.codec_context.bit_rate_tolerance,
                 'frame_rate': int(float(stream.base_rate) * 1000) / 1000,
             }
             for stream in media.streams.video

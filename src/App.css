@@ -13,6 +13,7 @@
 
 .video-panel {
   overflow: hidden;
+  position: relative;
 }
 
 .player-wrapper {
@@ -22,6 +23,7 @@
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
 
   height: 100%;
   width: 100%;
@@ -159,7 +161,7 @@ input[type=time][data-variant=unstyled] {
 .timeline-header {
   height: 100%;
   max-height: 100%;
-  width: 15rem;
+  width: 20rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;

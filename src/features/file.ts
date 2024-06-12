@@ -10,6 +10,7 @@ export interface FfmpegMediaInfo {
   format_long: string
   duration: number
   duration_time: string
+  bit_rate: number
   video: {
     name: string
     profile: string

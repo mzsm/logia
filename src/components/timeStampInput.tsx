@@ -5,6 +5,7 @@ import { formatTime, parseTimeCode } from '../utils'
 
 interface Props {
   variant?: string
+  label?: string
   size?: MantineSize | NonNullable<string>
   radius?: MantineRadius
   value: number
@@ -17,6 +18,7 @@ interface Props {
 
 function TimeStampInput({
                           variant = 'default',
+                          label,
                           size,
                           radius,
                           value,
@@ -49,6 +51,7 @@ function TimeStampInput({
   return (
     <TextInput
       ref={input}
+      label={label}
       variant={variant}
       size={size}
       radius={radius}

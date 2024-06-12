@@ -1,11 +1,17 @@
 import { TimelineEngine } from 'react-timeline-editor'
 import { MutableRefObject } from 'react'
+import { TranscriptionRow } from '../declare'
 
 export default class VideoEngine extends TimelineEngine {
   constructor(private mediaTag: MutableRefObject<HTMLMediaElement>) {
     super()
   }
 
+  set data(data: TranscriptionRow[]) {
+    this._dealData(data);
+    this._dealClear();
+    this._dealEnter(this._currentTime);
+  }
 
   get isPlaying() {
     return !this.mediaTag.current.paused

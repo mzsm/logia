@@ -1,15 +1,20 @@
 import { useMemo } from 'react'
 import { Stack } from '@mantine/core'
 import { MantineReactTable, MRT_ColumnDef, useMantineReactTable } from 'mantine-react-table'
+import { MRT_Localization_JA } from 'mantine-react-table/locales/ja/index.cjs'
 import { TranscriptionRow, TranscriptionText } from '../declare'
 import { formatTime } from '../utils'
+
+const TIME_WIDTH = 110
 
 interface Props {
   timeline: TranscriptionRow
   parentHeight: number
+  parentWidth: number
+  onClick?: (TranscriptionText) => unknown
 }
 
-function TimelineTable({timeline, parentHeight}: Props) {
+function TimelineTable({timeline, parentHeight, parentWidth, onClick}: Props) {
   const columns = useMemo<MRT_ColumnDef<TranscriptionText>[]>(
     () =>
       [
@@ -17,9 +22,9 @@ function TimelineTable({timeline, parentHeight}: Props) {
           accessorKey: 'start',
           header: '開始',
           enableGlobalFilter: false,
-          size: 110,
+          size: TIME_WIDTH,
           // @ts-expect-error TS7031
-          Cell: ({renderedCellValue}) => (
+          Cell: ({renderedCellValue}: {renderedCellValue: number}) => (
             <Stack justify="start" style={{height: '100%'}}>
               <div>{formatTime(renderedCellValue, true)}</div>
             </Stack>
@@ -29,9 +34,9 @@ function TimelineTable({timeline, parentHeight}: Props) {
           accessorKey: 'end',
           header: '終了',
           enableGlobalFilter: false,
-          size: 110,
+          size: TIME_WIDTH,
           // @ts-expect-error TS7031
-          Cell: ({renderedCellValue}) => (
+          Cell: ({renderedCellValue}: {renderedCellValue: number}) => (
             <Stack justify="start" style={{height: '100%'}}>
               <div>{formatTime(renderedCellValue, true)}</div>
             </Stack>
@@ -40,15 +45,15 @@ function TimelineTable({timeline, parentHeight}: Props) {
         {
           accessorKey: 'text',
           header: 'テキスト',
-          mantineTableBodyCellProps: {
-            style: {
-              alignItems: 'top',
-            },
-          },
+          size: Math.max(TIME_WIDTH, parentWidth - TIME_WIDTH * 2 - 1),
+          // @ts-expect-error TS7031
+          Cell: ({renderedCellValue}) => (
+            <div style={{textOverflow: 'ellipsis', overflow: 'hidden'}}>{renderedCellValue}</div>
+          ),
         },
       ]
     ,
-    [],
+    [parentHeight, parentWidth],
   )
 
   const table = useMantineReactTable({
@@ -62,12 +67,12 @@ function TimelineTable({timeline, parentHeight}: Props) {
     enableFullScreenToggle: false,
     enableSorting: false,
     enableHiding: false,
-    enableRowVirtualization: () => timeline.actions.length >= 100,
+    enableRowVirtualization: true,
     rowVirtualizerOptions: {overscan: 10},
     initialState: {density: 'xs'},
-    mantineTableProps: {
-      sx: {
-        tableLayout: 'fixed'
+    mantinePaperProps: {
+      style: {
+        border: 'none'
       }
     },
     mantineTableContainerProps: {
@@ -76,9 +81,12 @@ function TimelineTable({timeline, parentHeight}: Props) {
         maxHeight: `${parentHeight - 56}px`,
       },
     },
-    mantineSearchTextInputProps: {
-      placeholder: '検索',
-    },
+    mantineTableBodyRowProps: ({row}) => ({
+      onClick: () => {
+        onClick && onClick(row.original)
+      }
+    }),
+    localization: MRT_Localization_JA
   })
 
   return <MantineReactTable table={table}/>
