@@ -232,10 +232,11 @@ function App() {
   }
 
 
-  const onClickStartTranscription = (id: string, promise: Promise<unknown>) => {
+  const onClickStartTranscription = (id: string, promise: Promise<unknown>, name: string) => {
     const actions: TranscriptionText[] = []
     const row = {
       id: id,
+      name: name,
       progress: true,
       actions,
     }
@@ -243,11 +244,34 @@ function App() {
 
     promise.then(() => {
       row.progress = false
+      updateTimelineData()
     })
   }
 
   const onClickAbortTranscription = () => {
     window.electronAPI.abortTranscription()
+  }
+
+  const addEmptyTimeline = () => {
+    setTimelineData((_timelineData) => {
+      const timelineNames = _timelineData.map((_timeline) => _timeline.name)
+      let name = ''
+      let suffix = 0
+      while(true) {
+        name = `無題のタイムライン${suffix? ` (${suffix})`: ''}`
+        if (!timelineNames.includes(name)) {
+          break
+        }
+        suffix++
+      }
+      _timelineData = _timelineData.concat([{
+        id: new Date().getTime().toString(),
+        name: name,
+        progress: false,
+        actions: [],
+      } as TranscriptionRow])
+      return structuredClone(_timelineData)
+    })
   }
 
   useEffect(() => {
@@ -568,13 +592,7 @@ function App() {
                           size="md"
                           radius="sm"
                           color="gray"
-                          onClick={() => {
-                            setTimelineData(timelineData.concat([{
-                              id: new Date().getTime().toString(),
-                              progress: false,
-                              actions: [],
-                            } as TranscriptionRow]))
-                          }}
+                          onClick={addEmptyTimeline}
                         >
                           <IconPlus size={16} stroke={1.5}/>
                         </ActionIcon>
@@ -644,8 +662,11 @@ function App() {
                               value: item.id,
                               label: (
                                 <Group justify="space-between" gap="xs" align="center" wrap="nowrap">
-                                  <div style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-                                    {item.id}
+                                  <div
+                                    style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
+                                    title={item.name}
+                                  >
+                                    {item.name}
                                   </div>
                                   {
                                     item.progress ?

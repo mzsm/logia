@@ -10,5 +10,6 @@ export interface TranscriptionText extends TimelineAction {
 
 export interface TranscriptionRow extends TimelineRow {
   progress: boolean
+  name: string,
   actions: TranscriptionText[]
 }

@@ -7,6 +7,9 @@ import { IconPlayerPlayFilled } from '@tabler/icons-react'
 const languages = LANGUAGES.map(([label, code]: [string, string]) => {
   return {label, value: code}
 })
+const languageLabels = LANGUAGES.reduce((obj: {[key: string]: string}, [label, code]: [string, string]) => {
+  return Object.assign(obj, {[code]: label.replace(/\s*\(.+?\)$/, '')})
+}, {})
 const models = [
   {label: 'Base', value: 'base'},
   {label: 'Base(英語専用)', value: 'base.en'},
@@ -15,13 +18,16 @@ const models = [
   {label: 'Large-v2', value: 'large-v2'},
   {label: 'Large-v3', value: 'large-v3'},
 ]
+const modelLabels = models.reduce((obj: {[key: string]: string}, x) => {
+  return Object.assign(obj, {[x.value]: x.label})
+}, {})
 
 interface Props {
   opened: boolean
   onClose: () => unknown
   mediaFilePath: string
   duration: number
-  onClickStartTranscription?: (id: string, promise: Promise<unknown>) => unknown
+  onClickStartTranscription?: (id: string, promise: Promise<unknown>, name: string) => unknown
 }
 
 function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickStartTranscription}: Props) {
@@ -75,7 +81,8 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
     }
 
     const promise = window.electronAPI.startTranscription(args)
-    onClickStartTranscription && onClickStartTranscription(id, promise)
+    const name = `自動文字起こし(${languageLabels[language]} ${modelLabels[model]})`
+    onClickStartTranscription && onClickStartTranscription(id, promise, name)
     onClose()
   }
 
