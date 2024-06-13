@@ -200,6 +200,20 @@ function App() {
     setTime(timeStamp)
   }
 
+  // 編集中のテキストを削除
+  const removeActiveText = () => {
+    setActiveTextId(null)
+
+    setTimelineData((_timelineData) => {
+      _timelineData.forEach((_timeline) => {
+        _timeline.actions = _timeline.actions.filter((text) => {
+          return activeTextId !== text.id
+        })
+      })
+      return structuredClone(_timelineData)
+    })
+  }
+
   // ツールバーの開くボタンクリック時
   const onClickMediaOpen = () => {
     window.electronAPI.openMediaFile().then((media) => {
@@ -754,7 +768,11 @@ function App() {
             <Panel order={2}>
               {
                 activeText ?
-                  <TextEditArea text={activeText} onChange={updateTimelineData}/> :
+                  <TextEditArea
+                    text={activeText}
+                    onChange={updateTimelineData}
+                    onRemove={removeActiveText}
+                  /> :
                   <></>
               }
             </Panel>
