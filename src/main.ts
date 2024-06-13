@@ -74,6 +74,28 @@ const createWindow = () => {
         isMac ? {role: 'close'} : {role: 'quit'},
       ],
     },
+    {
+      label: 'Edit',
+      submenu: [
+        {role: 'undo'},
+        {role: 'redo'},
+        {type: 'separator'},
+        {role: 'cut'},
+        {role: 'copy'},
+        {role: 'paste'},
+        ...(isMac
+          ? [
+            {role: 'pasteAndMatchStyle'},
+            {role: 'delete'},
+            {role: 'selectAll'},
+          ]
+          : [
+            {role: 'delete'},
+            {type: 'separator'},
+            {role: 'selectAll'},
+          ]),
+      ],
+    },
   ]
   if (isMac) {
     templateMenu.unshift({
@@ -109,7 +131,14 @@ const createWindow = () => {
 
   ipcMain.handle(
     'startTranscription',
-    async (event, args: { filePath: string; id?: string; language?: string; model?: string; begin?: number; end?: number },
+    async (event, args: {
+             filePath: string;
+             id?: string;
+             language?: string;
+             model?: string;
+             begin?: number;
+             end?: number
+           },
     ) => {
       try {
         await startTranscription(mainWindow, args.filePath, args.id, args.language, args.model, args.begin, args.end)
