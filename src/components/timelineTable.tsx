@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { ActionIcon, Stack } from '@mantine/core'
 import { IconPlayerPlay } from '@tabler/icons-react'
-import { MantineReactTable, MRT_ColumnDef, useMantineReactTable } from 'mantine-react-table'
+import { MantineReactTable, MRT_ColumnDef, useMantineReactTable, type MRT_RowVirtualizer } from 'mantine-react-table'
 import { MRT_Localization_JA } from 'mantine-react-table/locales/ja/index.cjs'
 import { TranscriptionRow, TranscriptionText } from '../declare'
 import { formatTime } from '../utils'
@@ -11,7 +11,7 @@ const ACTION_WIDTH = 40
 
 interface Props {
   timeline: TranscriptionRow
-  currentTextId?: string
+  currentTextId: string
   parentHeight: number
   parentWidth: number
   onClick?: (TranscriptionText) => unknown
@@ -19,6 +19,7 @@ interface Props {
 }
 
 function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onClick, onSetTime}: Props) {
+  const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null);
 
   const columns = useMemo<MRT_ColumnDef<TranscriptionText>[]>(
     () =>
@@ -61,6 +62,13 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
     [parentHeight, parentWidth],
   )
 
+  useEffect(() => {
+    const index = timeline.actions.findIndex((_text) => _text.id === currentTextId)
+    if (index > -1) {
+      rowVirtualizerInstanceRef.current.scrollToIndex(index, {align: 'start', behavior: 'smooth'})
+    }
+  }, [currentTextId])
+
   const table = useMantineReactTable({
     columns,
     data: timeline.actions,
@@ -73,6 +81,7 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
     enableSorting: false,
     enableHiding: false,
     enableRowVirtualization: true,
+    rowVirtualizerInstanceRef,
     rowVirtualizerOptions: {overscan: 10},
     initialState: {density: 'xs'},
     mantinePaperProps: {

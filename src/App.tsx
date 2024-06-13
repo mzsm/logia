@@ -199,11 +199,12 @@ function App() {
       for (let i = 0; i < selectedRow.actions.length; i++) {
         if (selectedRow.actions[i].start <= currentTime && currentTime <= selectedRow.actions[i].end) {
           setCurrentTextId(selectedRow.actions[i].id)
-          break
+          return
         } else if (currentTime <= selectedRow.actions[i].start) {
-          break
+          return
         }
       }
+      setCurrentTextId(null)
     }
   }
 
