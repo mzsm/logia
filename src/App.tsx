@@ -61,6 +61,7 @@ function App() {
   // const [selectedTextList, setSelectedTextList] = useState<TranscriptionText[]>([])
   const [activeTextId, setActiveTextId] = useState<string>(null)
   const [activeText, setActiveText] = useState<TranscriptionText>(null)
+  const [currentTextId, setCurrentTextId] = useState<string>(null)
 
   const [engine, setEngine] = useState<TimelineEngine>(null)
   const [scales, setScales] = useState<number[]>([])
@@ -193,7 +194,17 @@ function App() {
   }
   const onTimeUpdate = () => {
     setCurrentTime(videoTag.current.currentTime)
-    // timelineState.current.setTime(videoTag.current.currentTime)
+
+    if (selectedRow) {
+      for (let i = 0; i < selectedRow.actions.length; i++) {
+        if (selectedRow.actions[i].start <= currentTime && currentTime <= selectedRow.actions[i].end) {
+          setCurrentTextId(selectedRow.actions[i].id)
+          break
+        } else if (currentTime <= selectedRow.actions[i].start) {
+          break
+        }
+      }
+    }
   }
 
   const onTimeInput = (timeStamp: number) => {
@@ -257,8 +268,8 @@ function App() {
       const timelineNames = _timelineData.map((_timeline) => _timeline.name)
       let name = ''
       let suffix = 0
-      while(true) {
-        name = `無題のタイムライン${suffix? ` (${suffix})`: ''}`
+      while (true) {
+        name = `無題のタイムライン${suffix ? ` (${suffix})` : ''}`
         if (!timelineNames.includes(name)) {
           break
         }
@@ -775,10 +786,15 @@ function App() {
                   selectedRow ?
                     <TimelineTable
                       timeline={selectedRow}
+                      currentTextId={currentTextId}
                       parentHeight={sideTop.current.clientHeight}
                       parentWidth={sideTop.current.clientWidth}
                       onClick={(text) => {
                         setActiveTextId(text.id)
+                      }}
+                      onSetTime={(time) => {
+                        setTime(time)
+                        playMedia()
                       }}
                     /> :
                     <></>
