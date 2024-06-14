@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "logia"
 version = "0.1.0"
-description = ""
+description = "動画クリエイターのための自動文字起こしソフト"
 authors = ["mzsm <mizushimaj@gmail.com>"]
 readme = "README.md"
 

@@ -2,7 +2,7 @@
   "name": "logia",
   "productName": "Logia",
   "version": "0.1.0",
-  "description": "My Electron application description",
+  "description": "動画クリエイターのための自動文字起こしソフト",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
