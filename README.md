@@ -1,6 +1,5 @@
 # Logia
 
-
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
-Automatic transcribe utility
+動画クリエイターのための自動文字起こしソフト Logia
