@@ -170,11 +170,13 @@ input[type=time][data-variant=unstyled] {
 .timeline-header .mantine-SegmentedControl-label {
   height: 2rem;
 }
-.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar {
+.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar,
+.mrt-table-container::-webkit-scrollbar {
   width: 0.75rem;
   height: 0.75rem;
 }
-.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar-corner {
+.timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar-corner,
+.mrt-table-container::-webkit-scrollbar-corner {
   display: none;
 }
 
@@ -193,7 +195,8 @@ input[type=time][data-variant=unstyled] {
 }
 
 .timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar-thumb,
-.timeline-editor .timeline-editor-edit-area .ReactVirtualized__Grid::-webkit-scrollbar-thumb {
+.timeline-editor .timeline-editor-edit-area .ReactVirtualized__Grid::-webkit-scrollbar-thumb,
+.mrt-table-container::-webkit-scrollbar-thumb {
   background-color: #424242;
   border-radius: 0.75rem;
   /*width: 1rem;*/

@@ -788,8 +788,8 @@ function App() {
                     <TimelineTable
                       timeline={selectedRow}
                       currentTextId={currentTextId}
-                      parentHeight={sideTop.current.clientHeight}
-                      parentWidth={sideTop.current.clientWidth}
+                      parentHeight={sideTop.current.scrollHeight}
+                      parentWidth={sideTop.current.scrollWidth}
                       onClick={(text) => {
                         setActiveTextId(text.id)
                       }}

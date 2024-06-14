@@ -1,7 +1,13 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { ActionIcon, Stack } from '@mantine/core'
-import { IconPlayerPlay } from '@tabler/icons-react'
-import { MantineReactTable, MRT_ColumnDef, useMantineReactTable, type MRT_RowVirtualizer } from 'mantine-react-table'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ActionIcon, Group, Stack } from '@mantine/core'
+import { IconArrowBigDownLines, IconPlayerPlay } from '@tabler/icons-react'
+import {
+  MantineReactTable,
+  MRT_ColumnDef,
+  MRT_GlobalFilterTextInput,
+  type MRT_RowVirtualizer,
+  useMantineReactTable,
+} from 'mantine-react-table'
 import { MRT_Localization_JA } from 'mantine-react-table/locales/ja/index.cjs'
 import { TranscriptionRow, TranscriptionText } from '../declare'
 import { formatTime } from '../utils'
@@ -19,7 +25,8 @@ interface Props {
 }
 
 function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onClick, onSetTime}: Props) {
-  const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null);
+  const [autoScroll, setAutoScroll] = useState<boolean>(false)
+  const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null)
 
   const columns = useMemo<MRT_ColumnDef<TranscriptionText>[]>(
     () =>
@@ -51,7 +58,7 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
         {
           accessorKey: 'text',
           header: 'テキスト',
-          size: Math.max(TIME_WIDTH, parentWidth - ACTION_WIDTH - TIME_WIDTH * 2 - 1),
+          size: Math.max(TIME_WIDTH, parentWidth - ACTION_WIDTH - TIME_WIDTH * 2 - 12 - 1),
           // @ts-expect-error TS7031
           Cell: ({renderedCellValue}) => (
             <div style={{textOverflow: 'ellipsis', overflow: 'hidden'}}>{renderedCellValue}</div>
@@ -63,27 +70,26 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
   )
 
   useEffect(() => {
+    if (!autoScroll) {
+      return
+    }
     const index = timeline.actions.findIndex((_text) => _text.id === currentTextId)
     if (index > -1) {
       rowVirtualizerInstanceRef.current.scrollToIndex(index, {align: 'start', behavior: 'smooth'})
     }
-  }, [currentTextId])
+  }, [currentTextId, autoScroll])
 
   const table = useMantineReactTable({
     columns,
     data: timeline.actions,
     enableBottomToolbar: false,
-    enableColumnActions: false,
-    enableColumnFilters: false,
-    enablePagination: false,
-    enableDensityToggle: false,
-    enableFullScreenToggle: false,
-    enableSorting: false,
-    enableHiding: false,
     enableRowVirtualization: true,
     rowVirtualizerInstanceRef,
     rowVirtualizerOptions: {overscan: 10},
-    initialState: {density: 'xs'},
+    initialState: {
+      density: 'xs',
+      showGlobalFilter: true,
+    },
     mantinePaperProps: {
       style: {
         border: 'none',
@@ -91,8 +97,8 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
     },
     mantineTableContainerProps: {
       style: {
-        height: `${parentHeight - 56}px`,
-        maxHeight: `${parentHeight - 56}px`,
+        height: `${parentHeight - 36}px`,
+        maxHeight: `${parentHeight - 36}px`,
       },
     },
     mantineTableBodyRowProps: ({row}) => ({
@@ -102,14 +108,46 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
         }
       },
       style: {
-        backgroundColor: row.original.id === currentTextId ? 'var(--mrt-row-hover-background-color)' : ''
-      }
+        backgroundColor: row.original.id === currentTextId ? 'var(--mrt-row-hover-background-color)' : '',
+      },
     }),
+    // top toolbar
+    enableColumnActions: false,
+    enableDensityToggle: false,
+    enableColumnFilters: false,
+    enableGlobalFilter: true,
+    enableHiding: false,
+    enableFullScreenToggle: false,
+    enablePagination: false,
+    enableSorting: false,
+    renderTopToolbar: ({table}) => {
+      return (
+        <Group pl="xs" justify="space-between">
+          <Group p={0}>
+
+          </Group>
+          <MRT_GlobalFilterTextInput table={table}/>
+        </Group>
+      )
+    },
+    mantineSearchTextInputProps: {
+      placeholder: 'テキストを検索',
+    },
     // Row actions
     enableRowActions: true,
     displayColumnDefOptions: {
       'mrt-row-actions': {
-        header: '',
+        header: (
+          <ActionIcon
+            variant={autoScroll ? 'filled' : 'default'}
+            size="sm"
+            radius="sm"
+            onClick={() => setAutoScroll(v => !v)}
+            title="再生時間に合わせて自動スクロール"
+          >
+            <IconArrowBigDownLines size={16} stroke={1.5}/>
+          </ActionIcon>
+        ),
         size: ACTION_WIDTH,
       },
     },
@@ -117,6 +155,7 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
       return <ActionIcon
         variant="default"
         size="sm"
+        radius="sm"
         onClick={() => {
           onSetTime(row.original.start)
         }}
