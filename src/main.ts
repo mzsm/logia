@@ -38,11 +38,11 @@ const createWindow = () => {
     const [x, y] = mainWindow.getPosition()
     store.set('windowPosition', {x, y})
   })
-  mainWindow.addListener('resize', (e: unknown) => {
+  mainWindow.addListener('resize', () => {
     const [width, height] = mainWindow.getSize()
     mainWindow.webContents.send('resize', {width, height})
   })
-  mainWindow.addListener('resized', (e: unknown) => {
+  mainWindow.addListener('resized', () => {
     const [width, height] = mainWindow.getSize()
     store.set('windowSize', {width, height})
   })
@@ -197,9 +197,8 @@ ipcMain.handle('save:ccFile', async (event, {format}) => {
   return await showCCSaveDialog(format)
 })
 
-ipcMain.handle('save', async (event, {path, content}) => {
-  // console.log(event, path, content)
-  return await saveFile(path, content)
+ipcMain.handle('save', async (event, {path, content, encoding}) => {
+  return await saveFile(path, content, encoding)
 })
 
 ipcMain.handle('getMediaInfo', async (event, filePath: string) => {

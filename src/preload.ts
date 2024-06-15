@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setConfig: (args: {[key: string]: unknown}) => ipcRenderer.invoke('setConfig', args),
   openMediaFile: () => ipcRenderer.invoke('open:mediaFile'),
   exportCC: (args: {format: OUTPUT_FORMAT_TYPES}) => ipcRenderer.invoke('save:ccFile', args),
-  saveFile: (args: {path: string, content: string}) => ipcRenderer.invoke('save', args),
+  saveFile: (args: {path: string, content: string, encoding: string|null}) => ipcRenderer.invoke('save', args),
   getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),
   startTranscription: (args: {filePath: string; id?: string; language?: string; model?: string; begin?: number; end?: number}) => ipcRenderer.invoke('startTranscription', args),
   abortTranscription: () => ipcRenderer.invoke('abortTranscription'),

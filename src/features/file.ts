@@ -1,6 +1,7 @@
 import { dialog } from 'electron'
 import { OUTPUT_FORMAT_DICT, OUTPUT_FORMAT_TYPES } from '../const'
 import fs from 'fs'
+import iconv from 'iconv-lite'
 
 const EXT_VIDEO = ['mp4', 'mov', 'mkv', 'webm']
 const EXT_AUDIO = ['m4a', 'mp3', 'ogg', 'opus', 'wav']
@@ -61,8 +62,17 @@ export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
   return result.filePath
 }
 
-export const saveFile = async (path: string, content: string) => {
-  fs.writeFile(path, content, (error) => {
-    console.log(error)
-  })
+export const saveFile = async (path: string, content: string, encoding: string|null) => {
+  if (encoding) {
+    let addBOM = false
+    if (encoding === 'utf8-bom') {
+      encoding = 'utf8'
+      addBOM = true
+    } else if (['utf16le', 'utf32le', 'utf32be'].includes(encoding)) {
+      addBOM = true
+    }
+    fs.writeFile(path, iconv.encode(content, encoding, {addBOM}), () => {})
+  } else {
+    fs.writeFile(path, content, () => {})
+  }
 }

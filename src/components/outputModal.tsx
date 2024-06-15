@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, Checkbox, Divider, Group, Modal, ScrollArea, Select, Stack, Text } from '@mantine/core'
 import {
   ENCODING_CP932,
   ENCODING_UTF16LE,
-  ENCODING_UTF8,
+  ENCODING_UTF8, ENCODING_UTF8_BOM,
   OUTPUT_FORMAT_TYPES,
   OUTPUT_FORMATS,
   TEXT_ENCODINGS,
 } from '../const'
 import { TranscriptionRow } from '../declare'
+import { exportCCFile, TextOptions, CsvOptions } from '../features/output'
 
 const formats: { label: string, value: OUTPUT_FORMAT_TYPES }[] = OUTPUT_FORMATS.map(([value, label]) => {
   return {label, value}
@@ -31,12 +32,12 @@ const TIMESTAMP_FORMAT_SEC = 'sec'
 const TIMESTAMP_FORMAT_MS = 'ms'
 
 const csvPresets: Partial<Record<CSV_PRESET_TYPES, [CSV_SEPARATOR_TYPES, string]>> = {
-  [CSV_PRESET_COMMA_UTF8]: [CSV_SEPARATOR_COMMA, ENCODING_UTF8],
+  [CSV_PRESET_COMMA_UTF8]: [CSV_SEPARATOR_COMMA, ENCODING_UTF8_BOM],
   [CSV_PRESET_TAB_UTF16LE]: [CSV_SEPARATOR_TAB, ENCODING_UTF16LE],
   [CSV_PRESET_COMMA_CP932]: [CSV_SEPARATOR_COMMA, ENCODING_CP932],
 }
 const csvFormats: { label: string, value: CSV_PRESET_TYPES }[] = [
-  {label: 'カンマ区切り UTF-8', value: CSV_PRESET_COMMA_UTF8},
+  {label: 'カンマ区切り UTF-8(BOM)', value: CSV_PRESET_COMMA_UTF8},
   {label: 'タブ区切り UTF-16LE', value: CSV_PRESET_TAB_UTF16LE},
   {label: 'カンマ区切り Shift_JIS', value: CSV_PRESET_COMMA_CP932},
   {label: 'カスタム', value: CSV_PRESET_CUSTOM},
@@ -66,18 +67,33 @@ interface Props {
 function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
   const [timelines, setTimelines] = useState([])
   const [target, setTarget] = useState<string>(null)
+  const _target = useRef<TranscriptionRow>(null)
   const [outputFormat, setOutputFormat] = useState<OUTPUT_FORMAT_TYPES>(formats[0].value)
   // settings for CSV
   const [csvFormat, setCsvFormat] = useState<CSV_PRESET_TYPES>(csvFormats[0].value)
   const [csvSeparator, setCsvSeparator] = useState<CSV_SEPARATOR_TYPES>(CSV_SEPARATOR_COMMA)
   const [csvEncoding, setCsvEncoding] = useState<string>(ENCODING_UTF8)
   const [csvTimestampFormat, setCsvTimestampFormat] = useState<string>(TIMESTAMP_FORMAT_TIMECODE)
+  const [csvOmitEndTimestamps, setCsvOmitEndTimestamps] = useState<boolean>(false)
   const [csvInsertHeader, setCsvInsertHeader] = useState<boolean>(false)
   const [csvQuoteAll, setCsvQuoteAll] = useState<boolean>(false)
   // settings for plain text
   const [textEncoding, setTextEncoding] = useState<string>(TEXT_ENCODINGS[0].items[0].value)
-  const [newline, setNewline] = useState<string>(newlines[0].value)
-  const [omitTimestamps, setOmitTimestamps] = useState<boolean>(false)
+  const [textNewline, setTextNewline] = useState<string>(newlines[0].value)
+  const [textOmitTimestamps, setTextOmitTimestamps] = useState<boolean>(false)
+
+  useEffect(() => {
+    let found = false
+    timelineData.map((timeline) => {
+      if (timeline.id == selectedRowId) {
+        _target.current = timeline
+        found = true
+      }
+    })
+    if (!found) {
+      _target.current = null
+    }
+  }, [target, timelines])
 
   const _setOutputFormat = (value: OUTPUT_FORMAT_TYPES) => {
     setOutputFormat(value)
@@ -101,7 +117,24 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
   const save = () => {
     window.electronAPI.exportCC({format: outputFormat}).then((filePath) => {
       if (filePath) {
-        // exportCCFile(filePath, transcript)
+        let options: TextOptions|CsvOptions
+        if (outputFormat === 'txt') {
+          options = {
+            newline: textNewline,
+            encoding: textEncoding,
+          }
+        } else if (outputFormat === 'csv') {
+          options = {
+            separator: csvSeparator,
+            encoding: csvEncoding,
+            timestampFormat: csvTimestampFormat,
+            omitEndTimestamps: csvOmitEndTimestamps,
+            insertHeader: csvInsertHeader,
+            quoteAll: csvQuoteAll,
+          }
+        }
+
+        exportCCFile(filePath, outputFormat, _target.current.actions, options)
       }
     })
   }
@@ -217,6 +250,11 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
                     size="sm"
                     radius="sm"
                   />
+                  <Checkbox
+                    label="開始時間のみ出力"
+                    checked={csvOmitEndTimestamps}
+                    onChange={(e) => setCsvOmitEndTimestamps(e.target.checked)}
+                  />
                 </Group>
                 <Checkbox
                   label="1行目にヘッダーを挿入する"
@@ -254,8 +292,8 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
                     label="改行コード"
                     id="coding"
                     data={newlines}
-                    value={newline}
-                    onChange={(v) => setNewline(v)}
+                    value={textNewline}
+                    onChange={(v) => setTextNewline(v)}
                     checkIconPosition="right"
                     allowDeselect={false}
                     size="sm"
@@ -264,8 +302,8 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
                 </Group>
                 <Checkbox
                   label="タイムスタンプを出力せず、テキストのみ出力する"
-                  checked={omitTimestamps}
-                  onChange={(e) => setOmitTimestamps(e.target.checked)}
+                  checked={textOmitTimestamps}
+                  onChange={(e) => setTextOmitTimestamps(e.target.checked)}
                 />
               </> :
               <></>
