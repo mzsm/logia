@@ -35,8 +35,10 @@ import { formatTime } from './utils'
 import { TranscriptionRow, TranscriptionText } from './declare'
 import './App.css'
 import MediaInfo from './components/mediaInfo'
+import OutputModal from './components/outputModal'
 
 const START_LEFT = 30
+const SCALE_WIDTH = 160
 
 function App() {
   const videoTag = useRef<HTMLVideoElement>(null)
@@ -55,6 +57,10 @@ function App() {
     open: openTranscriptionDialog,
     close: closeTranscriptionDialog,
   }] = useDisclosure(false)
+  const [isOpenedExportDialog, {
+    open: openExportDialog,
+    close: closeExportDialog,
+  }] = useDisclosure(false)
   const [timelineData, setTimelineData] = useState<TranscriptionRow[]>([])
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null)
   const [selectedRow, setSelectedRow] = useState<TranscriptionRow>(null)
@@ -66,10 +72,8 @@ function App() {
   const [engine, setEngine] = useState<TimelineEngine>(null)
   const [scales, setScales] = useState<number[]>([])
 
-  const [scaleWidth, setScaleWidth] = useState(160)
   const [scaleLevel, setScaleLevel] = useState(0)
   const [scale, setScale] = useState(1)
-  const _scaleWidth = useRef(scaleWidth)
   const _scale = useRef(scale)
 
   const mainHorizontalGrid = useRef<ImperativePanelGroupHandle>(null)
@@ -123,9 +127,9 @@ function App() {
 
   useEffect(() => {
     for (let i = 0; i < timelineData.length; i++) {
-      let _timeline = timelineData[i]
+      const _timeline = timelineData[i]
       for (let l = 0; l < _timeline.actions.length; l++) {
-        let text = _timeline.actions[l]
+        const text = _timeline.actions[l]
         if (activeTextId == text.id) {
           setActiveText(text)
           return
@@ -234,15 +238,6 @@ function App() {
       }
     })
   }
-  // 字幕ファイル出力
-  const onClickExportCC = () => {
-    window.electronAPI.exportCC().then((filePath) => {
-      if (filePath) {
-        // exportCCFile(filePath, transcript)
-      }
-    })
-  }
-
 
   const onClickStartTranscription = (id: string, promise: Promise<unknown>, name: string) => {
     const actions: TranscriptionText[] = []
@@ -260,22 +255,19 @@ function App() {
     })
   }
 
-  const onClickAbortTranscription = () => {
-    window.electronAPI.abortTranscription()
-  }
+  // const onClickAbortTranscription = () => {
+  //   window.electronAPI.abortTranscription()
+  // }
 
   const addEmptyTimeline = () => {
     setTimelineData((_timelineData) => {
       const timelineNames = _timelineData.map((_timeline) => _timeline.name)
       let name = ''
       let suffix = 0
-      while (true) {
+      do {
         name = `無題のタイムライン${suffix ? ` (${suffix})` : ''}`
-        if (!timelineNames.includes(name)) {
-          break
-        }
         suffix++
-      }
+      } while (timelineNames.includes(name))
       _timelineData = _timelineData.concat([{
         id: new Date().getTime().toString(),
         name: name,
@@ -359,7 +351,7 @@ function App() {
         // setTime(time);
         if (_autoScroll.current) {
           const autoScrollFrom = timelineState.current.target.clientWidth * 0.75
-          const left = time * (_scaleWidth.current / _scale.current) + START_LEFT - autoScrollFrom
+          const left = time * (SCALE_WIDTH / _scale.current) + START_LEFT - autoScrollFrom
           timelineState.current.setScrollLeft(left)
         }
       })
@@ -386,7 +378,11 @@ function App() {
           variant="subtle"
           color="gray"
           radius="sm"
-          onClick={onClickExportCC}
+          disabled={timelineData.length === 0}
+          onClick={() => {
+            engine.pause()
+            openExportDialog()
+          }}
         >
           <IconBadgeCc size={16} stroke={1.5}/>
         </ActionIcon>
@@ -717,11 +713,11 @@ function App() {
                         ref={timelineState}
                         editorData={timelineData}
                         engine={engine}
-                        onChange={(e: TranscriptionRow[]) => updateTimelineData()}
+                        onChange={(_: TranscriptionRow[]) => updateTimelineData()}
                         effects={{}}
                         scaleSplitCount={10}
                         minScaleCount={Math.ceil(Math.max(duration, 1) / scale)}
-                        scaleWidth={scaleWidth}
+                        scaleWidth={SCALE_WIDTH}
                         scale={scale}
                         startLeft={START_LEFT}
                         getScaleRender={(scale) => <>{formatTime(scale)}</>}
@@ -750,7 +746,7 @@ function App() {
                         }}
                         // onClickActionOnly={(e, {row, action}) => {
                         // }}
-                        onDoubleClickAction={(e, {row, action}: {
+                        onDoubleClickAction={(e, {action}: {
                           row: TranscriptionRow,
                           action: TranscriptionText,
                           time: number
@@ -823,6 +819,12 @@ function App() {
         mediaFilePath={mediaFilePath}
         duration={duration}
         onClickStartTranscription={onClickStartTranscription}
+      />
+      <OutputModal
+        timelineData={timelineData}
+        selectedRowId={selectedRowId}
+        opened={isOpenedExportDialog}
+        onClose={closeExportDialog}
       />
     </div>
   )

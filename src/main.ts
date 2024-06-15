@@ -193,8 +193,8 @@ ipcMain.handle('open:mediaFile', async () => {
   return await showMediaOpenDialog()
 })
 
-ipcMain.handle('save:ccFile', async () => {
-  return await showCCSaveDialog()
+ipcMain.handle('save:ccFile', async (event, {format}) => {
+  return await showCCSaveDialog(format)
 })
 
 ipcMain.handle('save', async (event, {path, content}) => {

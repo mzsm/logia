@@ -3,13 +3,14 @@
 
 import { FfmpegMediaInfo } from './features/file'
 import { contextBridge, ipcRenderer } from 'electron'
+import { OUTPUT_FORMAT_TYPES } from './const'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Main <= Renderer
   getConfig: (key: string) => ipcRenderer.invoke('getConfig', key),
   setConfig: (args: {[key: string]: unknown}) => ipcRenderer.invoke('setConfig', args),
   openMediaFile: () => ipcRenderer.invoke('open:mediaFile'),
-  exportCC: () => ipcRenderer.invoke('save:ccFile'),
+  exportCC: (args: {format: OUTPUT_FORMAT_TYPES}) => ipcRenderer.invoke('save:ccFile', args),
   saveFile: (args: {path: string, content: string}) => ipcRenderer.invoke('save', args),
   getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),
   startTranscription: (args: {filePath: string; id?: string; language?: string; model?: string; begin?: number; end?: number}) => ipcRenderer.invoke('startTranscription', args),

@@ -4,7 +4,7 @@ import { LANGUAGES } from '../const'
 import TimeStampInput from './timeStampInput'
 import { IconPlayerPlayFilled } from '@tabler/icons-react'
 
-const languages = LANGUAGES.map(([label, code]: [string, string]) => {
+const languages = LANGUAGES.map(([label, code]) => {
   return {label, value: code}
 })
 const languageLabels = LANGUAGES.reduce((obj: {[key: string]: string}, [label, code]: [string, string]) => {

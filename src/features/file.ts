@@ -1,4 +1,5 @@
 import { dialog } from 'electron'
+import { OUTPUT_FORMAT_DICT, OUTPUT_FORMAT_TYPES } from '../const'
 import fs from 'fs'
 
 const EXT_VIDEO = ['mp4', 'mov', 'mkv', 'webm']
@@ -19,11 +20,11 @@ export interface FfmpegMediaInfo {
     frame_rate: number
   }[]
   audio: {
-      name: string
-      profile: string
-      bit_rate: number
-      sample_rate: number
-      channels: number
+    name: string
+    profile: string
+    bit_rate: number
+    sample_rate: number
+    channels: number
   }[]
   format_text: string
 }
@@ -45,28 +46,13 @@ export const showMediaOpenDialog = async () => {
   return opened.filePaths[0]
 }
 
-export const showCCSaveDialog = async () => {
+export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
+  const {name, extensions} = OUTPUT_FORMAT_DICT[format]
+
   const result = await dialog.showSaveDialog({
-    title: '字幕ファイルを出力',
+    title: '字幕ファイル出力',
     properties: ['createDirectory', 'showOverwriteConfirmation'],
-    filters: [
-      {
-        name: 'WebVTT',
-        extensions: ['.vtt'],
-      },
-      {
-        name: 'SubRip',
-        extensions: ['.srt'],
-      },
-      {
-        name: 'SubViewer',
-        extensions: ['.sbv'],
-      },
-      {
-        name: 'Plain text',
-        extensions: ['.txt'],
-      },
-    ],
+    filters: [{name, extensions}],
   })
   if (result.canceled) {
     return null
