@@ -55,7 +55,7 @@ export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
     properties: ['createDirectory', 'showOverwriteConfirmation'],
     filters: [
       {name, extensions},
-      {name: 'すべてのファイル', extensions:['*']}
+      ...(process.platform === 'win32' ? [{name: 'すべてのファイル', extensions:['*']}] : [])
     ],
   })
   if (result.canceled) {
