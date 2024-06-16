@@ -10,7 +10,8 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "build:python": ".venv/bin/pyinstaller py_backend.spec --noconfirm"
+    "build:python:applesilicon": ".venv/bin/pyinstaller backend_applesilicon.spec --noconfirm",
+    "build:python:windows": ".venv/Scripts/pyinstaller.exe backend_windows.spec --noconfirm"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",

@@ -11,7 +11,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: [
-      'dist/py_backend/'
+      'dist/backend/'
     ],
     icon: 'images/icon'
   },
