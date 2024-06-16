@@ -20,7 +20,7 @@ interface Props {
   currentTextId: string
   parentHeight: number
   parentWidth: number
-  onClick?: (TranscriptionText) => unknown
+  onClick?: (text: TranscriptionText) => unknown
   onSetTime?: (time: number) => unknown
 }
 
@@ -59,7 +59,6 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
           accessorKey: 'text',
           header: 'テキスト',
           size: Math.max(TIME_WIDTH, parentWidth - ACTION_WIDTH - TIME_WIDTH * 2 - 12 - 1),
-          // @ts-expect-error TS7031
           Cell: ({renderedCellValue}) => (
             <div style={{textOverflow: 'ellipsis', overflow: 'hidden'}}>{renderedCellValue}</div>
           ),
@@ -137,6 +136,7 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
     enableRowActions: true,
     displayColumnDefOptions: {
       'mrt-row-actions': {
+        // @ts-expect-error TS2322
         header: (
           <ActionIcon
             variant={autoScroll ? 'filled' : 'default'}
