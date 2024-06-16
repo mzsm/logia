@@ -1,8 +1,8 @@
-import { app, Menu, BrowserWindow, MenuItemConstructorOptions, MenuItem, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
 import path from 'path'
-import { showMediaOpenDialog, showCCSaveDialog, saveFile } from './features/file'
+import { saveFile, showCCSaveDialog, showMediaOpenDialog } from './features/file'
 import { getMediaInfo } from './features/ffmpeg'
-import { startTranscription, abortTranscription } from './features/transcript'
+import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -88,12 +88,12 @@ const createWindow = () => {
             {role: 'pasteAndMatchStyle'},
             {role: 'delete'},
             {role: 'selectAll'},
-          ]
+          ] as MenuItemConstructorOptions[]
           : [
             {role: 'delete'},
             {type: 'separator'},
             {role: 'selectAll'},
-          ]),
+          ] as MenuItemConstructorOptions[]),
       ],
     },
   ]

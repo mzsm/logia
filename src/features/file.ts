@@ -55,7 +55,7 @@ export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
     properties: ['createDirectory', 'showOverwriteConfirmation'],
     filters: [
       {name, extensions},
-      {name: 'すべてのファイル', extensions:['*']}
+      ...(process.platform === 'win32' ? [{name: 'すべてのファイル', extensions: ['*']}] : []),
     ],
   })
   if (result.canceled) {
@@ -65,7 +65,7 @@ export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
   return result.filePath
 }
 
-export const saveFile = async (path: string, content: string, encoding: string|null) => {
+export const saveFile = async (path: string, content: string, encoding: string | null) => {
   if (encoding) {
     let addBOM = false
     if (encoding === 'utf8-bom') {
@@ -74,8 +74,10 @@ export const saveFile = async (path: string, content: string, encoding: string|n
     } else if (['utf16le', 'utf32le', 'utf32be'].includes(encoding)) {
       addBOM = true
     }
-    fs.writeFile(path, iconv.encode(content, encoding, {addBOM}), () => {})
+    fs.writeFile(path, iconv.encode(content, encoding, {addBOM}), () => {
+    })
   } else {
-    fs.writeFile(path, content, () => {})
+    fs.writeFile(path, content, () => {
+    })
   }
 }

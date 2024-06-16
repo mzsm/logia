@@ -6,6 +6,7 @@ export interface TextOptions {
   encoding: string
   newline: string
 }
+
 export interface CsvOptions {
   separator: string
   encoding: string
@@ -15,7 +16,7 @@ export interface CsvOptions {
   quoteAll: boolean
 }
 
-export const exportCCFile = (filePath: string, format: OUTPUT_FORMAT_TYPES, transcript: TranscriptionText[], options?: TextOptions|CsvOptions) => {
+export const exportCCFile = (filePath: string, format: OUTPUT_FORMAT_TYPES, transcript: TranscriptionText[], options?: TextOptions | CsvOptions) => {
   let body = ''
   if (format === 'txt') {
     body = toPlainText(transcript, options as TextOptions)
@@ -38,7 +39,7 @@ export const exportCCFile = (filePath: string, format: OUTPUT_FORMAT_TYPES, tran
     window.electronAPI.saveFile({
       path: filePath,
       content: body,
-      encoding
+      encoding,
     }).then()
   }
   // openMedia(media)

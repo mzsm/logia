@@ -1,5 +1,3 @@
-import argparse
-
 import av
 import ujson
 from av.container.input import InputContainer
