@@ -713,7 +713,7 @@ function App() {
                         ref={timelineState}
                         editorData={timelineData}
                         engine={engine}
-                        onChange={(_: TranscriptionRow[]) => updateTimelineData()}
+                        onChange={() => updateTimelineData()}
                         effects={{}}
                         scaleSplitCount={10}
                         minScaleCount={Math.ceil(Math.max(duration, 1) / scale)}

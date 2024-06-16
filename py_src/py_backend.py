@@ -1,9 +1,10 @@
-import os
 import argparse
 import multiprocessing
-import ujson
+import os
 import sys
 from pathlib import Path
+
+import ujson
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
@@ -66,7 +67,9 @@ if __name__ == '__main__':
                                                  )
         else:
             from backends import general
+
             if sys.platform == 'win32':
+                # なんとかしたい
                 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
             generator = general.transcribe(Path(args.media_file).absolute(),

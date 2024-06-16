@@ -6,7 +6,7 @@ import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 
 let currentProcess: ChildProcessWithoutNullStreams | null = null
 
-export const startTranscription = async (mainWindow: BrowserWindow, filePath: string, id: string, lang='en', model='medium', start?: number, end?: number) => {
+export const startTranscription = async (mainWindow: BrowserWindow, filePath: string, id: string, lang = 'en', model = 'medium', start?: number, end?: number) => {
   let leftover = ''
 
   const onProgress = (data: string) => {
@@ -29,8 +29,8 @@ export const startTranscription = async (mainWindow: BrowserWindow, filePath: st
           } catch (e) {
             // pass
           }
-        }).filter(line => line)
-      }
+        }).filter(line => line),
+      },
     )
     leftover = ''
   }
@@ -68,9 +68,9 @@ export const transcribe = async (wavPath: string, lang?: string, model = 'medium
     currentProcess = spawn(
       app.isPackaged ?
         path.join(path.dirname(app.getAppPath()), 'py_backend', 'py_backend') :
-          os.platform() === 'win32' ?
-            path.join(app.getAppPath(), '.venv', 'Scripts', 'python.exe') :
-            path.join(app.getAppPath(), '.venv', 'bin', 'python'),
+        os.platform() === 'win32' ?
+          path.join(app.getAppPath(), '.venv', 'Scripts', 'python.exe') :
+          path.join(app.getAppPath(), '.venv', 'bin', 'python'),
       args,
     )
     currentProcess.on('exit', () => {

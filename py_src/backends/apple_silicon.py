@@ -31,7 +31,6 @@ from typing import List, Optional, Tuple, Union
 import mlx.core as mx
 import numpy as np
 import tqdm
-
 from faster_whisper import decode_audio
 from mlx_whisper.audio import (
     FRAMES_PER_SECOND,
