@@ -2,6 +2,7 @@ import argparse
 import multiprocessing
 import ujson
 import sys
+from pathlib import Path
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
@@ -55,7 +56,7 @@ if __name__ == '__main__':
                 'large-v2': "mlx-community/whisper-large-v2-mlx",
                 'large-v3': "mlx-community/whisper-large-v3-mlx",
             }
-            generator = apple_silicon.transcribe(args.media_file,
+            generator = apple_silicon.transcribe(str(Path(args.media_file).absolute()),
                                                  path_or_hf_repo=default_models.get(args.model, args.model),
                                                  word_timestamps=True,
                                                  language=args.language,
@@ -65,7 +66,7 @@ if __name__ == '__main__':
         else:
             from backends import general
 
-            generator = general.transcribe(args.media_file,
+            generator = general.transcribe(Path(args.media_file).absolute(),
                                            model_path=args.model,
                                            device=args.device,
                                            compute_type=args.compute_type,
@@ -81,4 +82,4 @@ if __name__ == '__main__':
     if args.subcommand == 'media_info':
         from media import info
 
-        print(info(args.media_file))
+        print(info(Path(args.media_file).absolute()))
