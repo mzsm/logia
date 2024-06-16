@@ -53,7 +53,10 @@ export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
   const result = await dialog.showSaveDialog({
     title: '字幕ファイル出力',
     properties: ['createDirectory', 'showOverwriteConfirmation'],
-    filters: [{name, extensions}],
+    filters: [
+      {name, extensions},
+      {name: 'すべてのファイル', extensions:['*']}
+    ],
   })
   if (result.canceled) {
     return null
