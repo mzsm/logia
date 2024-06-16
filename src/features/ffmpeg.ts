@@ -22,13 +22,14 @@ export const getMediaInfo = async (filePath: string): Promise<FfmpegMediaInfo|st
           resolve(JSON.parse(stdout))
         } catch (e) {
           resolve({
-            format: error as any,
+            format: error.toString(),
             format_long: stderr,
             duration: 0,
             duration_time: '0',
             video: [],
             audio: [],
-            format_text: ''
+            format_text: '',
+            bit_rate: null
           })
         }
       }
