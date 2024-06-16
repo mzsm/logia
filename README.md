@@ -5,6 +5,28 @@
 Automatic transcribe program for video creators.  
 動画クリエイターのための自動文字起こしソフト
 
+## System requirements
+
+* OS
+  * As new and stable as possible (Whether Windows or macOS)  
+    なるべく新しくて安定してるやつ (WindowsでもmacOSでも)
+* CPU
+  * As fast as possible  
+    なるべく速いやつ
+* Memory
+  * As much as possible  
+    なるべくたくさん
+
+### Recommended
+
+#### on Windows
+* with CUDA supported NVIDIA GPU  
+  CUDA対応のNVIDIA製GPU搭載
+
+#### on macOS
+* with Apple Silicon  
+  Appleシリコン搭載
+
 ## Dependencies
 
 This program is developed with below ones.  
@@ -22,7 +44,7 @@ This program is developed with below ones.
 
 * [MLX](https://github.com/ml-explore/mlx)
   * An array framework for machine learning research on Apple Silicon.
-  * Apple Silicon用の機械学習フレームワーク
+  * Appleシリコン用の機械学習フレームワーク
 * [mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper)
   * OpenAI Whisper on Apple Silicon with MLX and the Hugging Face Hub.
-  * MLXとHugging Face Hubを利用したApple Silicon用のOpenAI Whisper
+  * MLXとHugging Face Hubを利用したAppleシリコン用のOpenAI Whisper
