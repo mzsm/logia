@@ -1,3 +1,4 @@
+import os
 import argparse
 import multiprocessing
 import ujson
@@ -65,6 +66,8 @@ if __name__ == '__main__':
                                                  )
         else:
             from backends import general
+            if sys.platform == 'win32':
+                os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
             generator = general.transcribe(Path(args.media_file).absolute(),
                                            model_path=args.model,

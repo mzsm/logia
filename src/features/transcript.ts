@@ -1,3 +1,4 @@
+import os from 'os'
 import path from 'path'
 import { app, BrowserWindow } from 'electron'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
@@ -65,7 +66,11 @@ export const transcribe = async (wavPath: string, lang?: string, model = 'medium
     }
 
     currentProcess = spawn(
-      app.isPackaged ? path.join(path.dirname(app.getAppPath()), 'py_backend', 'py_backend') : path.join(app.getAppPath(), '.venv', 'bin', 'python'),
+      app.isPackaged ?
+        path.join(path.dirname(app.getAppPath()), 'py_backend', 'py_backend') :
+          os.platform() === 'win32' ?
+            path.join(app.getAppPath(), '.venv', 'Scripts', 'python.exe') :
+            path.join(app.getAppPath(), '.venv', 'bin', 'python'),
       args,
     )
     currentProcess.on('exit', () => {
