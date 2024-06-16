@@ -14,7 +14,7 @@ export interface IElectronAPI {
     id?: string;
     language?: string;
     model?: string;
-    begin?: number;
+    start?: number;
     end?: number
   }) => Promise<unknown | null>,
   abortTranscription: () => Promise<unknown>,

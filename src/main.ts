@@ -136,12 +136,12 @@ const createWindow = () => {
              id?: string;
              language?: string;
              model?: string;
-             begin?: number;
+             start?: number;
              end?: number
            },
     ) => {
       try {
-        await startTranscription(mainWindow, args.filePath, args.id, args.language, args.model, args.begin, args.end)
+        await startTranscription(mainWindow, args.filePath, args.id, args.language, args.model, args.start, args.end)
       } catch (e) {
         // pass
       }
