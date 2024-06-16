@@ -19,6 +19,9 @@ Automatic transcribe program for video creators.
 
 ### Recommended
 
+The program work faster, if your computer equipped with below H/W.  
+コンピュータに以下のハードウェアが搭載されていれば、より高速に動作します
+
 #### on Windows
 * with CUDA supported NVIDIA GPU  
   CUDA対応のNVIDIA製GPU搭載
