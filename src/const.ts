@@ -135,11 +135,11 @@ export const TEXT_ENCODINGS = [
 ]
 
 export const OUTPUT_FORMAT_DICT = {
-  vtt: {name: 'WebVTT', extensions: ['.vtt'], description: 'YouTubeやHTML5ビデオ用の字幕ファイル'},
-  srt: {name: 'SubRip', extensions: ['.srt'], description: 'YouTubeやffmpeg用の字幕ファイル'},
-  sbv: {name: 'SubViewer', extensions: ['.sbv'], description: ''},
-  csv: {name: 'CSV', extensions: ['.csv'], description: 'カンマ(またはタブ)区切りテキストファイル'},
-  txt: {name: 'プレーンテキスト', extensions: ['.txt'], description: '通常のテキストファイル'}
+  vtt: {name: 'WebVTT', extensions: ['vtt'], description: 'YouTubeやHTML5ビデオ用の字幕ファイル'},
+  srt: {name: 'SubRip', extensions: ['srt'], description: 'YouTubeやffmpeg用の字幕ファイル'},
+  sbv: {name: 'SubViewer', extensions: ['sbv'], description: ''},
+  csv: {name: 'CSV', extensions: ['csv'], description: 'カンマ(またはタブ)区切りテキストファイル'},
+  txt: {name: 'プレーンテキスト', extensions: ['txt'], description: '通常のテキストファイル'}
 }
 
 export type OUTPUT_FORMAT_TYPES = keyof typeof OUTPUT_FORMAT_DICT
