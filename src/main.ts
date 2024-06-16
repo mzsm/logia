@@ -88,12 +88,12 @@ const createWindow = () => {
             {role: 'pasteAndMatchStyle'},
             {role: 'delete'},
             {role: 'selectAll'},
-          ]
+          ] as MenuItemConstructorOptions[]
           : [
             {role: 'delete'},
             {type: 'separator'},
             {role: 'selectAll'},
-          ]),
+          ] as MenuItemConstructorOptions[]),
       ],
     },
   ]
