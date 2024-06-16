@@ -32,7 +32,7 @@ function TextEditArea({text, onChange, onRemove}: Props) {
     <Container
       pt={16}
       pb={16}
-      style={{maxHeight: '100%', overflow: 'scroll'}}
+      style={{maxHeight: '100%', overflow: 'auto'}}
     >
       <Stack>
         <Group>
