@@ -1,22 +1,17 @@
 import { FfmpegMediaInfo } from './features/file'
 import { OUTPUT_FORMAT_TYPES } from './const'
+import { TranscriptionParams } from './declare'
 
 export interface IElectronAPI {
   // Main <= Renderer
   getConfig: (key: string) => Promise<unknown>,
   setConfig: (args: { [key: string]: unknown }) => void,
+  isAppleSilicon: () => Promise<boolean>,
   openMediaFile: () => Promise<string | null>,
   exportCC: (args: { format: OUTPUT_FORMAT_TYPES }) => Promise<string | null>,
   saveFile: (args: { path: string, content: string, encoding: string | null }) => Promise<string | null>,
   getMediaInfo: (filePath: string) => Promise<FfmpegMediaInfo | null>,
-  startTranscription: (args: {
-    filePath: string;
-    id?: string;
-    language?: string;
-    model?: string;
-    start?: number;
-    end?: number
-  }) => Promise<unknown | null>,
+  startTranscription: (args: TranscriptionParams) => Promise<unknown | null>,
   abortTranscription: () => Promise<unknown>,
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) => unknown,

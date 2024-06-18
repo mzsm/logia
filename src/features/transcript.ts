@@ -2,11 +2,20 @@ import os from 'os'
 import path from 'path'
 import { app, BrowserWindow } from 'electron'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
+import { TranscriptionParams } from '../declare'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 
 let currentProcess: ChildProcessWithoutNullStreams | null = null
 
-export const startTranscription = async (mainWindow: BrowserWindow, filePath: string, id: string, lang = 'en', model = 'medium', start?: number, end?: number) => {
+export const startTranscription = async (mainWindow: BrowserWindow, {
+  filePath,
+  id,
+  language = 'en',
+  model,
+  computeType,
+  start,
+  end,
+}: TranscriptionParams) => {
   let leftover = ''
 
   const onProgress = (data: string) => {
@@ -34,7 +43,7 @@ export const startTranscription = async (mainWindow: BrowserWindow, filePath: st
     )
     leftover = ''
   }
-  return await transcribe(filePath, lang, model, start, end, onProgress)
+  return await transcribe(filePath, language, model, computeType, start, end, onProgress)
 }
 
 export const abortTranscription = () => {
@@ -44,7 +53,9 @@ export const abortTranscription = () => {
   currentProcess = null
 }
 
-export const transcribe = async (wavPath: string, lang?: string, model = 'medium', start?: number, end?: number, onProgress?: (data: string) => unknown): Promise<void> => {
+export const transcribe = async (
+  wavPath: string, lang?: string, model = 'medium', computeType = 'auto', start?: number, end?: number, onProgress?: (data: string) => unknown,
+): Promise<void> => {
   return new Promise((resolve) => {
     const args = [
       'transcribe',
@@ -63,6 +74,8 @@ export const transcribe = async (wavPath: string, lang?: string, model = 'medium
     }
     if (isAppleSilicon() && !isRosetta()) {
       args.push('-x')
+    } else if (computeType) {
+      args.push('-c', computeType)
     }
 
     currentProcess = spawn(

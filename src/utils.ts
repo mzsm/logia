@@ -1,5 +1,3 @@
-
-
 export const formatTime = (time: number, withMs=false, isMs=false) => {
   time = isMs ? time / 1000 : time
   return `${('0' +Math.floor(time / 3600)).slice(-2)}:`+

@@ -1,13 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Group, Input, Modal, RangeSlider, ScrollArea, Select, SimpleGrid, Stack } from '@mantine/core'
+import {
+  Button,
+  Divider,
+  Group,
+  Input,
+  Modal,
+  RangeSlider,
+  ScrollArea,
+  Select,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@mantine/core'
 import { LANGUAGES } from '../const'
+import { TranscriptionParams } from '../declare'
 import TimeStampInput from './timeStampInput'
 import { IconPlayerPlayFilled } from '@tabler/icons-react'
 
 const languages = LANGUAGES.map(([label, code]) => {
   return {label, value: code}
 })
-const languageLabels = LANGUAGES.reduce((obj: {[key: string]: string}, [label, code]: [string, string]) => {
+const languageLabels = LANGUAGES.reduce((obj: { [key: string]: string }, [label, code]: [string, string]) => {
   return Object.assign(obj, {[code]: label.replace(/\s*\(.+?\)$/, '')})
 }, {})
 const models = [
@@ -18,9 +31,21 @@ const models = [
   {label: 'Large-v2', value: 'large-v2'},
   {label: 'Large-v3', value: 'large-v3'},
 ]
-const modelLabels = models.reduce((obj: {[key: string]: string}, x) => {
+const modelLabels = models.reduce((obj: { [key: string]: string }, x) => {
   return Object.assign(obj, {[x.value]: x.label})
 }, {})
+
+const computeTypes = [
+  {label: '自動 (推奨)', value: 'auto'},
+  {label: 'int8', value: 'int8'},
+  {label: 'int8_float32', value: 'int8_float32'},
+  {label: 'int8_float16', value: 'int8_float16'},
+  {label: 'int8_bfloat16', value: 'int8_bfloat16'},
+  {label: 'int16', value: 'int16'},
+  {label: 'float16', value: 'float16'},
+  {label: 'float32', value: 'float32'},
+  {label: 'bfloat16', value: 'bfloat16'},
+]
 
 interface Props {
   opened: boolean
@@ -28,13 +53,22 @@ interface Props {
   mediaFilePath: string
   duration: number
   onClickStartTranscription?: (id: string, promise: Promise<unknown>, name: string) => unknown
+  isAppleSilicon: boolean
 }
 
-function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickStartTranscription}: Props) {
+function TranscriptionModal({
+                              opened,
+                              onClose,
+                              mediaFilePath,
+                              duration,
+                              onClickStartTranscription,
+                              isAppleSilicon,
+                            }: Props) {
   const videoTag = useRef<HTMLVideoElement>(null)
   const [timeRange, setTimeRange] = useState<[number, number]>([0, duration])
   const [language, setLanguage] = useState<string>(navigator.language.split('-')[0])
   const [model, setModel] = useState<string>('medium')
+  const [computeType, setComputeType] = useState<string>('auto')
 
   const onChangeRangeSlider = (value: [number, number]) => {
     setTimeRange((prevValue) => {
@@ -67,7 +101,7 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
   const _onClickStartTranscription = () => {
     const id = new Date().getTime().toString()
     // 書き起こしを実行し、Promiseを変数に代入
-    const args: { filePath: string; id: string; language?: string; model?: string; start?: number; end?: number } = {
+    const args: TranscriptionParams = {
       filePath: mediaFilePath,
       language,
       model,
@@ -78,6 +112,9 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
     }
     if (timeRange[1] !== duration) {
       args.end = timeRange[1]
+    }
+    if (!isAppleSilicon) {
+      args.computeType = computeType
     }
 
     const promise = window.electronAPI.startTranscription(args)
@@ -180,6 +217,29 @@ function TranscriptionModal({opened, onClose, mediaFilePath, duration, onClickSt
               自動文字起こしを開始
             </Button>
           </Group>
+          {
+            isAppleSilicon ?
+              <></> :
+              <>
+                <Divider/>
+                <Group>
+                  <Text fw="bold" size="sm">高度な設定</Text>
+                </Group>
+                <Group wrap="nowrap" align="flex-end">
+                  <Select
+                    label="量子化タイプ"
+                    id="computetype"
+                    data={computeTypes}
+                    value={computeType}
+                    onChange={(v) => setComputeType(v)}
+                    checkIconPosition="right"
+                    allowDeselect={false}
+                    size="sm"
+                    radius="sm"
+                  />
+                </Group>
+              </>
+          }
         </Stack>
       </form>
     </Modal>

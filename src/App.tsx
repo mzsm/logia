@@ -41,6 +41,7 @@ const START_LEFT = 30
 const SCALE_WIDTH = 160
 
 function App() {
+  const [isAppleSilicon, setIsAppleSilicon] = useState<boolean>(false)
   const videoTag = useRef<HTMLVideoElement>(null)
   const timelineHeader = useRef<HTMLDivElement>(null)
   const timelineState = useRef<TimelineState>(null)
@@ -298,6 +299,10 @@ function App() {
   }
 
   useEffect(() => {
+    window.electronAPI.isAppleSilicon().then((_isAppleSilicon) => {
+      setIsAppleSilicon(_isAppleSilicon)
+    })
+
     if (!engine) {
       // メニューから開かれた場合
       window.electronAPI.onOpenMedia(openMedia)
@@ -819,6 +824,7 @@ function App() {
         mediaFilePath={mediaFilePath}
         duration={duration}
         onClickStartTranscription={onClickStartTranscription}
+        isAppleSilicon={isAppleSilicon}
       />
       <OutputModal
         timelineData={timelineData}

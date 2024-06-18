@@ -1,9 +1,11 @@
 import { app, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
+import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 import path from 'path'
 import { saveFile, showCCSaveDialog, showMediaOpenDialog } from './features/file'
 import { getMediaInfo } from './features/ffmpeg'
 import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
+import { TranscriptionParams } from './declare'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -131,17 +133,10 @@ const createWindow = () => {
 
   ipcMain.handle(
     'startTranscription',
-    async (event, args: {
-             filePath: string;
-             id?: string;
-             language?: string;
-             model?: string;
-             start?: number;
-             end?: number
-           },
+    async (_, args: TranscriptionParams,
     ) => {
       try {
-        await startTranscription(mainWindow, args.filePath, args.id, args.language, args.model, args.start, args.end)
+        await startTranscription(mainWindow, args)
       } catch (e) {
         // pass
       }
@@ -182,26 +177,30 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-ipcMain.handle('getConfig', async (event, key: string) => {
+ipcMain.handle('getConfig', async (_, key: string) => {
   return await store.get(key)
 })
-ipcMain.handle('setConfig', async (event, value: object) => {
+ipcMain.handle('setConfig', async (_, value: object) => {
   store.set(value)
+})
+
+ipcMain.handle('isAppleSilicon', () => {
+  return isAppleSilicon() && !isRosetta()
 })
 
 ipcMain.handle('open:mediaFile', async () => {
   return await showMediaOpenDialog()
 })
 
-ipcMain.handle('save:ccFile', async (event, {format}) => {
+ipcMain.handle('save:ccFile', async (_, {format}) => {
   return await showCCSaveDialog(format)
 })
 
-ipcMain.handle('save', async (event, {path, content, encoding}) => {
+ipcMain.handle('save', async (_, {path, content, encoding}) => {
   return await saveFile(path, content, encoding)
 })
 
-ipcMain.handle('getMediaInfo', async (event, filePath: string) => {
+ipcMain.handle('getMediaInfo', async (_, filePath: string) => {
   return await getMediaInfo(filePath)
 })
 
