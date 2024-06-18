@@ -99,3 +99,7 @@ out/
 
 # JetBrains
 .idea
+
+# pyinstaller
+build/
+dist/
