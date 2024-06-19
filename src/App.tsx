@@ -586,7 +586,7 @@ function App() {
                 </Group>
               </Stack>
             </Panel>
-            <PanelResizeHandle className="resize-handle"/>
+            <PanelResizeHandle hitAreaMargins={{coarse: 5, fine: 2}} className="resize-handle"/>
             <Panel order={2} defaultSize={30}>
               {
                 mediaFilePath ?
@@ -771,7 +771,7 @@ function App() {
             </Panel>
           </PanelGroup>
         </Panel>
-        <PanelResizeHandle className="resize-handle"/>
+        <PanelResizeHandle hitAreaMargins={{coarse: 5, fine: 2}} className="resize-handle"/>
         <Panel order={2} defaultSize={30}>
           <PanelGroup
             direction="vertical"
@@ -803,7 +803,7 @@ function App() {
                 }
               </div>
             </Panel>
-            <PanelResizeHandle className="resize-handle"/>
+            <PanelResizeHandle hitAreaMargins={{coarse: 5, fine: 2}} className="resize-handle"/>
             <Panel order={2}>
               {
                 activeText ?
