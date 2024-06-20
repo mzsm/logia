@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { DragEvent, useEffect, useRef, useState } from 'react'
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useDisclosure } from '@mantine/hooks'
 import { ActionIcon, Divider, Group, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
@@ -162,8 +162,21 @@ function App() {
     }
   }, [sideVerticalGridRatio])
 
-  const openMedia = (filePath: string) => {
+  // on File Drop
+  const onFileDrop = (e: DragEvent) => {
+    if (e.dataTransfer.files.length) {
+      const _file = e.dataTransfer.files[0]
+      openMedia(_file.path).then()
+    }
+    e.preventDefault()
+  }
+
+  const openMedia = async (filePath: string) => {
     // 初期化
+    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
+      return
+    }
+
     pauseMedia()
     setIsPaused(true)
     setTime(0)
@@ -173,12 +186,18 @@ function App() {
     setTimelineData([])
     setActiveTextId(null)
     setSelectedRowId(null)
-    window.electronAPI.getMediaInfo(filePath).then((_mediaInfo) => {
-      setMediaInfo(_mediaInfo)
-      setDuration(_mediaInfo.duration / 1000)
-    })
+    videoTag.current.src = null
+
+    const _mediaInfo = await window.electronAPI.getMediaInfo(filePath)
+    if (!_mediaInfo) {
+      alert('この形式のファイルには対応していません')
+      return
+    }
+
+    setMediaInfo(_mediaInfo)
+    setDuration(_mediaInfo.duration / 1000)
     setMediaFilePath(filePath)
-    videoTag.current.src = 'file://' + filePath
+    videoTag.current.src = 'file://' + encodeURIComponent(filePath).replaceAll('%2F', '/')
   }
 
   const setTime = (time: number) => {
@@ -235,7 +254,7 @@ function App() {
   const onClickMediaOpen = () => {
     window.electronAPI.openMediaFile().then((media) => {
       if (media) {
-        openMedia(media)
+        openMedia(media).then()
       }
     })
   }
@@ -365,7 +384,13 @@ function App() {
   }, [])
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      onDragOver={(e) => {
+        e.preventDefault()
+      }}
+      onDrop={onFileDrop}
+    >
       <Group
         justify="space-between"
         wrap="nowrap"
