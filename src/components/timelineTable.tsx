@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActionIcon, Group, Stack } from '@mantine/core'
+import { ActionIcon, Group, Stack, Text, TextInput } from '@mantine/core'
 import { IconArrowBigDownLines, IconPlayerPlay } from '@tabler/icons-react'
 import {
   MantineReactTable,
@@ -22,11 +22,23 @@ interface Props {
   parentWidth: number
   onClick?: (text: TranscriptionText) => unknown
   onSetTime?: (time: number) => unknown
+  onChange?: () => unknown
 }
 
-function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onClick, onSetTime}: Props) {
+function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onClick, onSetTime, onChange}: Props) {
+  const nameInput = useRef(null)
+  const [timelineName, setTimelineName] = useState<string>('')
+  const [timelineNameTemp, setTimelineNameTemp] = useState<string>('')
   const [autoScroll, setAutoScroll] = useState<boolean>(false)
   const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null)
+
+  const _onChange = () => {
+    onChange && onChange()
+  }
+
+  useEffect(() => {
+    setTimelineName(timeline.name)
+  }, [timeline])
 
   const columns = useMemo<MRT_ColumnDef<TranscriptionText>[]>(
     () =>
@@ -121,11 +133,39 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
     enableSorting: false,
     renderTopToolbar: ({table}) => {
       return (
-        <Group pl="xs" justify="space-between">
-          <Group p={0}>
-
+        <Group pl="xs" gap={0} justify="space-between" wrap="nowrap">
+          <TextInput
+            variant="filled"
+            ref={nameInput}
+            value={timelineName}
+            onChange={(e) => {
+              setTimelineName(e.currentTarget.value)
+            }}
+            onFocus={() => {
+              setTimelineNameTemp(timelineName)
+            }}
+            onBlur={() => {
+              let valid = true
+              if (timelineName.length === 0) {
+                alert('タイムラインの名称を設定してください')
+                valid = false
+                setTimelineName(timelineNameTemp)
+              } else {
+                timeline.name = timelineName
+              }
+              if (valid) {
+                _onChange()
+              } else {
+                setTimeout(() => {
+                  nameInput.current?.focus()
+                })
+              }
+            }}
+            style={{width: '100%'}}
+          />
+          <Group p={0} style={{flexShrink: 0}}>
+            <MRT_GlobalFilterTextInput table={table}/>
           </Group>
-          <MRT_GlobalFilterTextInput table={table}/>
         </Group>
       )
     },

@@ -798,6 +798,7 @@ function App() {
                         setTime(time)
                         playMedia()
                       }}
+                      onChange={updateTimelineData}
                     /> :
                     <></>
                 }
