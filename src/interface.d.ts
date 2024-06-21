@@ -4,6 +4,7 @@ import { TranscriptionParams } from './declare'
 
 export interface IElectronAPI {
   // Main <= Renderer
+  contentReady: () => void,
   getConfig: (key: string) => Promise<unknown>,
   setConfig: (args: { [key: string]: unknown }) => void,
   isAppleSilicon: () => Promise<boolean>,

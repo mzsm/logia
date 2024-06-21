@@ -9,6 +9,8 @@ import {
   IconBadgeCc,
   IconBan,
   IconClockPlay,
+  IconDeviceFloppy,
+  IconFileMusic,
   IconFileTextAi,
   IconFolderOpen,
   IconMovieOff,
@@ -76,7 +78,7 @@ function App() {
   const [scaleLevel, setScaleLevel] = useState(0)
   const [scale, setScale] = useState(1)
   const _scale = useRef(scale)
-  const [processingTranscriptions, setProcessingTranscriptions] = useState<{[id: string]: Promise<unknown>}>({})
+  const [processingTranscriptions, setProcessingTranscriptions] = useState<{ [id: string]: Promise<unknown> }>({})
 
   const mainHorizontalGrid = useRef<ImperativePanelGroupHandle>(null)
   const [mainHorizontalGridRatio, setMainHorizontalGridRatio] = useState(null)
@@ -167,12 +169,14 @@ function App() {
   const onFileDrop = (e: DragEvent) => {
     if (e.dataTransfer.files.length) {
       const _file = e.dataTransfer.files[0]
+      console.log(_file)
       openMedia(_file.path).then()
     }
     e.preventDefault()
   }
 
   const openMedia = async (filePath: string) => {
+    console.log('openMedia', filePath)
     // 初期化
     if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
       return
@@ -394,6 +398,8 @@ function App() {
       })
       setEngine(_engine)
     }
+
+    window.electronAPI.contentReady()
   }, [])
 
   return (
@@ -409,17 +415,43 @@ function App() {
         wrap="nowrap"
         style={{marginBottom: 0}}
       >
+        <Group gap={0}>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size="lg"
+            radius="sm"
+            onClick={onClickMediaOpen}
+            title="メディアファイルを開く"
+          >
+            <IconFileMusic size={24} stroke={1.5}/>
+          </ActionIcon>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size="lg"
+            radius="sm"
+            onClick={onClickMediaOpen}
+            title="プロジェクトファイルを開く"
+          >
+            <IconFolderOpen size={24} stroke={1.5}/>
+          </ActionIcon>
+          <Divider orientation="vertical"/>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size="lg"
+            radius="sm"
+            onClick={onClickMediaOpen}
+            title="プロジェクトファイルを保存する"
+          >
+            <IconDeviceFloppy size={24} stroke={1.5}/>
+          </ActionIcon>
+        </Group>
         <ActionIcon
           variant="subtle"
           color="gray"
-          radius="sm"
-          onClick={onClickMediaOpen}
-        >
-          <IconFolderOpen size={16} stroke={1.5}/>
-        </ActionIcon>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
+          size="lg"
           radius="sm"
           disabled={timelineData.length === 0}
           onClick={() => {
@@ -427,7 +459,7 @@ function App() {
             openExportDialog()
           }}
         >
-          <IconBadgeCc size={16} stroke={1.5}/>
+          <IconBadgeCc size={24} stroke={1.5}/>
         </ActionIcon>
       </Group>
       <PanelGroup
@@ -712,7 +744,8 @@ function App() {
                             return {
                               value: item.id,
                               label: (
-                                <Group justify="space-between" gap={0} align="center" wrap="nowrap" className="visible-on-hover-parent">
+                                <Group justify="space-between" gap={0} align="center" wrap="nowrap"
+                                       className="visible-on-hover-parent">
                                   <div
                                     style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
                                     title={item.name}
@@ -749,7 +782,7 @@ function App() {
                                           <IconX size={16} stroke={1.5}/>
                                         </ActionIcon>
                                       </div>
-                                    }
+                                  }
                                 </Group>
                               ),
                             }

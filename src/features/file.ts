@@ -4,7 +4,7 @@ import fs from 'fs'
 import iconv from 'iconv-lite'
 
 const EXT_VIDEO = ['mp4', 'mov', 'mkv', 'webm']
-const EXT_AUDIO = ['m4a', 'mp3', 'ogg', 'opus', 'wav']
+const EXT_AUDIO = ['m4a', 'aac', 'mp3', 'ogg', 'opus', 'wav']
 const EXT_MEDIA = [].concat(...EXT_VIDEO, ...EXT_AUDIO)
 
 export interface FfmpegMediaInfo {

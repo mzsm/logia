@@ -12,12 +12,24 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
+let mainWindow: BrowserWindow = undefined
+let fileTemp: string
+
+app.on('open-file', async (e, filePath) => {
+  e.preventDefault()
+  if (mainWindow) {
+    mainWindow.webContents.send('open_media', filePath)
+  } else {
+    fileTemp = filePath
+  }
+})
+
 const createWindow = () => {
   const windowPosition = store.get('windowPosition')
   const windowSize = store.get('windowSize')
 
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     x: windowPosition.x,
     y: windowPosition.y,
     width: windowSize.width,
@@ -58,7 +70,7 @@ const createWindow = () => {
       label: 'File',
       submenu: [
         {
-          label: 'Open Video File...',
+          label: 'Open Media File...',
           accelerator: 'CmdOrCtrl+O',
           click: async () => {
             const media = await showMediaOpenDialog()
@@ -142,7 +154,6 @@ const createWindow = () => {
       }
     })
 
-
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
@@ -150,6 +161,12 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
   }
 
+  ipcMain.handle('contentReady', async () => {
+    if (fileTemp) {
+      mainWindow.webContents.send('open_media', fileTemp)
+      fileTemp = undefined
+    }
+  })
 }
 
 // This method will be called when Electron has finished

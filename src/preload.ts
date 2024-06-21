@@ -8,6 +8,7 @@ import { TranscriptionParams } from './declare'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Main <= Renderer
+  contentReady: () => ipcRenderer.invoke('contentReady'),
   getConfig: (key: string) => ipcRenderer.invoke('getConfig', key),
   setConfig: (args: { [key: string]: unknown }) => ipcRenderer.invoke('setConfig', args),
   isAppleSilicon: () => ipcRenderer.invoke('isAppleSilicon'),

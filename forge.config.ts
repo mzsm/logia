@@ -1,19 +1,89 @@
-import type { ForgeConfig } from '@electron-forge/shared-types';
-import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-import { MakerZIP } from '@electron-forge/maker-zip';
-import { MakerDeb } from '@electron-forge/maker-deb';
-import { MakerRpm } from '@electron-forge/maker-rpm';
-import { VitePlugin } from '@electron-forge/plugin-vite';
-import { FusesPlugin } from '@electron-forge/plugin-fuses';
-import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import type { ForgeConfig } from '@electron-forge/shared-types'
+import { MakerSquirrel } from '@electron-forge/maker-squirrel'
+import { MakerZIP } from '@electron-forge/maker-zip'
+import { MakerDeb } from '@electron-forge/maker-deb'
+import { MakerRpm } from '@electron-forge/maker-rpm'
+import { VitePlugin } from '@electron-forge/plugin-vite'
+import { FusesPlugin } from '@electron-forge/plugin-fuses'
+import { FuseV1Options, FuseVersion } from '@electron/fuses'
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: [
-      'dist/backend/'
+      'dist/backend/',
     ],
-    icon: 'images/icon'
+    icon: 'images/icon',
+    extendInfo: {
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeName: 'MP4 Video',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['video/mp4'],
+          CFBundleTypeExtensions: ['mp4', 'm4v'],
+        },
+        {
+          CFBundleTypeName: 'QuickTime Video',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['video/quicktime'],
+          CFBundleTypeExtensions: ['mov', 'qt'],
+        },
+        {
+          CFBundleTypeName: 'WebM Video',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['video/webm'],
+          CFBundleTypeExtensions: ['webm'],
+        },
+        {
+          CFBundleTypeName: 'Matroska Video',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['video/x-matroska'],
+          CFBundleTypeExtensions: ['mkv'],
+        },
+        {
+          CFBundleTypeName: 'MP4 Audio',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['audio/x-m4a'],
+          CFBundleTypeExtensions: ['m4a'],
+        },
+        {
+          CFBundleTypeName: 'AAC Audio',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['audio/aac'],
+          CFBundleTypeExtensions: ['aac'],
+        },
+        {
+          CFBundleTypeName: 'Ogg Audio',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['audio/ogg'],
+          CFBundleTypeExtensions: ['ogg'],
+        },
+        {
+          CFBundleTypeName: 'MP3 Audio',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['audio/mpeg'],
+          CFBundleTypeExtensions: ['mp3'],
+        },
+        {
+          CFBundleTypeName: 'Opus Audio',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['audio/ogg', 'audio/opus'],
+          CFBundleTypeExtensions: ['opus'],
+        },
+        {
+          CFBundleTypeName: 'WAVE Audio',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: ['audio/wav'],
+          CFBundleTypeExtensions: ['wav'],
+        },
+        {
+          CFBundleTypeName: 'Logia Project File',
+          CFBundleTypeRole: 'Editor',
+          CFBundleTypeMIMETypes: [],
+          CFBundleTypeExtensions: ['logia'],
+        },
+      ],
+    },
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
@@ -51,6 +121,6 @@ const config: ForgeConfig = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
-};
+}
 
-export default config;
+export default config
