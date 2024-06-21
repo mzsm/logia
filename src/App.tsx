@@ -21,6 +21,7 @@ import {
   IconRewindBackward5,
   IconRewindForward10,
   IconRobot,
+  IconX,
   IconZoomIn,
   IconZoomOut,
 } from '@tabler/icons-react'
@@ -72,10 +73,10 @@ function App() {
 
   const [engine, setEngine] = useState<TimelineEngine>(null)
   const [scales, setScales] = useState<number[]>([])
-
   const [scaleLevel, setScaleLevel] = useState(0)
   const [scale, setScale] = useState(1)
   const _scale = useRef(scale)
+  const [processingTranscriptions, setProcessingTranscriptions] = useState<{[id: string]: Promise<unknown>}>({})
 
   const mainHorizontalGrid = useRef<ImperativePanelGroupHandle>(null)
   const [mainHorizontalGridRatio, setMainHorizontalGridRatio] = useState(null)
@@ -264,13 +265,18 @@ function App() {
     const row = {
       id: id,
       name: name,
-      progress: true,
       actions,
     }
     setTimelineData(timelineData.concat([row]))
+    setProcessingTranscriptions((v) => {
+      return Object.assign({[id]: promise}, v)
+    })
 
     promise.then(() => {
-      row.progress = false
+      setProcessingTranscriptions((v) => {
+        delete v[id]
+        return Object.assign({}, v)
+      })
       updateTimelineData()
     })
   }
@@ -295,6 +301,13 @@ function App() {
         actions: [],
       } as TranscriptionRow])
       return structuredClone(_timelineData)
+    })
+  }
+
+  const removeTimeline = (id: string) => {
+
+    setTimelineData((_timelineData) => {
+      return structuredClone(_timelineData.filter((_timeline) => _timeline.id !== id))
     })
   }
 
@@ -699,7 +712,7 @@ function App() {
                             return {
                               value: item.id,
                               label: (
-                                <Group justify="space-between" gap="xs" align="center" wrap="nowrap">
+                                <Group justify="space-between" gap={0} align="center" wrap="nowrap" className="visible-on-hover-parent">
                                   <div
                                     style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
                                     title={item.name}
@@ -707,7 +720,7 @@ function App() {
                                     {item.name}
                                   </div>
                                   {
-                                    item.progress ?
+                                    processingTranscriptions[item.id] ?
                                       <Group wrap="nowrap" gap="xs">
                                         <div className="loader">
                                           <IconAbc className="abc" size={16} stroke={1.5}/>
@@ -724,8 +737,19 @@ function App() {
                                           <IconBan size={16} stroke={1.5}/>
                                         </ActionIcon>
                                       </Group> :
-                                      <></>
-                                  }
+                                      <div className="visible-on-hover">
+                                        <ActionIcon
+                                          variant="outline"
+                                          color="red"
+                                          size="sm"
+                                          radius="sm"
+                                          title="削除"
+                                          onClick={() => removeTimeline(item.id)}
+                                        >
+                                          <IconX size={16} stroke={1.5}/>
+                                        </ActionIcon>
+                                      </div>
+                                    }
                                 </Group>
                               ),
                             }

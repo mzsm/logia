@@ -216,3 +216,17 @@ input[type=time][data-variant=unstyled] {
   line-height: 28px !important;
   margin: 0 0.5rem;
 }
+
+.show-on-hover {
+  display: none;
+}
+.show-on-hover-parent:hover .show-on-hover {
+  display: block;
+}
+
+.visible-on-hover {
+  visibility: hidden;
+}
+.visible-on-hover-parent:hover .visible-on-hover {
+  visibility: visible;
+}
