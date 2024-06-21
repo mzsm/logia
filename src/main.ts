@@ -88,7 +88,7 @@ const createWindow = () => {
           },
           {type: 'separator'},
           {
-            label: `Save Project File...`,
+            label: 'Save Project File...',
             enabled: opened,
             accelerator: 'CmdOrCtrl+S',
             click: async () => {
@@ -122,6 +122,19 @@ const createWindow = () => {
               {type: 'separator'},
               {role: 'selectAll'},
             ] as MenuItemConstructorOptions[]),
+        ],
+      },
+      {
+        label: 'Transcription',
+        submenu: [
+          {
+            label: 'AI Auto Transcribe',
+            enabled: opened,
+            accelerator: 'CmdOrCtrl+T',
+            click: () => {
+              mainWindow.webContents.send('show_transcription_dialog')
+            },
+          },
         ],
       },
     ]

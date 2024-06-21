@@ -25,6 +25,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('open_media', (_event, value) => callback(value)),
   onSaveProjectFile: (callback: (filePath: string) => unknown) =>
     ipcRenderer.on('save_project', (_event, value) => callback(value)),
+  onShowTranscriptionDialog: (callback: () => unknown) =>
+    ipcRenderer.on('show_transcription_dialog', () => callback()),
   onTranscriptionProgress: (callback: (value: { offsets: { from: number; to: number }; text: string }[]) => unknown) =>
     ipcRenderer.on('progress', (_event, value) => callback(value)),
   onResizeWindow: (callback: (value: { width: number, height: number }) => unknown) =>

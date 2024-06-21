@@ -92,7 +92,6 @@ function App() {
   const sideTop = useRef(null)
 
   useEffect(() => {
-    console.log(!!mediaFilePath)
     window.electronAPI.fileOpened(!!mediaFilePath)
   }, [mediaFilePath])
 
@@ -350,10 +349,25 @@ function App() {
     })
 
     if (!engine) {
+      const _engine = new VideoEngine(videoTag)
+      _engine.on('setTimeByTick', ({time}: { time: number }) => {
+        // setTime(time);
+        if (_autoScroll.current) {
+          const autoScrollFrom = timelineState.current.target.clientWidth * 0.75
+          const left = time * (SCALE_WIDTH / _scale.current) + START_LEFT - autoScrollFrom
+          timelineState.current.setScrollLeft(left)
+        }
+      })
+      setEngine(_engine)
+
       // メニューから開かれた場合
       window.electronAPI.onOpenMedia(openMedia)
       window.electronAPI.onSaveProjectFile((dest) => {
         saveProjectFile(dest, mediaFilePath, timelineData)
+      })
+      window.electronAPI.onShowTranscriptionDialog(() => {
+        _engine.pause()
+        openTranscriptionDialog()
       })
 
       window.electronAPI.onTranscriptionProgress(({id, data}) => {
@@ -399,17 +413,6 @@ function App() {
           sideVerticalGrid.current.setLayout(value)
         }
       })
-
-      const _engine = new VideoEngine(videoTag)
-      _engine.on('setTimeByTick', ({time}: { time: number }) => {
-        // setTime(time);
-        if (_autoScroll.current) {
-          const autoScrollFrom = timelineState.current.target.clientWidth * 0.75
-          const left = time * (SCALE_WIDTH / _scale.current) + START_LEFT - autoScrollFrom
-          timelineState.current.setScrollLeft(left)
-        }
-      })
-      setEngine(_engine)
     }
 
     window.electronAPI.contentReady()

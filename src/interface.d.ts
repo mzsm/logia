@@ -19,6 +19,7 @@ export interface IElectronAPI {
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) => unknown,
   onSaveProjectFile: (callback: (filePath: string) => unknown) => unknown,
+  onShowTranscriptionDialog: (callback: () => unknown) => unknown,
   onTranscriptionProgress: (callback: (value: {
     id: string;
     data: Array<{
