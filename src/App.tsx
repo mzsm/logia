@@ -169,14 +169,12 @@ function App() {
   const onFileDrop = (e: DragEvent) => {
     if (e.dataTransfer.files.length) {
       const _file = e.dataTransfer.files[0]
-      console.log(_file)
       openMedia(_file.path).then()
     }
     e.preventDefault()
   }
 
   const openMedia = async (filePath: string) => {
-    console.log('openMedia', filePath)
     // 初期化
     if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
       return
