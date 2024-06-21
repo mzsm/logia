@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setConfig: (args: { [key: string]: unknown }) => ipcRenderer.invoke('setConfig', args),
   isAppleSilicon: () => ipcRenderer.invoke('isAppleSilicon'),
   openMediaFile: () => ipcRenderer.invoke('open:mediaFile'),
+  saveProjectFile: () => ipcRenderer.invoke('save:projectFile'),
   exportCC: (args: { format: OUTPUT_FORMAT_TYPES }) => ipcRenderer.invoke('save:ccFile', args),
   saveFile: (args: { path: string, content: string, encoding: string | null }) => ipcRenderer.invoke('save', args),
   getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),

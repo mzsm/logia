@@ -9,6 +9,7 @@ export interface IElectronAPI {
   setConfig: (args: { [key: string]: unknown }) => void,
   isAppleSilicon: () => Promise<boolean>,
   openMediaFile: () => Promise<string | null>,
+  saveProjectFile: () => Promise<string | null>,
   exportCC: (args: { format: OUTPUT_FORMAT_TYPES }) => Promise<string | null>,
   saveFile: (args: { path: string, content: string, encoding: string | null }) => Promise<string | null>,
   getMediaInfo: (filePath: string) => Promise<FfmpegMediaInfo | null>,

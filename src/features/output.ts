@@ -22,8 +22,8 @@ export const saveProjectFile = (destFilePath: string, mediaFilePath: string, tim
     content: JSON.stringify({
       media: mediaFilePath,
       timelineData,
-    }),
-    encoding: 'utf8'
+    }, null, 1),
+    encoding: 'utf8',
   }).then()
 }
 

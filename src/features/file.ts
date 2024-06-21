@@ -30,6 +30,22 @@ export interface FfmpegMediaInfo {
   format_text: string
 }
 
+const _showSaveDialog = async (title: string, filters: Electron.FileFilter[]) => {
+  const result = await dialog.showSaveDialog({
+    title,
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+    filters: [
+      ...filters,
+      ...(process.platform === 'win32' ? [{name: 'すべてのファイル', extensions: ['*']}] : []),
+    ],
+  })
+  if (result.canceled) {
+    return null
+  }
+
+  return result.filePath
+}
+
 export const showMediaOpenDialog = async () => {
   const opened = await dialog.showOpenDialog({
     properties: ['openFile'],
@@ -47,22 +63,19 @@ export const showMediaOpenDialog = async () => {
   return opened.filePaths[0]
 }
 
+export const showProjectSaveDialog = async () => {
+  return await _showSaveDialog(
+    'プロジェクトファイル保存',
+    [{name: 'Logia Project File', extensions: ['logia']}],
+  )
+}
+
 export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
   const {name, extensions} = OUTPUT_FORMAT_DICT[format]
-
-  const result = await dialog.showSaveDialog({
-    title: '字幕ファイル出力',
-    properties: ['createDirectory', 'showOverwriteConfirmation'],
-    filters: [
-      {name, extensions},
-      ...(process.platform === 'win32' ? [{name: 'すべてのファイル', extensions: ['*']}] : []),
-    ],
-  })
-  if (result.canceled) {
-    return null
-  }
-
-  return result.filePath
+  return await _showSaveDialog(
+    '字幕ファイル出力',
+    [{name, extensions}],
+  )
 }
 
 export const saveFile = async (path: string, content: string, encoding: string | null) => {

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 import path from 'path'
-import { saveFile, showCCSaveDialog, showMediaOpenDialog } from './features/file'
+import { saveFile, showCCSaveDialog, showMediaOpenDialog, showProjectSaveDialog } from './features/file'
 import { getMediaInfo } from './features/ffmpeg'
 import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
@@ -207,6 +207,10 @@ ipcMain.handle('isAppleSilicon', () => {
 
 ipcMain.handle('open:mediaFile', async () => {
   return await showMediaOpenDialog()
+})
+
+ipcMain.handle('save:projectFile', async () => {
+  return await showProjectSaveDialog()
 })
 
 ipcMain.handle('save:ccFile', async (_, {format}) => {

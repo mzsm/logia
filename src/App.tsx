@@ -33,12 +33,12 @@ import TimelineTable from './components/timelineTable'
 import TextEditArea from './components/textEditArea'
 import { Timeline, TimelineEngine, TimelineState } from 'react-timeline-editor'
 import { FfmpegMediaInfo } from './features/file'
-// import { exportCCFile } from './features/output'
 import { formatTime } from './utils'
 import { TranscriptionRow, TranscriptionText } from './declare'
 import './App.css'
 import MediaInfo from './components/mediaInfo'
 import OutputModal from './components/outputModal'
+import { saveProjectFile } from './features/output'
 
 const START_LEFT = 30
 const SCALE_WIDTH = 160
@@ -262,6 +262,14 @@ function App() {
     })
   }
 
+  const onClickProjectSave = () => {
+    window.electronAPI.saveProjectFile().then((dest) => {
+      if (dest) {
+        saveProjectFile(dest, mediaFilePath, timelineData)
+      }
+    })
+  }
+
   const onClickStartTranscription = (id: string, promise: Promise<unknown>, name: string) => {
     const actions: TranscriptionText[] = []
     const row = {
@@ -299,7 +307,6 @@ function App() {
       _timelineData = _timelineData.concat([{
         id: new Date().getTime().toString(),
         name: name,
-        progress: false,
         actions: [],
       } as TranscriptionRow])
       return structuredClone(_timelineData)
@@ -440,7 +447,7 @@ function App() {
             color="gray"
             size="lg"
             radius="sm"
-            onClick={onClickMediaOpen}
+            onClick={onClickProjectSave}
             title="プロジェクトファイルを保存する"
           >
             <IconDeviceFloppy size={24} stroke={1.5}/>
