@@ -1,7 +1,6 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-import { FfmpegMediaInfo } from './features/file'
 import { contextBridge, ipcRenderer } from 'electron'
 import { OUTPUT_FORMAT_TYPES } from './const'
 import { TranscriptionParams } from './declare'
@@ -9,6 +8,7 @@ import { TranscriptionParams } from './declare'
 contextBridge.exposeInMainWorld('electronAPI', {
   // Main <= Renderer
   contentReady: () => ipcRenderer.invoke('contentReady'),
+  fileOpened: (status: boolean) => ipcRenderer.invoke('content:fileOpened', status),
   getConfig: (key: string) => ipcRenderer.invoke('getConfig', key),
   setConfig: (args: { [key: string]: unknown }) => ipcRenderer.invoke('setConfig', args),
   isAppleSilicon: () => ipcRenderer.invoke('isAppleSilicon'),
@@ -21,8 +21,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   abortTranscription: () => ipcRenderer.invoke('abortTranscription'),
 
   // Main => Renderer
-  onOpenMedia: (callback: (value: { filePath: string, mediaInfo: FfmpegMediaInfo }) => unknown) =>
+  onOpenMedia: (callback: (filePath: string) => unknown) =>
     ipcRenderer.on('open_media', (_event, value) => callback(value)),
+  onSaveProjectFile: (callback: (filePath: string) => unknown) =>
+    ipcRenderer.on('save_project', (_event, value) => callback(value)),
   onTranscriptionProgress: (callback: (value: { offsets: { from: number; to: number }; text: string }[]) => unknown) =>
     ipcRenderer.on('progress', (_event, value) => callback(value)),
   onResizeWindow: (callback: (value: { width: number, height: number }) => unknown) =>

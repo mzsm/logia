@@ -13,7 +13,8 @@ if (require('electron-squirrel-startup')) {
 }
 
 let mainWindow: BrowserWindow = undefined
-let fileTemp: string
+let fileTemp: string = undefined
+let opened: boolean = false
 
 app.on('open-file', async (e, filePath) => {
   e.preventDefault()
@@ -62,86 +63,106 @@ const createWindow = () => {
   })
 
   // Menu
-  const isMac = process.platform === 'darwin'
-  const templateMenu: (MenuItemConstructorOptions | MenuItem)[] = [
-    // { role: 'appMenu' }
-    // { role: 'fileMenu' }
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Open Media File...',
-          accelerator: 'CmdOrCtrl+O',
-          click: async () => {
-            const media = await showMediaOpenDialog()
-            if (media) {
-              mainWindow.webContents.send('open_media', media)
-            }
+  const buildMenu = () => {
+    const isMac = process.platform === 'darwin'
+    const templateMenu: (MenuItemConstructorOptions | MenuItem)[] = [
+      // { role: 'appMenu' }
+      // { role: 'fileMenu' }
+      {
+        label: 'File',
+        submenu: [
+          {
+            label: 'Open Media File...',
+            accelerator: 'CmdOrCtrl+O',
+            click: async () => {
+              const media = await showMediaOpenDialog()
+              if (media) {
+                mainWindow.webContents.send('open_media', media)
+              }
+            },
           },
-        },
-        {
-          label: 'Open Project File...',
-          accelerator: 'CmdOrCtrl+P',
-          click: () => showMediaOpenDialog(),
-        },
-        {type: 'separator'},
-        isMac ? {role: 'close'} : {role: 'quit'},
-      ],
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        {role: 'undo'},
-        {role: 'redo'},
-        {type: 'separator'},
-        {role: 'cut'},
-        {role: 'copy'},
-        {role: 'paste'},
-        ...(isMac
-          ? [
-            {role: 'pasteAndMatchStyle'},
-            {role: 'delete'},
-            {role: 'selectAll'},
-          ] as MenuItemConstructorOptions[]
-          : [
-            {role: 'delete'},
-            {type: 'separator'},
-            {role: 'selectAll'},
-          ] as MenuItemConstructorOptions[]),
-      ],
-    },
-  ]
-  if (isMac) {
-    templateMenu.unshift({
-      label: app.name,
-      submenu: [
-        {role: 'about'},
-        {type: 'separator'},
-        {role: 'services'},
-        {type: 'separator'},
-        {role: 'hide'},
-        {role: 'hideOthers'},
-        {role: 'unhide'},
-        {type: 'separator'},
-        {role: 'quit'},
-      ],
-    })
-  }
-  if (!app.isPackaged) {
-    templateMenu.push({
-      label: 'Debug',
-      submenu: [
-        {
-          label: 'Open Dev Tools',
-          accelerator: 'F12',
-          click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
-        },
-      ],
-    })
+          {
+            label: 'Open Project File...',
+            accelerator: 'CmdOrCtrl+P',
+            click: () => showMediaOpenDialog(),
+          },
+          {type: 'separator'},
+          {
+            label: `Save Project File...`,
+            enabled: opened,
+            accelerator: 'CmdOrCtrl+S',
+            click: async () => {
+              const dest = await showProjectSaveDialog()
+              if (dest) {
+                mainWindow.webContents.send('save_project', dest)
+              }
+            },
+          },
+          {type: 'separator'},
+          isMac ? {role: 'close'} : {role: 'quit'},
+        ],
+      },
+      {
+        label: 'Edit',
+        submenu: [
+          {role: 'undo'},
+          {role: 'redo'},
+          {type: 'separator'},
+          {role: 'cut'},
+          {role: 'copy'},
+          {role: 'paste'},
+          ...(isMac
+            ? [
+              {role: 'pasteAndMatchStyle'},
+              {role: 'delete'},
+              {role: 'selectAll'},
+            ] as MenuItemConstructorOptions[]
+            : [
+              {role: 'delete'},
+              {type: 'separator'},
+              {role: 'selectAll'},
+            ] as MenuItemConstructorOptions[]),
+        ],
+      },
+    ]
+    if (isMac) {
+      templateMenu.unshift({
+        label: app.name,
+        submenu: [
+          {role: 'about'},
+          {type: 'separator'},
+          {role: 'services'},
+          {type: 'separator'},
+          {role: 'hide'},
+          {role: 'hideOthers'},
+          {role: 'unhide'},
+          {type: 'separator'},
+          {role: 'quit'},
+        ],
+      })
+    }
+    if (!app.isPackaged) {
+      templateMenu.push({
+        label: 'Debug',
+        submenu: [
+          {
+            label: 'Open Dev Tools',
+            accelerator: 'F12',
+            click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
+          },
+        ],
+      })
 
+    }
+    const menu = Menu.buildFromTemplate(templateMenu)
+    Menu.setApplicationMenu(menu)
   }
-  const menu = Menu.buildFromTemplate(templateMenu)
-  Menu.setApplicationMenu(menu)
+  buildMenu()
+
+  ipcMain.handle('content:fileOpened', (_, status: boolean) => {
+    opened = status
+    buildMenu()
+  })
 
   ipcMain.handle(
     'startTranscription',

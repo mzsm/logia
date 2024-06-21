@@ -92,6 +92,11 @@ function App() {
   const sideTop = useRef(null)
 
   useEffect(() => {
+    console.log(!!mediaFilePath)
+    window.electronAPI.fileOpened(!!mediaFilePath)
+  }, [mediaFilePath])
+
+  useEffect(() => {
     const _d = Math.max(1, duration / 2)
     const _scales = [1, 2, 3, 4, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600]
       .filter((x) => x <= _d).reverse()
@@ -347,6 +352,9 @@ function App() {
     if (!engine) {
       // メニューから開かれた場合
       window.electronAPI.onOpenMedia(openMedia)
+      window.electronAPI.onSaveProjectFile((dest) => {
+        saveProjectFile(dest, mediaFilePath, timelineData)
+      })
 
       window.electronAPI.onTranscriptionProgress(({id, data}) => {
         setTimelineData((timelineData) => {
@@ -447,6 +455,7 @@ function App() {
             color="gray"
             size="lg"
             radius="sm"
+            disabled={!mediaFilePath}
             onClick={onClickProjectSave}
             title="プロジェクトファイルを保存する"
           >

@@ -5,6 +5,7 @@ import { TranscriptionParams } from './declare'
 export interface IElectronAPI {
   // Main <= Renderer
   contentReady: () => void,
+  fileOpened: (status: boolean) => void,
   getConfig: (key: string) => Promise<unknown>,
   setConfig: (args: { [key: string]: unknown }) => void,
   isAppleSilicon: () => Promise<boolean>,
@@ -17,6 +18,7 @@ export interface IElectronAPI {
   abortTranscription: () => Promise<unknown>,
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) => unknown,
+  onSaveProjectFile: (callback: (filePath: string) => unknown) => unknown,
   onTranscriptionProgress: (callback: (value: {
     id: string;
     data: Array<{
