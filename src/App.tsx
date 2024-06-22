@@ -22,7 +22,7 @@ import {
   IconPlus,
   IconRewindBackward5,
   IconRewindForward10,
-  IconRobot,
+  IconRobot, IconVolume, IconVolume2, IconVolume3,
   IconX,
   IconZoomIn,
   IconZoomOut,
@@ -55,6 +55,8 @@ function App() {
   const [currentTime, setCurrentTime] = useState(0)
   const [isPaused, setIsPaused] = useState<boolean>(true)
   const [speed, setSpeed] = useState<number>(1.0)
+  const [volume, setVolume] = useState<number>(1.0)
+  const [muted, setMuted] = useState<boolean>(false)
   const [autoScroll, setAutoScroll] = useState(false)
   const _autoScroll = useRef(autoScroll)
   const [isOpenedTranscriptionDialog, {
@@ -358,6 +360,12 @@ function App() {
   useEffect(() => {
     videoTag.current.playbackRate = speed
   }, [speed])
+  useEffect(() => {
+    videoTag.current.volume = volume
+  }, [volume])
+  useEffect(() => {
+    videoTag.current.muted = muted
+  }, [muted])
 
   // パネルの幅・高さが変更されたとき
   const onResizeMainHorizontalGrid = (sizes: [number, number]) => {
@@ -682,6 +690,38 @@ function App() {
                       step={0.25}
                       style={{width: '80px'}}
                       label={(v) => <>再生速度: x{v}</>}
+                    />
+                  </Group>
+                  <Divider orientation="vertical"/>
+                  <Group gap="xs" wrap="nowrap">
+                    <ActionIcon
+                      variant={muted? 'outline' : 'subtle'}
+                      disabled={!mediaFilePath}
+                      size="sm"
+                      radius="sm"
+                      color={muted ? 'red' : 'gray'}
+                      onClick={() => setMuted((v) => !v)}
+                      title="音量"
+                    >
+                      {
+                        muted || volume === 0 ?
+                          <IconVolume3 size={16} stroke={1.5}/> :
+                          volume <= 0.5 ?
+                            <IconVolume2 size={16} stroke={1.5}/> :
+                            <IconVolume size={16} stroke={1.5}/>
+                      }
+                    </ActionIcon>
+                    <Slider
+                      disabled={!mediaFilePath || muted}
+                      value={volume}
+                      onChange={setVolume}
+                      min={0}
+                      max={1}
+                      radius="md"
+                      size="md"
+                      step={0.1}
+                      style={{width: '80px'}}
+                      label={null}
                     />
                   </Group>
                   <Divider orientation="vertical"/>
