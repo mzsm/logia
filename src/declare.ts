@@ -22,3 +22,8 @@ export interface TranscriptionParams {
   end?: number
   computeType?: string
 }
+
+export interface ProjectFileFormat {
+  media: string,
+  timelineData: TranscriptionRow[]
+}

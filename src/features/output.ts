@@ -1,5 +1,5 @@
 import { formatTime } from '../utils'
-import { TranscriptionRow, TranscriptionText } from '../declare'
+import { ProjectFileFormat, TranscriptionRow, TranscriptionText } from '../declare'
 import { OUTPUT_FORMAT_TYPES } from '../const'
 
 export interface TextOptions {
@@ -19,10 +19,13 @@ export interface CsvOptions {
 export const saveProjectFile = (destFilePath: string, mediaFilePath: string, timelineData: TranscriptionRow[]) => {
   window.electronAPI.saveFile({
     path: destFilePath,
-    content: JSON.stringify({
-      media: mediaFilePath,
-      timelineData,
-    }, null, 1),
+    content: JSON.stringify(
+      {
+        media: mediaFilePath,
+        timelineData,
+      } as ProjectFileFormat,
+      null, 1,
+    ),
     encoding: 'utf8',
   }).then()
 }

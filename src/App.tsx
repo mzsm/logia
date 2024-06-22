@@ -1,7 +1,7 @@
 import { DragEvent, useEffect, useRef, useState } from 'react'
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useDisclosure } from '@mantine/hooks'
-import { ActionIcon, Divider, Group, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
+import { ActionIcon, Divider, Group, Loader, Modal, noop, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
 import TimeStampInput from './components/timeStampInput'
 import {
   IconAbc,
@@ -64,6 +64,10 @@ function App() {
   const [isOpenedExportDialog, {
     open: openExportDialog,
     close: closeExportDialog,
+  }] = useDisclosure(false)
+  const [isOpenedLoader, {
+    open: openLoader,
+    close: closeLoader,
   }] = useDisclosure(false)
   const [timelineData, setTimelineData] = useState<TranscriptionRow[]>([])
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null)
@@ -207,6 +211,25 @@ function App() {
     videoTag.current.src = 'file://' + encodeURIComponent(filePath).replaceAll('%2F', '/')
   }
 
+  const openProject = async (filePath: string) => {
+    // 初期化
+    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
+      return
+    }
+    openLoader()
+    setMediaFilePath(null)
+    const _projectData = await window.electronAPI.loadProjectFile(filePath)
+    if (!_projectData) {
+      alert('プロジェクトファイルを開けませんでした')
+      return
+    }
+
+    openMedia(_projectData.media).then(() => {
+      closeLoader()
+    })
+    setTimelineData(_projectData.timelineData)
+  }
+
   const setTime = (time: number) => {
     videoTag.current.currentTime = time
   }
@@ -262,6 +285,14 @@ function App() {
     window.electronAPI.openMediaFile().then((media) => {
       if (media) {
         openMedia(media).then()
+      }
+    })
+  }
+
+  const onClickProjectOpen = () => {
+    window.electronAPI.openProjectFile().then((projectFile) => {
+      if (projectFile) {
+        openProject(projectFile).then()
       }
     })
   }
@@ -362,6 +393,7 @@ function App() {
 
       // メニューから開かれた場合
       window.electronAPI.onOpenMedia(openMedia)
+      window.electronAPI.onOpenProjectFile(openProject)
       window.electronAPI.onSaveProjectFile((dest) => {
         saveProjectFile(dest, mediaFilePath, timelineData)
       })
@@ -447,7 +479,7 @@ function App() {
             color="gray"
             size="lg"
             radius="sm"
-            onClick={onClickMediaOpen}
+            onClick={onClickProjectOpen}
             title="プロジェクトファイルを開く"
           >
             <IconFolderOpen size={24} stroke={1.5}/>
@@ -932,6 +964,20 @@ function App() {
         opened={isOpenedExportDialog}
         onClose={closeExportDialog}
       />
+      <Modal
+        opened={isOpenedLoader}
+        onClose={noop}
+        closeOnClickOutside={false}
+        withCloseButton={false}
+        closeOnEscape={false}
+        size="auto"
+        overlayProps={{blur: 1}}
+      >
+        <Group justify="center" gap="xs" wrap="nowrap">
+          <Loader size="sm"/>
+          <Text size="sm">プロジェクトファイルを開いています しばらくお待ちください…</Text>
+        </Group>
+      </Modal>
     </div>
   )
 }

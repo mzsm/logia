@@ -1,7 +1,14 @@
 import { app, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 import path from 'path'
-import { saveFile, showCCSaveDialog, showMediaOpenDialog, showProjectSaveDialog } from './features/file'
+import {
+  loadProjectFile,
+  saveFile,
+  showCCSaveDialog,
+  showMediaOpenDialog,
+  showProjectOpenDialog,
+  showProjectSaveDialog,
+} from './features/file'
 import { getMediaInfo } from './features/ffmpeg'
 import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
@@ -84,7 +91,12 @@ const createWindow = () => {
           {
             label: 'Open Project File...',
             accelerator: 'CmdOrCtrl+P',
-            click: () => showMediaOpenDialog(),
+            click: async () => {
+              const projectFile = await showProjectOpenDialog()
+              if (projectFile) {
+                mainWindow.webContents.send('open_project', projectFile)
+              }
+            },
           },
           {type: 'separator'},
           {
@@ -241,6 +253,14 @@ ipcMain.handle('isAppleSilicon', () => {
 
 ipcMain.handle('open:mediaFile', async () => {
   return await showMediaOpenDialog()
+})
+
+ipcMain.handle('open:projectFile', async () => {
+  return await showProjectOpenDialog()
+})
+
+ipcMain.handle('load:projectFile', async (_, path) => {
+  return await loadProjectFile(path)
 })
 
 ipcMain.handle('save:projectFile', async () => {

@@ -143,8 +143,9 @@ function TranscriptionModal({
       opened={opened}
       onClose={onClose}
       closeOnClickOutside={false}
-      size={'lg'}
+      size="lg"
       scrollAreaComponent={ScrollArea.Autosize}
+      overlayProps={{blur: 1}}
     >
       <form>
         <Stack>

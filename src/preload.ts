@@ -13,9 +13,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setConfig: (args: { [key: string]: unknown }) => ipcRenderer.invoke('setConfig', args),
   isAppleSilicon: () => ipcRenderer.invoke('isAppleSilicon'),
   openMediaFile: () => ipcRenderer.invoke('open:mediaFile'),
+  openProjectFile: () => ipcRenderer.invoke('open:projectFile'),
   saveProjectFile: () => ipcRenderer.invoke('save:projectFile'),
   exportCC: (args: { format: OUTPUT_FORMAT_TYPES }) => ipcRenderer.invoke('save:ccFile', args),
   saveFile: (args: { path: string, content: string, encoding: string | null }) => ipcRenderer.invoke('save', args),
+  loadProjectFile: (filePath: string) => ipcRenderer.invoke('load:projectFile', filePath),
   getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),
   startTranscription: (args: TranscriptionParams) => ipcRenderer.invoke('startTranscription', args),
   abortTranscription: () => ipcRenderer.invoke('abortTranscription'),
@@ -23,6 +25,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) =>
     ipcRenderer.on('open_media', (_event, value) => callback(value)),
+  onOpenProjectFile: (callback: (filePath: string) => unknown) =>
+    ipcRenderer.on('open_project', (_event, value) => callback(value)),
   onSaveProjectFile: (callback: (filePath: string) => unknown) =>
     ipcRenderer.on('save_project', (_event, value) => callback(value)),
   onShowTranscriptionDialog: (callback: () => unknown) =>

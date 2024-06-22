@@ -1,6 +1,7 @@
 import { dialog } from 'electron'
 import { OUTPUT_FORMAT_DICT, OUTPUT_FORMAT_TYPES } from '../const'
-import fs from 'fs'
+import { ProjectFileFormat } from '../declare'
+import fs from 'fs/promises'
 import iconv from 'iconv-lite'
 
 const EXT_VIDEO = ['mp4', 'mov', 'mkv', 'webm']
@@ -42,24 +43,28 @@ const _showSaveDialog = async (title: string, filters: Electron.FileFilter[]) =>
   if (result.canceled) {
     return null
   }
-
   return result.filePath
 }
 
 export const showMediaOpenDialog = async () => {
   const opened = await dialog.showOpenDialog({
     properties: ['openFile'],
-    filters: [
-      {
-        name: 'Media files',
-        extensions: EXT_MEDIA,
-      },
-    ],
+    filters: [{name: 'Media Files', extensions: EXT_MEDIA}],
   })
   if (opened.canceled) {
     return null
   }
+  return opened.filePaths[0]
+}
 
+export const showProjectOpenDialog = async () => {
+  const opened = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{name: 'Logia Project Files', extensions: ['logia']}],
+  })
+  if (opened.canceled) {
+    return null
+  }
   return opened.filePaths[0]
 }
 
@@ -78,7 +83,7 @@ export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
   )
 }
 
-export const saveFile = async (path: string, content: string, encoding: string | null) => {
+export const saveFile = async (path: string, content: string, encoding?: string | null) => {
   if (encoding) {
     let addBOM = false
     if (encoding === 'utf8-bom') {
@@ -87,10 +92,17 @@ export const saveFile = async (path: string, content: string, encoding: string |
     } else if (['utf16le', 'utf32le', 'utf32be'].includes(encoding)) {
       addBOM = true
     }
-    fs.writeFile(path, iconv.encode(content, encoding, {addBOM}), () => {
-    })
+    fs.writeFile(path, iconv.encode(content, encoding, {addBOM})).then()
   } else {
-    fs.writeFile(path, content, () => {
-    })
+    fs.writeFile(path, content).then()
+  }
+}
+
+export const loadProjectFile = async (path: string) => {
+  try {
+    const projectData = await fs.readFile(path, 'utf8')
+    return JSON.parse(projectData) as ProjectFileFormat
+  } catch (e) {
+    return null
   }
 }
