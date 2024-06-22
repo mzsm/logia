@@ -80,7 +80,7 @@ export const transcribe = async (
 
     currentProcess = spawn(
       app.isPackaged ?
-        path.join(path.dirname(app.getAppPath()), 'backend', 'backend') :
+        path.join(path.dirname(app.getAppPath()), 'backend', 'logia_backend') :
         os.platform() === 'win32' ?
           path.join(app.getAppPath(), '.venv', 'Scripts', 'python.exe') :
           path.join(app.getAppPath(), '.venv', 'bin', 'python'),

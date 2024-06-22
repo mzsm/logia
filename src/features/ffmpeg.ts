@@ -11,7 +11,7 @@ export const getMediaInfo = async (filePath: string): Promise<FfmpegMediaInfo|st
       args.unshift(path.join(app.getAppPath(), 'py_src', 'py_backend.py'))
     }
     return execFile(
-      app.isPackaged ? path.join(path.dirname(app.getAppPath()), 'backend', 'backend') :
+      app.isPackaged ? path.join(path.dirname(app.getAppPath()), 'backend', 'logia_backend') :
           os.platform() === 'win32' ?
             path.join(app.getAppPath(), '.venv', 'Scripts', 'python.exe') :
             path.join(app.getAppPath(), '.venv', 'bin', 'python')
