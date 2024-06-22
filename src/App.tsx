@@ -471,27 +471,29 @@ function App() {
         wrap="nowrap"
         style={{marginBottom: 0}}
       >
-        <Group gap={0}>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="lg"
-            radius="sm"
-            onClick={onClickMediaOpen}
-            title="メディアファイルを開く"
-          >
-            <IconFileMusic size={24} stroke={1.5}/>
-          </ActionIcon>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="lg"
-            radius="sm"
-            onClick={onClickProjectOpen}
-            title="プロジェクトファイルを開く"
-          >
-            <IconFolderOpen size={24} stroke={1.5}/>
-          </ActionIcon>
+        <Group gap="xs">
+          <Group gap={0}>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size="lg"
+              radius="sm"
+              onClick={onClickMediaOpen}
+              title="メディアファイルを開く"
+            >
+              <IconFileMusic size={24} stroke={1.5}/>
+            </ActionIcon>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size="lg"
+              radius="sm"
+              onClick={onClickProjectOpen}
+              title="プロジェクトファイルを開く"
+            >
+              <IconFolderOpen size={24} stroke={1.5}/>
+            </ActionIcon>
+          </Group>
           <Divider orientation="vertical"/>
           <ActionIcon
             variant="subtle"
@@ -506,8 +508,6 @@ function App() {
           </ActionIcon>
         </Group>
         <ActionIcon
-          variant="subtle"
-          color="gray"
           size="lg"
           radius="sm"
           disabled={timelineData.length === 0}
