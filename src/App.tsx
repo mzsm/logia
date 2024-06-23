@@ -210,7 +210,7 @@ function App() {
     setMediaInfo(_mediaInfo)
     setDuration(_mediaInfo.duration / 1000)
     setMediaFilePath(filePath)
-    videoTag.current.src = 'file://' + encodeURIComponent(filePath).replaceAll('%2F', '/')
+    videoTag.current.src = 'file://' + encodeURIComponent(filePath).replaceAll('%2F', '/').replaceAll('%5C', '\\').replaceAll('%3A', ':')
   }
 
   const openProject = async (filePath: string) => {

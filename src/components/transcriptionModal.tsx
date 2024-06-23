@@ -154,7 +154,7 @@ function TranscriptionModal({
             disablePictureInPicture
             preload="auto"
             ref={videoTag}
-            src={`file://${encodeURIComponent(mediaFilePath).replaceAll('%2F', '/')}`}
+            src={`file://${encodeURIComponent(mediaFilePath).replaceAll('%2F', '/').replaceAll('%5C', '\\').replaceAll('%3A', ':')}`}
           >
           </video>
           <Input.Wrapper
