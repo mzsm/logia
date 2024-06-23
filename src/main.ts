@@ -13,6 +13,7 @@ import { getMediaInfo } from './features/ffmpeg'
 import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
 import { TranscriptionParams } from './declare'
+import log from 'electron-log/main'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -33,6 +34,8 @@ app.on('open-file', async (e, filePath) => {
 })
 
 const createWindow = () => {
+  log.initialize()
+
   const windowPosition = store.get('windowPosition')
   const windowSize = store.get('windowSize')
 

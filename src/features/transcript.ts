@@ -4,6 +4,7 @@ import { app, BrowserWindow } from 'electron'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import { TranscriptionParams } from '../declare'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
+import log from 'electron-log/main'
 
 const currentProcesses: {[id: string]: ChildProcessWithoutNullStreams} = {}
 
@@ -88,6 +89,7 @@ export const transcribe = async (
     )
     currentProcess.on('exit', () => {
       // pass
+      log.info(`${id}: finished ${new Date().toISOString()}`)
       resolve()
     })
 
@@ -98,10 +100,12 @@ export const transcribe = async (
       onProgress && onProgress(data)
     })
 
-    // TODO: ログに出力
     currentProcess.stderr.on('data', (data) => {
-      console.log(data.toString())
+      log.warn(data.toString())
     })
     currentProcesses[id] = currentProcess
+    log.info(`${id}: ${wavPath} -l ${lang} -m ${model}`)
+    log.info(`${id}: started ${new Date().toISOString()}`)
+
   })
 }

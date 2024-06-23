@@ -3199,6 +3199,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-log@npm:^5.1.5":
+  version: 5.1.5
+  resolution: "electron-log@npm:5.1.5"
+  checksum: 10c0/40bb497d1a515855d52d49ec86dee55b1eddf990b8cf74b24e79b1af5830413fd47afb8c060b830201e3b7d2c5f5401f5cc5c2321e91ab0c66fc8e862c9b8380
+  languageName: node
+  linkType: hard
+
 "electron-squirrel-startup@npm:^1.0.1":
   version: 1.0.1
   resolution: "electron-squirrel-startup@npm:1.0.1"
@@ -5339,6 +5346,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.11"
     electron: "npm:31.0.2"
+    electron-log: "npm:^5.1.5"
     electron-squirrel-startup: "npm:^1.0.1"
     electron-store: "npm:^8.2.0"
     esbuild-plugin-react-virtualized: "npm:^1.0.4"

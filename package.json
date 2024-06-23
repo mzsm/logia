@@ -49,6 +49,7 @@
     "@tabler/icons-react": "^3.6.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.11",
+    "electron-log": "^5.1.5",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^8.2.0",
     "esbuild-plugin-react-virtualized": "^1.0.4",
