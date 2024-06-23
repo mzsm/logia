@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 import path from 'path'
 import {
@@ -14,6 +14,7 @@ import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
 import { TranscriptionParams } from './declare'
 import log from 'electron-log/main'
+import os from 'os'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -35,6 +36,21 @@ app.on('open-file', async (e, filePath) => {
 
 const createWindow = () => {
   log.initialize()
+  log.debug(`OS: ${os.type()}`)
+  log.debug(`Platform: ${os.platform()}`)
+  log.debug(`Version: ${os.version()} (${process.getSystemVersion()})`)
+  const mem = process.getSystemMemoryInfo().total
+  log.debug(`Memory: ${mem} KB`)
+  log.debug(`CPUs: ${os.cpus().length} CPUs`)
+  os.cpus().forEach((_cpu, index) => {
+    log.debug(`  [${index}] ${_cpu.model}`)
+  })
+  app.getGPUInfo('complete').then((gpuInfo: {auxAttributes: {glRenderer: string}; gpuDevice: {vendorId: number, deviceId: number, driverVersion: string, driverVendor?: string}[]}) => {
+    log.debug(`GPUinfo: ${gpuInfo.auxAttributes.glRenderer}`)
+    gpuInfo.gpuDevice.forEach((_gpu, index) => {
+      log.debug(`  [${index}] Vendor:${_gpu.vendorId}(${_gpu.driverVendor}) Device:${_gpu.deviceId} Ver.:${_gpu.driverVersion}`)
+    })
+  })
 
   const windowPosition = store.get('windowPosition')
   const windowSize = store.get('windowSize')
@@ -178,9 +194,22 @@ const createWindow = () => {
             accelerator: 'F12',
             click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
           },
+          {
+            label: 'Open AppData directory',
+            click: () => shell.openPath(path.join(app.getPath('appData'), app.getName())),
+          },
         ],
       })
-
+    } else {
+      templateMenu.push({
+        label: 'Debug',
+        submenu: [
+          {
+            label: 'Open AppData directory',
+            click: () => shell.openPath(path.join(app.getPath('appData'), app.getName())),
+          },
+        ],
+      })
     }
     const menu = Menu.buildFromTemplate(templateMenu)
     Menu.setApplicationMenu(menu)
