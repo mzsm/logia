@@ -279,6 +279,6 @@ ipcMain.handle('getMediaInfo', async (_, filePath: string) => {
   return await getMediaInfo(filePath)
 })
 
-ipcMain.handle('abortTranscription', async () => {
-  abortTranscription()
+ipcMain.handle('abortTranscription', async (_, id: string) => {
+  abortTranscription(id)
 })

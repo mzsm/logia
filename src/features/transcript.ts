@@ -5,7 +5,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import { TranscriptionParams } from '../declare'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 
-let currentProcess: ChildProcessWithoutNullStreams | null = null
+const currentProcesses: {[id: string]: ChildProcessWithoutNullStreams} = {}
 
 export const startTranscription = async (mainWindow: BrowserWindow, {
   filePath,
@@ -43,18 +43,18 @@ export const startTranscription = async (mainWindow: BrowserWindow, {
     )
     leftover = ''
   }
-  return await transcribe(filePath, language, model, computeType, start, end, onProgress)
+  return await transcribe(id, filePath, language, model, computeType, start, end, onProgress)
 }
 
-export const abortTranscription = () => {
-  if (currentProcess) {
-    currentProcess.kill()
+export const abortTranscription = (id :string) => {
+  if (currentProcesses[id]) {
+    currentProcesses[id].kill()
+    delete currentProcesses[id]
   }
-  currentProcess = null
 }
 
 export const transcribe = async (
-  wavPath: string, lang?: string, model = 'medium', computeType = 'auto', start?: number, end?: number, onProgress?: (data: string) => unknown,
+  id: string, wavPath: string, lang?: string, model = 'medium', computeType = 'auto', start?: number, end?: number, onProgress?: (data: string) => unknown,
 ): Promise<void> => {
   return new Promise((resolve) => {
     const args = [
@@ -78,7 +78,7 @@ export const transcribe = async (
       args.push('-c', computeType)
     }
 
-    currentProcess = spawn(
+    const currentProcess = spawn(
       app.isPackaged ?
         path.join(path.dirname(app.getAppPath()), 'backend', 'logia_backend') :
         os.platform() === 'win32' ?
@@ -102,5 +102,6 @@ export const transcribe = async (
     currentProcess.stderr.on('data', (data) => {
       console.log(data.toString())
     })
+    currentProcesses[id] = currentProcess
   })
 }

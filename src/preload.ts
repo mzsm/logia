@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadProjectFile: (filePath: string) => ipcRenderer.invoke('load:projectFile', filePath),
   getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),
   startTranscription: (args: TranscriptionParams) => ipcRenderer.invoke('startTranscription', args),
-  abortTranscription: () => ipcRenderer.invoke('abortTranscription'),
+  abortTranscription: (id: string) => ipcRenderer.invoke('abortTranscription', id),
 
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) =>

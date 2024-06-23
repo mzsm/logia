@@ -17,7 +17,7 @@ export interface IElectronAPI {
   loadProjectFile: (filePath: string) => Promise<ProjectFileFormat | null>,
   getMediaInfo: (filePath: string) => Promise<FfmpegMediaInfo | null>,
   startTranscription: (args: TranscriptionParams) => Promise<unknown | null>,
-  abortTranscription: () => Promise<unknown>,
+  abortTranscription: (id: string) => Promise<unknown>,
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) => unknown,
   onOpenProjectFile: (callback: (filePath: string) => unknown) => unknown,

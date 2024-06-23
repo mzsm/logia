@@ -328,9 +328,11 @@ function App() {
     })
   }
 
-  // const onClickAbortTranscription = () => {
-  //   window.electronAPI.abortTranscription()
-  // }
+  const onClickAbortTranscription = (id: string) => {
+    if (confirm('進行中の自動文字起こしを中止してよろしいですか?')) {
+      window.electronAPI.abortTranscription(id)
+    }
+  }
 
   const addEmptyTimeline = () => {
     setTimelineData((_timelineData) => {
@@ -855,6 +857,7 @@ function App() {
                                           size="sm"
                                           radius="sm"
                                           title="自動文字起こしを中止"
+                                          onClick={() => onClickAbortTranscription(item.id)}
                                         >
                                           <IconBan size={16} stroke={1.5}/>
                                         </ActionIcon>
