@@ -10,16 +10,14 @@ a = Analysis(
     ('.venv/lib/python3.12/site-packages/mlx_whisper/assets/multilingual.tiktoken', 'mlx_whisper/assets'),
     ('.venv/lib/python3.12/site-packages/mlx_whisper/assets/gpt2.tiktoken', 'mlx_whisper/assets'),
     ],
-    hiddenimports=['backends', 'mlx._reprlib_fix', 'mlx._os_warning'],
+    hiddenimports=[
+     'backends', 'mlx._reprlib_fix', 'mlx._os_warning',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-     'pip',
-     'pyinstaller',
-     'pyinstaller-hooks-contrib',
      'pyyaml',
-     'setuptools',
     ],
     noarchive=False,
 )
