@@ -10,7 +10,13 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=[
+     'pip',
+     'pyinstaller',
+     'pyinstaller-hooks-contrib',
+     'pyyaml',
+     'setuptools',
+    ],
     noarchive=False,
     optimize=1,
 )
