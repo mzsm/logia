@@ -30,6 +30,45 @@ The program work faster, if your computer equipped with below H/W.
 * with Apple Silicon  
   Appleシリコン搭載
 
+## Performances
+
+Processing time is depending on audio.  
+There are samples.
+
+### Sample #1
+* Lang: Japanese
+* Duration: 20:03
+* Genre: Talk (Conversation)
+
+#### CPU only
+| CPU           | Mem. | Model    | Time  | Speed |
+|---------------|------|----------|-------|-------|
+| Ryzen 7 7840U | 32GB | Medium   | 12:14 | x1.63 |
+| Ryzen 7 7840U | 32GB | Large-v3 | 19:38 | x1.02 |
+
+#### with CUDA supported NVIDIA GPU
+| CPU | GPU     | Mem. | Model    | Time  | Speed |
+|-----|---------|------|----------|-------|-------|
+|     | GeForce | 32GB | Medium   |       |       |
+|     | GeForce | 32GB | Large-v3 |       |       |
+
+#### with Apple Silicon
+| CPU/GPU  | Mem. | Model    | Time  | Speed |
+|----------|------|----------|-------|-------|
+| Apple M2 | 24GB | Medium   | 03:42 | x5.42 |
+| Apple M2 | 24GB | Large-v3 | 06:25 | x3.12 |
+
+### Sample #2
+* Lang: English
+* Duration: 21:03
+* Genre: Speech
+
+#### with Apple Silicon
+| CPU/GPU  | Mem. | Model     | Time  | Speed |
+|----------|------|-----------|-------|-------|
+| Apple M2 | 24GB | Medium    | 03:19 | x6.37 |
+| Apple M2 | 24GB | Large-v3  | 05:55 | x3.56 |
+
 ## Dependencies
 
 This program is developed with below ones.  

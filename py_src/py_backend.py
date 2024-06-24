@@ -17,7 +17,7 @@ if __name__ == '__main__':
     transcribe_parser.add_argument('--mlx', '-x', action='store_true',
                                    help="Use MLX version (Available only for Apple Silicon)")
     transcribe_parser.add_argument('--model', '-m', type=str, default='medium')
-    transcribe_parser.add_argument('--device', '-d', type=str, default='cpu',
+    transcribe_parser.add_argument('--device', '-d', type=str, default='auto',
                                    choices=('auto', 'cpu', 'cuda'))
     transcribe_parser.add_argument('--compute_type', '-c', type=str, default='auto',
                                    choices=('default', 'auto', 'int8', 'int8_float32', 'int8_float16', 'int8_bfloat16',
