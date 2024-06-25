@@ -168,6 +168,39 @@ const createWindow = () => {
           },
         ],
       },
+      {
+        label: 'Debug',
+        submenu: [
+          {
+            label: 'Open AppData directory',
+            click: () => shell.openPath(path.join(app.getPath('appData'), app.getName())),
+          },
+          ...(isMac
+            ? [
+              {
+                label: 'Open Library directory',
+                click: () => shell.openPath(path.join(app.getPath('home'), 'Library', 'Application Support', app.getName().toLowerCase())),
+              },
+              {
+                label: 'Open Logs directory',
+                click: () => shell.openPath(path.join(app.getPath('home'), 'Library', 'Logs', app.getName())),
+              },
+            ] as MenuItemConstructorOptions[]
+            : []
+          ),
+          ...(!app.isPackaged
+            ? [
+              {type: 'separator'},
+              {
+                label: 'Open Dev Tools',
+                accelerator: 'F12',
+                click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
+              },
+            ] as MenuItemConstructorOptions[]
+            : []
+          ),
+        ],
+      }
     ]
     if (isMac) {
       templateMenu.unshift({
@@ -185,34 +218,9 @@ const createWindow = () => {
         ],
       })
     }
-    if (!app.isPackaged) {
-      templateMenu.push({
-        label: 'Debug',
-        submenu: [
-          {
-            label: 'Open Dev Tools',
-            accelerator: 'F12',
-            click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
-          },
-          {
-            label: 'Open AppData directory',
-            click: () => shell.openPath(path.join(app.getPath('appData'), app.getName())),
-          },
-        ],
-      })
-    } else {
-      templateMenu.push({
-        label: 'Debug',
-        submenu: [
-          {
-            label: 'Open AppData directory',
-            click: () => shell.openPath(path.join(app.getPath('appData'), app.getName())),
-          },
-        ],
-      })
-    }
     const menu = Menu.buildFromTemplate(templateMenu)
     Menu.setApplicationMenu(menu)
+    console.log(path.join(app.getPath('home'), 'Library', 'Application Support', app.getName()))
   }
   buildMenu()
 
