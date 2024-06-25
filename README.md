@@ -7,7 +7,7 @@ Transcription and subtitling support app for video creators.
 
 ## What Can This App Do For You? / 何ができるの？
 
-Transcribes video / audio files automatically with voice recognition.  
+Transcribes video / audio files automatically with speech recognition.  
 It supports about 100 languages, such as English, Japanese, Chinese, French, Korean, etc...  
 If the result was wrong, you can correct it manually.  
 It supports to output subtitle files for YouTube and HTML5 videos, and you can add high-quality subtitles to your videos easily.  
@@ -139,3 +139,8 @@ This app is developed with below libraries.
 ## License / ライセンス
 
 [MIT License](LICENSE)
+
+## Where The Name Come From / 名前の由来
+
+**Logia** comes from Greek word [**λόγια**](https://en.wiktionary.org/wiki/%CE%BB%CF%8C%CE%B3%CE%B9%CE%B1) (the plural of [**λόγος**](https://en.wiktionary.org/wiki/%CE%BB%CF%8C%CE%B3%CE%BF%CF%82) (logos)) which meanings *words*. And also pun for *log* and *AI*.  
+**Logia**(ロギア)の由来はギリシア語で「言葉」を意味する単語 [**λόγια**](https://en.wiktionary.org/wiki/%CE%BB%CF%8C%CE%B3%CE%B9%CE%B1) (※[**λόγος**](https://en.wiktionary.org/wiki/%CE%BB%CF%8C%CE%B3%CE%BF%CF%82)(ロゴス)の複数形)で、また*log*と*AI*にも掛けています
