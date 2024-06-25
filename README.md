@@ -2,10 +2,24 @@
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
-Automatic transcribe program for video creators.  
-動画クリエイターのための自動文字起こしソフト
+Transcription and subtitling support app for video creators.  
+動画クリエイターのための文字起こし・字幕制作支援アプリ
 
-## System requirements
+## What Can This App Do For You? / 何ができるの？
+
+Transcribes video / audio files automatically with voice recognition.  
+It supports about 100 languages, such as English, Japanese, Chinese, French, Korean, etc...  
+If the result was wrong, you can correct it manually.  
+It supports to output subtitle files for YouTube and HTML5 videos, and you can add high-quality subtitles to your videos easily.  
+Also available to output CSV and plain text, you can use for a wide range of use cases, not only video creation.
+
+音声認識により自動で動画・音声ファイルの文字起こしを行います  
+英語や日本語、中国語、フランス語、韓国語など、約100の言語に対応しています  
+自動文字起こしの結果が間違っていた場合は、手動で内容を修正できます  
+YouTubeやHTML5ビデオ用字幕ファイルの出力に対応しており、あなたの動画に手軽に高品質な字幕を付与できます  
+また、CSVやプレーンテキストでの出力も可能なので、動画制作だけでなく幅広い用途で利用可能です
+
+## System Requirements / 動作環境
 
 * OS
   * As new and stable as possible (Whether Windows or macOS)  
@@ -17,10 +31,10 @@ Automatic transcribe program for video creators.
   * As much as possible  
     なるべくたくさん
 
-### Recommended
+### Recommended / 推奨環境
 
-The program work faster, if your computer equipped with below H/W.  
-コンピュータに以下のハードウェアが搭載されていれば、より高速に動作します
+The app work faster, if your computer equipped with below H/W.  
+コンピューターに以下のハードウェアが搭載されていれば、より高速に動作します
 
 #### on Windows
 * with CUDA supported NVIDIA GPU  
@@ -30,24 +44,25 @@ The program work faster, if your computer equipped with below H/W.
 * with Apple Silicon  
   Appleシリコン搭載
 
-## Performances
+## Performance Benchmark Results / 性能ベンチマーク結果
 
 Below are sample data measured by developer or friends.  
 Processing time is heavily depending on your PC specs, the content of the audio or other reasons.  
-These are intended as a guide only.  
+These are intended as a guide only.
+
 以下は開発者や友人が測定したサンプルデータです  
 処理時間はPCのスペックや音声の内容などにより大きく左右されます  
 あくまで目安として参考にしてください
 
 ### Sample #1
-* Lang: Japanese  
-  言語：日本語
-* Duration: 20:03  
-  再生時間：20分03秒
-* Genre: Conversation of two  
-  ジャンル：2人の会話
+* Lang / 言語
+  * Japanese / 日本語
+* Duration / 再生時間
+  * 20:03
+* Genre / ジャンル
+  * Conversation of two / 2人の会話
 
-#### CPU only
+#### CPU Only
 | CPU           | Mem. | Model    | Time  | Speed |
 |---------------|------|----------|-------|-------|
 | Ryzen 7 7840U | 32GB | Medium   | 12:14 | x1.63 |
@@ -62,18 +77,26 @@ These are intended as a guide only.
 | Ryzen 7 7745HX | GeForce RTX 4090    | 64GB | Large-v3 | 01:27 | x13.86 |
 
 #### with Apple Silicon
-| CPU/GPU  | Mem. | Model    | Time  | Speed |
-|----------|------|----------|-------|-------|
-| Apple M2 | 24GB | Medium   | 03:42 | x5.42 |
-| Apple M2 | 24GB | Large-v3 | 06:25 | x3.12 |
+| CPU/GPU  | GPU Cores | Mem. | Model    | Time  | Speed |
+|----------|-----------|------|----------|-------|-------|
+| Apple M1 | 8         | 16GB | Medium   | 04:46 | x4.20 |
+| Apple M1 | 8         | 16GB | Large-v3 | 08:50 | x2.27 |
+| Apple M2 | 10        | 24GB | Medium   | 03:42 | x5.42 |
+| Apple M2 | 10        | 24GB | Large-v3 | 06:25 | x3.12 |
 
 ### Sample #2
-* Lang: English  
-  言語：英語
-* Duration: 21:03  
-  再生時間：21分03秒
-* Genre: Solo speech  
-  ジャンル：1人によるスピーチ
+* Lang / 言語
+  * English / 英語
+* Duration / 再生時間
+  * 21:03
+* Genre / ジャンル
+  * Solo speech / 1人によるスピーチ
+
+#### CPU Only
+| CPU           | Mem. | Model    | Time  | Speed |
+|---------------|------|----------|-------|-------|
+| Ryzen 7 7840U | 32GB | Medium   | 10:59 | x1.91 |
+| Ryzen 7 7840U | 32GB | Large-v3 | 15:04 | x1.39 |
 
 #### with CUDA supported NVIDIA GPU
 | CPU            | GPU                 | Mem. | Model    | Time  | Speed  |
@@ -84,15 +107,17 @@ These are intended as a guide only.
 | Ryzen 7 7745HX | GeForce RTX 4090    | 64GB | Large-v3 | 01:18 | x16.37 |
 
 #### with Apple Silicon
-| CPU/GPU  | Mem. | Model     | Time  | Speed |
-|----------|------|-----------|-------|-------|
-| Apple M2 | 24GB | Medium    | 03:19 | x6.37 |
-| Apple M2 | 24GB | Large-v3  | 05:55 | x3.56 |
+| CPU/GPU  | GPU Cores | Mem. | Model    | Time  | Speed |
+|----------|-----------|------|----------|-------|-------|
+| Apple M1 | 8         | 16GB | Medium   | 04:28 | x4.72 |
+| Apple M1 | 8         | 16GB | Large-v3 | 08:08 | x2.59 |
+| Apple M2 | 10        | 24GB | Medium   | 03:19 | x6.37 |
+| Apple M2 | 10        | 24GB | Large-v3 | 05:55 | x3.56 |
 
-## Dependencies
+## Dependencies / 依存ライブラリー
 
-This program is developed with below ones.  
-このプログラムは以下のプログラムを利用して開発されています
+This app is developed with below libraries.  
+このアプリは以下のライブラリーを利用して開発されています
 
 * [Faster Whisper](https://github.com/SYSTRAN/faster-whisper)
   * A reimplementation of OpenAI's Whisper model using [CTranslate2](https://github.com/OpenNMT/CTranslate2/).
@@ -110,3 +135,7 @@ This program is developed with below ones.
 * [mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper)
   * OpenAI Whisper on Apple Silicon with MLX and the Hugging Face Hub.
   * MLXとHugging Face Hubを利用したAppleシリコン用のOpenAI Whisper
+
+## License / ライセンス
+
+[MIT License](LICENSE)

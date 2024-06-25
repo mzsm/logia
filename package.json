@@ -2,7 +2,7 @@
   "name": "logia",
   "productName": "Logia",
   "version": "0.1.0",
-  "description": "動画クリエイターのための自動文字起こしソフト",
+  "description": "動画クリエイターのための文字起こし・字幕制作支援アプリ",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
