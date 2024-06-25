@@ -69,7 +69,7 @@ These are intended as a guide only.
 
 ### Sample #2
 * Lang: English  
-  言語：援護
+  言語：英語
 * Duration: 21:03  
   再生時間：21分03秒
 * Genre: Solo speech  
