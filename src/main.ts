@@ -125,9 +125,26 @@ const createWindow = () => {
           },
           {type: 'separator'},
           {
-            label: 'Save Project File As...',
+            label: 'Save Project File',
             enabled: !!contentStatus.mediaFilePath,
             accelerator: 'CmdOrCtrl+S',
+            click: async () => {
+              if (contentStatus.projectFilePath) {
+                mainWindow.webContents.send('save_project', contentStatus.projectFilePath)
+                return
+              }
+              const dest = await showProjectSaveDialog(
+                contentStatus.projectFilePath || contentStatus.mediaFilePath,
+              )
+              if (dest) {
+                mainWindow.webContents.send('save_project', dest)
+              }
+            },
+          },
+          {
+            label: 'Save Project File As...',
+            enabled: !!contentStatus.mediaFilePath,
+            accelerator: 'CmdOrCtrl+Shift+S',
             click: async () => {
               const dest = await showProjectSaveDialog(
                 contentStatus.projectFilePath || contentStatus.mediaFilePath,

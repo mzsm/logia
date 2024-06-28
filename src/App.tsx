@@ -1,13 +1,14 @@
 import { DragEvent, useEffect, useRef, useState } from 'react'
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useDisclosure } from '@mantine/hooks'
-import { ActionIcon, Divider, Group, Loader, Modal, noop, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
+import { ActionIcon, Divider, Group, Loader, Menu, Modal, noop, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
 import TimeStampInput from './components/timeStampInput'
 import {
   IconAbc,
   IconArrowBigRightLines,
   IconBadgeCc,
   IconBan,
+  IconChevronDown,
   IconClockPlay,
   IconDeviceFloppy,
   IconFileMusic,
@@ -201,10 +202,9 @@ function App() {
     setMediaFilePath(null)
     setProjectFilePath(null)
     videoTag.current.src = null
-
   }
 
-  const openMedia = async (filePath: string) => {
+  const openMedia = async (filePath: string, force = false) => {
     const _mediaInfo = await window.electronAPI.getMediaInfo(filePath)
     if (!_mediaInfo) {
       alert('この形式のファイルには対応していません')
@@ -212,7 +212,7 @@ function App() {
     }
 
     // 初期化
-    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
+    if (!force && mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
       return
     }
     _cleanup()
@@ -236,9 +236,9 @@ function App() {
 
     openLoader()
     _cleanup()
-    setProjectFilePath(filePath)
 
-    await openMedia(_projectData.media)
+    await openMedia(_projectData.media, true)
+    setProjectFilePath(filePath)
     closeLoader()
     setTimelineData(_projectData.timelineData)
   }
@@ -310,13 +310,24 @@ function App() {
     })
   }
 
-  const onClickProjectSave = () => {
-    const defaultPath = projectFilePath || mediaFilePath
-    window.electronAPI.saveProjectFile(defaultPath).then((dest) => {
+  const projectSaveAsName = () => {
+    window.electronAPI.saveProjectFile().then((dest) => {
       if (dest) {
+        setProjectFilePath(dest)
         saveProjectFile(dest, mediaFilePath, timelineData)
       }
     })
+  }
+
+  const projectOverwrite = () => {
+    saveProjectFile(projectFilePath, mediaFilePath, timelineData)
+  }
+  const onClickProjectSave = () => {
+    if (projectFilePath) {
+      projectOverwrite()
+    } else {
+      projectSaveAsName()
+    }
   }
 
   const onClickStartTranscription = (id: string, promise: Promise<unknown>, name: string) => {
@@ -509,17 +520,40 @@ function App() {
             </ActionIcon>
           </Group>
           <Divider orientation="vertical"/>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="lg"
-            radius="sm"
-            disabled={!mediaFilePath}
-            onClick={onClickProjectSave}
-            title="プロジェクトファイルを保存する"
-          >
-            <IconDeviceFloppy size={24} stroke={1.5}/>
-          </ActionIcon>
+          <ActionIcon.Group style={{alignItems: 'center'}}>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size="lg"
+              radius="sm"
+              disabled={!mediaFilePath}
+              onClick={onClickProjectSave}
+              title="プロジェクトファイルを保存する"
+            >
+              <IconDeviceFloppy size={24} stroke={1.5}/>
+            </ActionIcon>
+            <Menu
+              position="bottom-end"
+              disabled={!mediaFilePath || !projectFilePath}
+              offset={0}
+            >
+              <Menu.Target>
+                <ActionIcon
+                  style={{height: '34px'}}
+                  variant="subtle"
+                  color="gray"
+                  size="xs"
+                  radius="sm"
+                  disabled={!mediaFilePath || !projectFilePath}
+                >
+                  <IconChevronDown size={16} stroke={1}/>
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item onClick={projectSaveAsName}>プロジェクトファイルを別名で保存...</Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </ActionIcon.Group>
         </Group>
         <ActionIcon
           size="lg"
