@@ -1,7 +1,21 @@
 import { DragEvent, useEffect, useRef, useState } from 'react'
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useDisclosure } from '@mantine/hooks'
-import { ActionIcon, Divider, Group, Loader, Menu, Modal, noop, SegmentedControl, Slider, Stack, Text } from '@mantine/core'
+import {
+  ActionIcon,
+  Button,
+  Divider,
+  Group,
+  Loader,
+  Menu,
+  Modal,
+  noop,
+  SegmentedControl,
+  Slider,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core'
 import TimeStampInput from './components/timeStampInput'
 import {
   IconAbc,
@@ -23,7 +37,10 @@ import {
   IconPlus,
   IconRewindBackward5,
   IconRewindForward10,
-  IconRobot, IconVolume, IconVolume2, IconVolume3,
+  IconRobot,
+  IconVolume,
+  IconVolume2,
+  IconVolume3,
   IconX,
   IconZoomIn,
   IconZoomOut,
@@ -102,7 +119,7 @@ function App() {
   useEffect(() => {
     window.electronAPI.contentStatus({
       mediaFilePath,
-      projectFilePath
+      projectFilePath,
     })
   }, [mediaFilePath, projectFilePath])
 
@@ -743,7 +760,7 @@ function App() {
                   <Divider orientation="vertical"/>
                   <Group gap="xs" wrap="nowrap">
                     <ActionIcon
-                      variant={muted? 'outline' : 'subtle'}
+                      variant={muted ? 'outline' : 'subtle'}
                       disabled={!mediaFilePath}
                       size="sm"
                       radius="sm"
@@ -1066,6 +1083,41 @@ function App() {
           <Loader size="sm"/>
           <Text size="sm">プロジェクトファイルを開いています しばらくお待ちください…</Text>
         </Group>
+      </Modal>
+      <Modal
+        opened={!mediaFilePath}
+        onClose={noop}
+        closeOnClickOutside={false}
+        withCloseButton={false}
+        closeOnEscape={false}
+        size="xl"
+        overlayProps={{blur: 1}}
+      >
+        <Stack>
+          <Title order={1}>Welcome to Logia</Title>
+          <Divider/>
+          <Group>
+            <Button
+              variant="subtle"
+              leftSection={<IconFileMusic size={24} stroke={1.5}/>}
+              rightSection={' (⌘+O)'}
+              onClick={onClickMediaOpen}
+            >
+              メディアファイルを開く
+            </Button>
+          </Group>
+          <Group>
+            <Button
+              variant="subtle"
+              leftSection={<IconFolderOpen size={24} stroke={1.5}/>}
+              rightSection={'(⌘+P)'}
+              onClick={onClickProjectOpen}
+            >
+              プロジェクトファイルを開く
+            </Button>
+          </Group>
+          <Text size="sm">またはウィンドウにメディア/プロジェクトファイルをドロップ</Text>
+        </Stack>
       </Modal>
     </div>
   )
