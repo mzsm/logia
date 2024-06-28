@@ -1,5 +1,7 @@
 # Logia
 
+![GitHub License](https://img.shields.io/github/license/mzsm/logia?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/mzsm/logia?style=flat-square)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 Transcription and subtitling support app for video creators.  
@@ -9,14 +11,14 @@ Transcription and subtitling support app for video creators.
 
 Transcribes video / audio files automatically with speech recognition.  
 It supports about 100 languages, such as English, Japanese, Chinese, French, Korean, etc...  
-If the result was wrong, you can correct it manually.  
+You can correct it manually if the result was wrong,   
 It supports to output subtitle files for YouTube and HTML5 videos, and you can add high-quality subtitles to your videos easily.  
 Also available to output CSV and plain text, you can use for a wide range of use cases, not only video creation.
 
 音声認識により自動で動画・音声ファイルの文字起こしを行います  
 英語や日本語、中国語、フランス語、韓国語など、約100の言語に対応しています  
 自動文字起こしの結果が間違っていた場合は、手動で内容を修正できます  
-YouTubeやHTML5ビデオ用字幕ファイルの出力に対応しており、あなたの動画に手軽に高品質な字幕を付与できます  
+YouTubeやHTML5ビデオ用字幕ファイルの出力に対応しており、動画に高品質な字幕を手軽に付与できます  
 また、CSVやプレーンテキストでの出力も可能なので、動画制作だけでなく幅広い用途で利用可能です
 
 ## System Requirements / 動作環境
