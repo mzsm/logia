@@ -1,11 +1,11 @@
 import { FfmpegMediaInfo } from './features/file'
 import { OUTPUT_FORMAT_TYPES } from './const'
-import { TranscriptionParams, ProjectFileFormat } from './declare'
+import { ContentStatus, ProjectFileFormat, TranscriptionParams } from './declare'
 
 export interface IElectronAPI {
   // Main <= Renderer
   contentReady: () => void,
-  fileOpened: (status: boolean) => void,
+  contentStatus: (status: ContentStatus) => void,
   getConfig: (key: string) => Promise<unknown>,
   setConfig: (args: { [key: string]: unknown }) => void,
   isAppleSilicon: () => Promise<boolean>,

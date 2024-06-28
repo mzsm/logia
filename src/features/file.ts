@@ -1,3 +1,4 @@
+import path from 'path'
 import { dialog } from 'electron'
 import { OUTPUT_FORMAT_DICT, OUTPUT_FORMAT_TYPES } from '../const'
 import { ProjectFileFormat } from '../declare'
@@ -31,9 +32,14 @@ export interface FfmpegMediaInfo {
   format_text: string
 }
 
-const _showSaveDialog = async (title: string, filters: Electron.FileFilter[]) => {
+const _excludeExt = (filepath: string | null) => {
+  return filepath ? filepath.replace(new RegExp('\\' + path.extname(filepath) + '$'), '')  : null
+}
+
+const _showSaveDialog = async (title: string, filters: Electron.FileFilter[], defaultPath?: string | null) => {
   const result = await dialog.showSaveDialog({
     title,
+    defaultPath: _excludeExt(defaultPath),
     properties: ['createDirectory', 'showOverwriteConfirmation'],
     filters: [
       ...filters,
@@ -68,18 +74,20 @@ export const showProjectOpenDialog = async () => {
   return opened.filePaths[0]
 }
 
-export const showProjectSaveDialog = async () => {
+export const showProjectSaveDialog = async (defaultPath?: string | null) => {
   return await _showSaveDialog(
     'プロジェクトファイル保存',
     [{name: 'Logia Project File', extensions: ['logia']}],
+    defaultPath
   )
 }
 
-export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES) => {
+export const showCCSaveDialog = async (format: OUTPUT_FORMAT_TYPES, defaultPath?: string | null) => {
   const {name, extensions} = OUTPUT_FORMAT_DICT[format]
   return await _showSaveDialog(
     '字幕ファイル出力',
     [{name, extensions}],
+    defaultPath
   )
 }
 

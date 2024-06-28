@@ -3,24 +3,38 @@
 
 import { contextBridge, ipcRenderer } from 'electron'
 import { OUTPUT_FORMAT_TYPES } from './const'
-import { TranscriptionParams } from './declare'
+import { ContentStatus, TranscriptionParams } from './declare'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Main <= Renderer
-  contentReady: () => ipcRenderer.invoke('contentReady'),
-  fileOpened: (status: boolean) => ipcRenderer.invoke('content:fileOpened', status),
-  getConfig: (key: string) => ipcRenderer.invoke('getConfig', key),
-  setConfig: (args: { [key: string]: unknown }) => ipcRenderer.invoke('setConfig', args),
-  isAppleSilicon: () => ipcRenderer.invoke('isAppleSilicon'),
-  openMediaFile: () => ipcRenderer.invoke('open:mediaFile'),
-  openProjectFile: () => ipcRenderer.invoke('open:projectFile'),
-  saveProjectFile: () => ipcRenderer.invoke('save:projectFile'),
-  exportCC: (args: { format: OUTPUT_FORMAT_TYPES }) => ipcRenderer.invoke('save:ccFile', args),
-  saveFile: (args: { path: string, content: string, encoding: string | null }) => ipcRenderer.invoke('save', args),
-  loadProjectFile: (filePath: string) => ipcRenderer.invoke('load:projectFile', filePath),
-  getMediaInfo: (filePath: string) => ipcRenderer.invoke('getMediaInfo', filePath),
-  startTranscription: (args: TranscriptionParams) => ipcRenderer.invoke('startTranscription', args),
-  abortTranscription: (id: string) => ipcRenderer.invoke('abortTranscription', id),
+  contentReady: () =>
+    ipcRenderer.invoke('contentReady'),
+  contentStatus: (status: ContentStatus) =>
+    ipcRenderer.invoke('contentStatus', status),
+  getConfig: (key: string) =>
+    ipcRenderer.invoke('getConfig', key),
+  setConfig: (args: { [key: string]: unknown }) =>
+    ipcRenderer.invoke('setConfig', args),
+  isAppleSilicon: () =>
+    ipcRenderer.invoke('isAppleSilicon'),
+  openMediaFile: () =>
+    ipcRenderer.invoke('open:mediaFile'),
+  openProjectFile: () =>
+    ipcRenderer.invoke('open:projectFile'),
+  saveProjectFile: () =>
+    ipcRenderer.invoke('save:projectFile'),
+  exportCC: (args: { format: OUTPUT_FORMAT_TYPES }) =>
+    ipcRenderer.invoke('save:ccFile', args),
+  saveFile: (args: { path: string, content: string, encoding: string | null }) =>
+    ipcRenderer.invoke('save', args),
+  loadProjectFile: (filePath: string) =>
+    ipcRenderer.invoke('load:projectFile', filePath),
+  getMediaInfo: (filePath: string) =>
+    ipcRenderer.invoke('getMediaInfo', filePath),
+  startTranscription: (args: TranscriptionParams) =>
+    ipcRenderer.invoke('startTranscription', args),
+  abortTranscription: (id: string) =>
+    ipcRenderer.invoke('abortTranscription', id),
 
   // Main => Renderer
   onOpenMedia: (callback: (filePath: string) => unknown) =>

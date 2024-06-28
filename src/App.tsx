@@ -48,6 +48,7 @@ function App() {
   const videoTag = useRef<HTMLVideoElement>(null)
   const timelineHeader = useRef<HTMLDivElement>(null)
   const timelineState = useRef<TimelineState>(null)
+  const [projectFilePath, setProjectFilePath] = useState<string>(null)
   const [mediaFilePath, setMediaFilePath] = useState<string>(null)
   const [mediaInfo, setMediaInfo] = useState<FfmpegMediaInfo>(null)
   const [audioOnly, setAudioOnly] = useState<boolean>(false)
@@ -98,8 +99,11 @@ function App() {
   const sideTop = useRef(null)
 
   useEffect(() => {
-    window.electronAPI.fileOpened(!!mediaFilePath)
-  }, [mediaFilePath])
+    window.electronAPI.contentStatus({
+      mediaFilePath,
+      projectFilePath
+    })
+  }, [mediaFilePath, projectFilePath])
 
   useEffect(() => {
     const _d = Math.max(1, duration / 2)
@@ -184,12 +188,7 @@ function App() {
     e.preventDefault()
   }
 
-  const openMedia = async (filePath: string) => {
-    // 初期化
-    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
-      return
-    }
-
+  const _cleanup = () => {
     pauseMedia()
     setIsPaused(true)
     setTime(0)
@@ -199,13 +198,24 @@ function App() {
     setTimelineData([])
     setActiveTextId(null)
     setSelectedRowId(null)
+    setMediaFilePath(null)
+    setProjectFilePath(null)
     videoTag.current.src = null
 
+  }
+
+  const openMedia = async (filePath: string) => {
     const _mediaInfo = await window.electronAPI.getMediaInfo(filePath)
     if (!_mediaInfo) {
       alert('この形式のファイルには対応していません')
       return
     }
+
+    // 初期化
+    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
+      return
+    }
+    _cleanup()
 
     setMediaInfo(_mediaInfo)
     setDuration(_mediaInfo.duration / 1000)
@@ -214,21 +224,22 @@ function App() {
   }
 
   const openProject = async (filePath: string) => {
-    // 初期化
-    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
-      return
-    }
-    openLoader()
-    setMediaFilePath(null)
     const _projectData = await window.electronAPI.loadProjectFile(filePath)
     if (!_projectData) {
       alert('プロジェクトファイルを開けませんでした')
       return
     }
+    // 初期化
+    if (mediaFilePath && !confirm('現在編集中のファイルを閉じてもよろしいですか?')) {
+      return
+    }
 
-    openMedia(_projectData.media).then(() => {
-      closeLoader()
-    })
+    openLoader()
+    _cleanup()
+    setProjectFilePath(filePath)
+
+    await openMedia(_projectData.media)
+    closeLoader()
     setTimelineData(_projectData.timelineData)
   }
 
@@ -300,7 +311,8 @@ function App() {
   }
 
   const onClickProjectSave = () => {
-    window.electronAPI.saveProjectFile().then((dest) => {
+    const defaultPath = projectFilePath || mediaFilePath
+    window.electronAPI.saveProjectFile(defaultPath).then((dest) => {
       if (dest) {
         saveProjectFile(dest, mediaFilePath, timelineData)
       }

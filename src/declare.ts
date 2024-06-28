@@ -27,3 +27,8 @@ export interface ProjectFileFormat {
   media: string,
   timelineData: TranscriptionRow[]
 }
+
+export interface ContentStatus {
+  mediaFilePath?: string | null
+  projectFilePath?: string | null
+}

@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, shell } from 'electron'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 import path from 'path'
 import {
@@ -12,7 +12,7 @@ import {
 import { getMediaInfo } from './features/ffmpeg'
 import { abortTranscription, startTranscription } from './features/transcript'
 import store from './store'
-import { TranscriptionParams } from './declare'
+import { ContentStatus, TranscriptionParams } from './declare'
 import log from 'electron-log/main'
 import os from 'os'
 
@@ -23,7 +23,10 @@ if (require('electron-squirrel-startup')) {
 
 let mainWindow: BrowserWindow = undefined
 let fileTemp: string = undefined
-let opened: boolean = false
+let contentStatus: ContentStatus = {
+  mediaFilePath: null,
+  projectFilePath: null,
+}
 
 app.on('open-file', async (e, filePath) => {
   e.preventDefault()
@@ -45,7 +48,10 @@ const createWindow = () => {
   os.cpus().forEach((_cpu, index) => {
     log.debug(`  [${index}] ${_cpu.model}`)
   })
-  app.getGPUInfo('complete').then((gpuInfo: {auxAttributes: {glRenderer: string}; gpuDevice: {vendorId: number, deviceId: number, driverVersion: string, driverVendor?: string}[]}) => {
+  app.getGPUInfo('complete').then((gpuInfo: {
+    auxAttributes: { glRenderer: string };
+    gpuDevice: { vendorId: number, deviceId: number, driverVersion: string, driverVendor?: string }[]
+  }) => {
     log.debug(`GPUinfo: ${gpuInfo.auxAttributes.glRenderer}`)
     gpuInfo.gpuDevice.forEach((_gpu, index) => {
       log.debug(`  [${index}] Vendor:${_gpu.vendorId}(${_gpu.driverVendor}) Device:${_gpu.deviceId} Ver.:${_gpu.driverVersion}`)
@@ -119,11 +125,13 @@ const createWindow = () => {
           },
           {type: 'separator'},
           {
-            label: 'Save Project File...',
-            enabled: opened,
+            label: 'Save Project File As...',
+            enabled: !!contentStatus.mediaFilePath,
             accelerator: 'CmdOrCtrl+S',
             click: async () => {
-              const dest = await showProjectSaveDialog()
+              const dest = await showProjectSaveDialog(
+                contentStatus.projectFilePath || contentStatus.mediaFilePath,
+              )
               if (dest) {
                 mainWindow.webContents.send('save_project', dest)
               }
@@ -160,7 +168,7 @@ const createWindow = () => {
         submenu: [
           {
             label: 'AI Auto Transcribe',
-            enabled: opened,
+            enabled: !!contentStatus.mediaFilePath,
             accelerator: 'CmdOrCtrl+T',
             click: () => {
               mainWindow.webContents.send('show_transcription_dialog')
@@ -176,31 +184,31 @@ const createWindow = () => {
             click: () => shell.openPath(path.join(app.getPath('appData'), app.getName())),
           },
           ...(isMac
-            ? [
-              {
-                label: 'Open Library directory',
-                click: () => shell.openPath(path.join(app.getPath('home'), 'Library', 'Application Support', app.getName().toLowerCase())),
-              },
-              {
-                label: 'Open Logs directory',
-                click: () => shell.openPath(path.join(app.getPath('home'), 'Library', 'Logs', app.getName())),
-              },
-            ] as MenuItemConstructorOptions[]
-            : []
+              ? [
+                {
+                  label: 'Open Library directory',
+                  click: () => shell.openPath(path.join(app.getPath('home'), 'Library', 'Application Support', app.getName().toLowerCase())),
+                },
+                {
+                  label: 'Open Logs directory',
+                  click: () => shell.openPath(path.join(app.getPath('home'), 'Library', 'Logs', app.getName())),
+                },
+              ] as MenuItemConstructorOptions[]
+              : []
           ),
           ...(!app.isPackaged
-            ? [
-              {type: 'separator'},
-              {
-                label: 'Open Dev Tools',
-                accelerator: 'F12',
-                click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
-              },
-            ] as MenuItemConstructorOptions[]
-            : []
+              ? [
+                {type: 'separator'},
+                {
+                  label: 'Open Dev Tools',
+                  accelerator: 'F12',
+                  click: () => mainWindow.webContents.openDevTools({mode: 'undocked'}),
+                },
+              ] as MenuItemConstructorOptions[]
+              : []
           ),
         ],
-      }
+      },
     ]
     if (isMac) {
       templateMenu.unshift({
@@ -220,12 +228,11 @@ const createWindow = () => {
     }
     const menu = Menu.buildFromTemplate(templateMenu)
     Menu.setApplicationMenu(menu)
-    console.log(path.join(app.getPath('home'), 'Library', 'Application Support', app.getName()))
   }
   buildMenu()
 
-  ipcMain.handle('content:fileOpened', (_, status: boolean) => {
-    opened = status
+  ipcMain.handle('contentStatus', (_, status: ContentStatus) => {
+    contentStatus = Object.assign(contentStatus, status)
     buildMenu()
   })
 
@@ -304,11 +311,11 @@ ipcMain.handle('load:projectFile', async (_, path) => {
 })
 
 ipcMain.handle('save:projectFile', async () => {
-  return await showProjectSaveDialog()
+  return await showProjectSaveDialog(contentStatus.projectFilePath || contentStatus.mediaFilePath)
 })
 
 ipcMain.handle('save:ccFile', async (_, {format}) => {
-  return await showCCSaveDialog(format)
+  return await showCCSaveDialog(format, contentStatus.projectFilePath || contentStatus.mediaFilePath)
 })
 
 ipcMain.handle('save', async (_, {path, content, encoding}) => {

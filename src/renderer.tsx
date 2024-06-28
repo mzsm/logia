@@ -38,7 +38,6 @@ import 'mantine-react-table/styles.css'
 import './index.css'
 import { NavigationProgress } from '@mantine/nprogress'
 
-
 const root = createRoot(document.getElementById('app'))
 root.render(
   <MantineProvider defaultColorScheme="dark">
