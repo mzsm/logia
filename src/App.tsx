@@ -3,7 +3,6 @@ import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from
 import { useDisclosure } from '@mantine/hooks'
 import {
   ActionIcon,
-  Button,
   Divider,
   Group,
   Loader,
@@ -14,7 +13,6 @@ import {
   Slider,
   Stack,
   Text,
-  Title,
 } from '@mantine/core'
 import TimeStampInput from './components/timeStampInput'
 import {
@@ -57,6 +55,7 @@ import './App.css'
 import MediaInfo from './components/mediaInfo'
 import OutputModal from './components/outputModal'
 import { saveProjectFile } from './features/output'
+import WelcomePage from './components/welcomePage'
 
 const START_LEFT = 30
 const SCALE_WIDTH = 160
@@ -1084,41 +1083,7 @@ function App() {
           <Text size="sm">プロジェクトファイルを開いています しばらくお待ちください…</Text>
         </Group>
       </Modal>
-      <Modal
-        opened={!mediaFilePath}
-        onClose={noop}
-        closeOnClickOutside={false}
-        withCloseButton={false}
-        closeOnEscape={false}
-        size="xl"
-        overlayProps={{blur: 1}}
-      >
-        <Stack>
-          <Title order={1}>Welcome to Logia</Title>
-          <Divider/>
-          <Group>
-            <Button
-              variant="subtle"
-              leftSection={<IconFileMusic size={24} stroke={1.5}/>}
-              rightSection={' (⌘+O)'}
-              onClick={onClickMediaOpen}
-            >
-              メディアファイルを開く
-            </Button>
-          </Group>
-          <Group>
-            <Button
-              variant="subtle"
-              leftSection={<IconFolderOpen size={24} stroke={1.5}/>}
-              rightSection={'(⌘+P)'}
-              onClick={onClickProjectOpen}
-            >
-              プロジェクトファイルを開く
-            </Button>
-          </Group>
-          <Text size="sm">またはウィンドウにメディア/プロジェクトファイルをドロップ</Text>
-        </Stack>
-      </Modal>
+      <WelcomePage opened={!mediaFilePath} onClickMediaOpen={onClickMediaOpen} onClickProjectOpen={onClickProjectOpen}/>
     </div>
   )
 }
