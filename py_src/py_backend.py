@@ -23,6 +23,7 @@ if __name__ == '__main__':
                                    choices=('default', 'auto', 'int8', 'int8_float32', 'int8_float16', 'int8_bfloat16',
                                             'int16', 'float16', 'float32', 'bfloat16'))
     transcribe_parser.add_argument('--language', '-l', type=str)
+    transcribe_parser.add_argument('--initial-prompt', '-p', type=str)
     transcribe_parser.add_argument('--start', '-s', type=float, help='Start time in seconds')
     transcribe_parser.add_argument('--end', '-e', type=float, help='End time in seconds')
     transcribe_parser.add_argument('--id', '-i', type=str)
@@ -65,6 +66,7 @@ if __name__ == '__main__':
                                                  language=args.language,
                                                  clip_timestamps=clip_timestamps or '0',
                                                  condition_on_previous_text=False,
+                                                 initial_prompt=args.initial_prompt,
                                                  )
         else:
             from backends import general
@@ -79,6 +81,8 @@ if __name__ == '__main__':
                                            compute_type=args.compute_type,
                                            language=args.language,
                                            clip_timestamps=clip_timestamps or '0',
+                                           condition_on_previous_text=False,
+                                           initial_prompt=args.initial_prompt,
                                            )
 
         for data in generator:

@@ -215,7 +215,6 @@ function App() {
     setTimelineData([])
     setActiveTextId(null)
     setSelectedRowId(null)
-    setMediaFilePath(null)
     setProjectFilePath(null)
     videoTag.current.src = null
   }

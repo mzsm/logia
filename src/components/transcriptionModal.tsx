@@ -11,6 +11,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Textarea,
 } from '@mantine/core'
 import { LANGUAGES } from '../const'
 import { TranscriptionParams } from '../declare'
@@ -69,6 +70,7 @@ function TranscriptionModal({
   const [language, setLanguage] = useState<string>(navigator.language.split('-')[0])
   const [model, setModel] = useState<string>('medium')
   const [computeType, setComputeType] = useState<string>('auto')
+  const [initialPrompt, setInitialPrompt] = useState<string>('')
 
   const onChangeRangeSlider = (value: [number, number]) => {
     setTimeRange((prevValue) => {
@@ -106,6 +108,7 @@ function TranscriptionModal({
       language,
       model,
       id,
+      initialPrompt
     }
     if (timeRange[0]) {
       args.start = timeRange[0]
@@ -218,14 +221,25 @@ function TranscriptionModal({
               自動文字起こしを開始
             </Button>
           </Group>
+          <Divider/>
+          <Group>
+            <Text fw="bold" size="sm">高度な設定</Text>
+          </Group>
+          <Group wrap="nowrap" align="flex-end">
+            <Textarea
+              label="出力イメージ・用語辞書"
+              description="句読点の有無、大文字小文字、漢字の字形など、出力結果のイメージを指定します。また、固有名詞や専門用語、特定の漢字をひらくかどうかなど、音声認識の結果をある程度誘導することもできます"
+              id="initialprompt"
+              value={initialPrompt}
+              onInput={(v) => setInitialPrompt(v.currentTarget.value)}
+              size="sm"
+              radius="sm"
+            />
+          </Group>
           {
             isAppleSilicon ?
               <></> :
               <>
-                <Divider/>
-                <Group>
-                  <Text fw="bold" size="sm">高度な設定</Text>
-                </Group>
                 <Group wrap="nowrap" align="flex-end">
                   <Select
                     label="量子化タイプ"

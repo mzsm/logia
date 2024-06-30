@@ -21,6 +21,7 @@ export interface TranscriptionParams {
   start?: number
   end?: number
   computeType?: string
+  initialPrompt?: string
 }
 
 export interface ProjectFileFormat {

@@ -244,13 +244,13 @@ def transcribe(
     time_precision = (
         input_stride * HOP_LENGTH / SAMPLE_RATE
     )  # time per output token: 0.02 (seconds)
-    all_tokens = []
-    all_segments = []
-    prompt_reset_since = 0
+    # all_tokens = []
+    # all_segments = []
+    # prompt_reset_since = 0
 
     if initial_prompt is not None:
         initial_prompt_tokens = tokenizer.encode(" " + initial_prompt.strip())
-        all_tokens.extend(initial_prompt_tokens)
+        # all_tokens.extend(initial_prompt_tokens)
     else:
         initial_prompt_tokens = []
 
@@ -287,7 +287,8 @@ def transcribe(
                 segment_duration = segment_size * HOP_LENGTH / SAMPLE_RATE
                 mel_segment = pad_or_trim(mel_segment, N_FRAMES, axis=-2).astype(dtype)
 
-                decode_options["prompt"] = all_tokens[prompt_reset_since:]
+                # decode_options["prompt"] = all_tokens[prompt_reset_since:]
+                decode_options["prompt"] = initial_prompt_tokens
                 result: DecodingResult = decode_with_fallback(mel_segment)
                 tokens = np.array(result.tokens)
 
@@ -522,13 +523,13 @@ def transcribe(
                         ]
                     }
 
-                all_tokens.extend(
-                    [token for segment in current_segments for token in segment["tokens"]]
-                )
-
-                if not condition_on_previous_text or result.temperature > 0.5:
-                    # do not feed the prompt tokens if a high temperature was used
-                    prompt_reset_since = len(all_tokens)
+                # all_tokens.extend(
+                #     [token for segment in current_segments for token in segment["tokens"]]
+                # )
+                #
+                # if not condition_on_previous_text or result.temperature > 0.5:
+                #     # do not feed the prompt tokens if a high temperature was used
+                #     prompt_reset_since = len(all_tokens)
 
                 # update progress bar
                 pbar.update(min(content_frames, seek) - previous_seek)

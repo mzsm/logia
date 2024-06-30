@@ -1,16 +1,32 @@
+import os
 import os.path
+from typing import List, Iterable
 
-from faster_whisper import WhisperModel
+from faster_whisper import WhisperModel as Original
+from faster_whisper.transcribe import Segment
 
 
-def transcribe(media_file, model_path='medium', device='auto', compute_type='default', language=None,
-               clip_timestamps=None):
+class WhisperModel(Original):
+    initial_prompt_tokens = None
+
+    def generate_segments(self, features, tokenizer, options, encoder_output=None) -> Iterable[Segment]:
+        initial_prompt = " " + options.initial_prompt.strip()
+        self.initial_prompt_tokens = tokenizer.encode(initial_prompt)
+        return super().generate_segments(features, tokenizer, options, encoder_output)
+
+    def get_prompt(self, tokenizer, previous_tokens, without_timestamps=False, prefix=None, hotwords=None) -> List[int]:
+        return super().get_prompt(tokenizer, self.initial_prompt_tokens, without_timestamps, prefix, hotwords)
+
+
+def transcribe(media_file, model_path='medium', device='auto', compute_type='default', **kwargs):
     model = WhisperModel(model_path, device=device, compute_type=compute_type)
 
-    segments, info = model.transcribe(os.path.abspath(media_file),
-                                      beam_size=5, word_timestamps=True, language=language,
-                                      condition_on_previous_text=False,
-                                      clip_timestamps=clip_timestamps)
+    segments, info = model.transcribe(
+        os.path.abspath(media_file),
+        beam_size=5,
+        word_timestamps=True,
+        **kwargs
+    )
     yield {
         'type': 0,
         'language': info.language,

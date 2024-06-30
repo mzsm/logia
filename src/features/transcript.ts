@@ -14,6 +14,7 @@ export const startTranscription = async (mainWindow: BrowserWindow, {
   language = 'en',
   model,
   computeType,
+  initialPrompt,
   start,
   end,
 }: TranscriptionParams) => {
@@ -44,7 +45,7 @@ export const startTranscription = async (mainWindow: BrowserWindow, {
     )
     leftover = ''
   }
-  return await transcribe(id, filePath, language, model, computeType, start, end, onProgress)
+  return await transcribe(id, filePath, language, model, computeType, initialPrompt, start, end, onProgress)
 }
 
 export const abortTranscription = (id :string) => {
@@ -55,7 +56,7 @@ export const abortTranscription = (id :string) => {
 }
 
 export const transcribe = async (
-  id: string, wavPath: string, lang?: string, model = 'medium', computeType = 'auto', start?: number, end?: number, onProgress?: (data: string) => unknown,
+  id: string, wavPath: string, lang?: string, model = 'medium', computeType = 'auto', initialPrompt= '', start?: number, end?: number, onProgress?: (data: string) => unknown,
 ): Promise<void> => {
   return new Promise((resolve) => {
     const args = [
@@ -66,6 +67,9 @@ export const transcribe = async (
     ]
     if (!app.isPackaged) {
       args.unshift(path.join(app.getAppPath(), 'py_src', 'py_backend.py'))
+    }
+    if (initialPrompt) {
+      args.push('-p', initialPrompt)
     }
     if (start !== undefined) {
       args.push('-s', start.toString())
