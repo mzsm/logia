@@ -64,6 +64,7 @@
 [data-panel-group-direction='vertical'] > .resize-handle {
   height: 2px;
 }
+
 [data-panel-group-direction='horizontal'] > .resize-handle {
   width: 2px;
 }
@@ -71,6 +72,7 @@
 [data-mantine-color-scheme='light'] .resize-handle {
   background-color: #424242;
 }
+
 [data-mantine-color-scheme='dark'] .resize-handle {
   background-color: #424242;
 }
@@ -132,6 +134,7 @@
 .transcript-list tr .player-actions {
   visibility: hidden;
 }
+
 .transcript-list tr:hover .player-actions {
   visibility: visible;
 }
@@ -145,9 +148,11 @@ input[type=time] {
   width: 6rem;
   text-align: right;
 }
+
 input[type=time][data-variant=unstyled] {
   width: 5rem;
 }
+
 .withIcon input[type=time] {
   width: 7rem;
 }
@@ -157,11 +162,14 @@ input[type=time][data-variant=unstyled] {
   height: 100%;
   max-height: 100%;
   overflow: hidden;
+  position: relative;
 }
+
 .timeline-header {
   height: 100%;
   max-height: 100%;
-  width: 20rem;
+  width: 15rem;
+  flex-shrink: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -170,11 +178,13 @@ input[type=time][data-variant=unstyled] {
 .timeline-header .mantine-SegmentedControl-label {
   height: 2rem;
 }
+
 .timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar,
 .mrt-table-container::-webkit-scrollbar {
   width: 0.75rem;
   height: 0.75rem;
 }
+
 .timeline-header .mantine-SegmentedControl-root::-webkit-scrollbar-corner,
 .mrt-table-container::-webkit-scrollbar-corner {
   display: none;
@@ -220,6 +230,7 @@ input[type=time][data-variant=unstyled] {
 .show-on-hover {
   display: none;
 }
+
 .show-on-hover-parent:hover .show-on-hover {
   display: block;
 }
@@ -227,6 +238,7 @@ input[type=time][data-variant=unstyled] {
 .visible-on-hover {
   visibility: hidden;
 }
+
 .visible-on-hover-parent:hover .visible-on-hover {
   visibility: visible;
 }

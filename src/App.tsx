@@ -787,24 +787,6 @@ function App() {
                       label={null}
                     />
                   </Group>
-                  <Divider orientation="vertical"/>
-                  <Group gap="xs" wrap="nowrap">
-                    <ActionIcon.Group>
-                      <ActionIcon
-                        variant="filled"
-                        disabled={!mediaFilePath}
-                        size="lg"
-                        radius="sm"
-                        onClick={() => {
-                          engine.pause()
-                          openTranscriptionDialog()
-                        }}
-                        title="自動文字起こし"
-                      >
-                        <IconFileTextAi size={24} stroke={1.5}/>
-                      </ActionIcon>
-                    </ActionIcon.Group>
-                  </Group>
                 </Group>
               </Stack>
             </Panel>
@@ -812,25 +794,174 @@ function App() {
             <Panel order={2} defaultSize={30}>
               {
                 mediaFilePath ?
-                  <div className="timeline-panel">
-                    <div
-                      className="timeline-header"
-                    >
-                      <Group
-                        gap="xs"
-                        wrap="nowrap"
-                        justify="center"
-                        style={{height: '2.5625rem', flexShrink: 0}}
+                  <Stack style={{height: '100%'}} gap={0} justify="space-between">
+                    <div className="timeline-panel">
+                      <div
+                        className="timeline-header"
                       >
-                        <ActionIcon
-                          variant="default"
-                          size="md"
-                          radius="sm"
-                          color="gray"
-                          onClick={addEmptyTimeline}
+                        <Group
+                          pl="xs"
+                          pr="xs"
+                          gap="xs"
+                          wrap="nowrap"
+                          justify="space-between"
+                          style={{height: '2.5625rem', flexShrink: 0}}
                         >
-                          <IconPlus size={16} stroke={1.5}/>
-                        </ActionIcon>
+                          <ActionIcon
+                            variant="default"
+                            size="md"
+                            radius="sm"
+                            color="gray"
+                            onClick={addEmptyTimeline}
+                          >
+                            <IconPlus size={16} stroke={1.5}/>
+                          </ActionIcon>
+                          <Group>
+                            <ActionIcon
+                              variant="filled"
+                              disabled={!mediaFilePath}
+                              size="lg"
+                              radius="sm"
+                              onClick={() => {
+                                engine.pause()
+                                openTranscriptionDialog()
+                              }}
+                              title="自動文字起こし"
+                            >
+                              <IconFileTextAi size={24} stroke={1.5}/>
+                            </ActionIcon>
+                          </Group>
+                        </Group>
+                        <Divider/>
+                        <SegmentedControl
+                          orientation="vertical"
+                          fullWidth
+                          value={selectedRowId}
+                          onChange={setSelectedRowId}
+                          transitionDuration={0}
+                          color="blue"
+                          styles={{
+                            root: {
+                              paddingTop: 0,
+                              paddingBottom: 0,
+                              overflow: 'scroll',
+                            },
+                          }}
+                          data={
+                            timelineData.map((item: TranscriptionRow) => {
+                              return {
+                                value: item.id,
+                                label: (
+                                  <Group justify="space-between" gap={0} align="center" wrap="nowrap"
+                                         className="visible-on-hover-parent">
+                                    <div
+                                      style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
+                                      title={item.name}
+                                    >
+                                      {item.name}
+                                    </div>
+                                    {
+                                      processingTranscriptions[item.id] ?
+                                        <Group wrap="nowrap" gap="xs">
+                                          <div className="loader">
+                                            <IconAbc className="abc" size={16} stroke={1.5}/>
+                                            <IconPencil className="pencil" size={16} stroke={1.5}/>
+                                            <IconRobot size={24} stroke={1}/>
+                                          </div>
+                                          <ActionIcon
+                                            variant="outline"
+                                            color="red"
+                                            size="sm"
+                                            radius="sm"
+                                            title="自動文字起こしを中止"
+                                            onClick={() => onClickAbortTranscription(item.id)}
+                                          >
+                                            <IconBan size={16} stroke={1.5}/>
+                                          </ActionIcon>
+                                        </Group> :
+                                        <div className="visible-on-hover">
+                                          <ActionIcon
+                                            variant="outline"
+                                            color="red"
+                                            size="sm"
+                                            radius="sm"
+                                            title="削除"
+                                            onClick={() => removeTimeline(item.id)}
+                                          >
+                                            <IconX size={16} stroke={1.5}/>
+                                          </ActionIcon>
+                                        </div>
+                                    }
+                                  </Group>
+                                ),
+                              }
+                            })
+                          }
+                          ref={timelineHeader}
+                          onScroll={(e) => {
+                            const target = e.target as HTMLDivElement
+                            timelineState.current.setScrollTop(target.scrollTop)
+                          }}
+                        />
+                      </div>
+                      <div style={{width: '100%'}}>
+                        <Timeline
+                          ref={timelineState}
+                          editorData={timelineData}
+                          engine={engine}
+                          onChange={() => updateTimelineData()}
+                          effects={{}}
+                          scaleSplitCount={10}
+                          minScaleCount={Math.ceil(Math.max(duration, 1) / scale)}
+                          scaleWidth={SCALE_WIDTH}
+                          scale={scale}
+                          startLeft={START_LEFT}
+                          getScaleRender={(scale) => <>{formatTime(scale)}</>}
+                          autoScroll={true}
+                          dragLine={true}
+                          onScroll={({scrollTop}) => {
+                            if (timelineHeader.current) {
+                              timelineHeader.current.scrollTop = scrollTop
+                            }
+                          }}
+                          onDoubleClickRow={(e, {row, time}) => {
+                            // アクション上でダブルクリックされた場合
+                            if ((e.target as HTMLDivElement).closest('.timeline-editor-action')) {
+                              return
+                            }
+                            row.actions = [
+                              ...row.actions,
+                              {
+                                id: `${row.id}_${new Date().getTime()}`,
+                                start: time,
+                                end: time + 1,
+                                effectId: null,
+                              },
+                            ].sort((a, b) => a.start - b.start)
+                            updateTimelineData()
+                          }}
+                          // onClickActionOnly={(e, {row, action}) => {
+                          // }}
+                          onDoubleClickAction={(e, {action}: {
+                            row: TranscriptionRow,
+                            action: TranscriptionText,
+                            time: number
+                          }) => {
+                            setActiveTextId(action.id)
+                          }}
+                          onActionMoveEnd={updateTimelineData}
+                          onActionResizeEnd={updateTimelineData}
+                          getActionRender={(action: TranscriptionText) => {
+                            return <div className="prompt">{action.text}</div>
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <Group style={{height: '2.125rem', flexShrink: 0}} gap={0} grow={false} align="center">
+                      <Group style={{width: '15rem', flexShrink: 0}}>
+                      </Group>
+                      <Divider orientation="vertical"/>
+                      <Group pl="xs" pr="xs" gap="xs" style={{flexGrow: 1}} justify="space-between" wrap="nowrap">
                         <Group gap="xs" wrap="nowrap">
                           <ActionIcon
                             variant="subtle"
@@ -876,131 +1007,9 @@ function App() {
                           <IconArrowBigRightLines size={16} stroke={1.5}/>
                         </ActionIcon>
                       </Group>
-                      <Divider/>
-                      <SegmentedControl
-                        orientation="vertical"
-                        fullWidth
-                        value={selectedRowId}
-                        onChange={setSelectedRowId}
-                        transitionDuration={0}
-                        color="blue"
-                        styles={{
-                          root: {
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                            overflow: 'scroll',
-                          },
-                        }}
-                        data={
-                          timelineData.map((item: TranscriptionRow) => {
-                            return {
-                              value: item.id,
-                              label: (
-                                <Group justify="space-between" gap={0} align="center" wrap="nowrap"
-                                       className="visible-on-hover-parent">
-                                  <div
-                                    style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
-                                    title={item.name}
-                                  >
-                                    {item.name}
-                                  </div>
-                                  {
-                                    processingTranscriptions[item.id] ?
-                                      <Group wrap="nowrap" gap="xs">
-                                        <div className="loader">
-                                          <IconAbc className="abc" size={16} stroke={1.5}/>
-                                          <IconPencil className="pencil" size={16} stroke={1.5}/>
-                                          <IconRobot size={24} stroke={1}/>
-                                        </div>
-                                        <ActionIcon
-                                          variant="outline"
-                                          color="red"
-                                          size="sm"
-                                          radius="sm"
-                                          title="自動文字起こしを中止"
-                                          onClick={() => onClickAbortTranscription(item.id)}
-                                        >
-                                          <IconBan size={16} stroke={1.5}/>
-                                        </ActionIcon>
-                                      </Group> :
-                                      <div className="visible-on-hover">
-                                        <ActionIcon
-                                          variant="outline"
-                                          color="red"
-                                          size="sm"
-                                          radius="sm"
-                                          title="削除"
-                                          onClick={() => removeTimeline(item.id)}
-                                        >
-                                          <IconX size={16} stroke={1.5}/>
-                                        </ActionIcon>
-                                      </div>
-                                  }
-                                </Group>
-                              ),
-                            }
-                          })
-                        }
-                        ref={timelineHeader}
-                        onScroll={(e) => {
-                          const target = e.target as HTMLDivElement
-                          timelineState.current.setScrollTop(target.scrollTop)
-                        }}
-                      />
-                    </div>
-                    <div style={{width: '100%'}}>
-                      <Timeline
-                        ref={timelineState}
-                        editorData={timelineData}
-                        engine={engine}
-                        onChange={() => updateTimelineData()}
-                        effects={{}}
-                        scaleSplitCount={10}
-                        minScaleCount={Math.ceil(Math.max(duration, 1) / scale)}
-                        scaleWidth={SCALE_WIDTH}
-                        scale={scale}
-                        startLeft={START_LEFT}
-                        getScaleRender={(scale) => <>{formatTime(scale)}</>}
-                        autoScroll={true}
-                        dragLine={true}
-                        onScroll={({scrollTop}) => {
-                          if (timelineHeader.current) {
-                            timelineHeader.current.scrollTop = scrollTop
-                          }
-                        }}
-                        onDoubleClickRow={(e, {row, time}) => {
-                          // アクション上でダブルクリックされた場合
-                          if ((e.target as HTMLDivElement).closest('.timeline-editor-action')) {
-                            return
-                          }
-                          row.actions = [
-                            ...row.actions,
-                            {
-                              id: `${row.id}_${new Date().getTime()}`,
-                              start: time,
-                              end: time + 1,
-                              effectId: null,
-                            },
-                          ].sort((a, b) => a.start - b.start)
-                          updateTimelineData()
-                        }}
-                        // onClickActionOnly={(e, {row, action}) => {
-                        // }}
-                        onDoubleClickAction={(e, {action}: {
-                          row: TranscriptionRow,
-                          action: TranscriptionText,
-                          time: number
-                        }) => {
-                          setActiveTextId(action.id)
-                        }}
-                        onActionMoveEnd={updateTimelineData}
-                        onActionResizeEnd={updateTimelineData}
-                        getActionRender={(action: TranscriptionText) => {
-                          return <div className="prompt">{action.text}</div>
-                        }}
-                      />
-                    </div>
-                  </div> :
+                    </Group>
+                  </Stack>
+                  :
                   <></>
               }
             </Panel>
