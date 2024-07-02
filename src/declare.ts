@@ -22,6 +22,7 @@ export interface TranscriptionParams {
   end?: number
   computeType?: string
   initialPrompt?: string
+  beamSize?: number
 }
 
 export interface ProjectFileFormat {

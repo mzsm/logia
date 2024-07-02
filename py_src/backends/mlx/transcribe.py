@@ -38,9 +38,10 @@ from mlx_whisper.audio import (
     N_FRAMES,
     N_SAMPLES,
     SAMPLE_RATE,
-    log_mel_spectrogram,
+    # log_mel_spectrogram,
     pad_or_trim,
 )
+from .audio import log_mel_spectrogram
 from mlx_whisper.decoding import DecodingOptions, DecodingResult
 from mlx_whisper.timing import add_word_timestamps
 from mlx_whisper.tokenizer import LANGUAGES, get_tokenizer

@@ -5,6 +5,7 @@ import {
   Group,
   Input,
   Modal,
+  NumberInput,
   RangeSlider,
   ScrollArea,
   Select,
@@ -69,8 +70,9 @@ function TranscriptionModal({
   const [timeRange, setTimeRange] = useState<[number, number]>([0, duration])
   const [language, setLanguage] = useState<string>(navigator.language.split('-')[0])
   const [model, setModel] = useState<string>('medium')
-  const [computeType, setComputeType] = useState<string>('auto')
   const [initialPrompt, setInitialPrompt] = useState<string>('')
+  const [computeType, setComputeType] = useState<string>('auto')
+  const [beamSize, setBeamSize] = useState<number>(5)
 
   const onChangeRangeSlider = (value: [number, number]) => {
     setTimeRange((prevValue) => {
@@ -108,7 +110,7 @@ function TranscriptionModal({
       language,
       model,
       id,
-      initialPrompt
+      initialPrompt,
     }
     if (timeRange[0]) {
       args.start = timeRange[0]
@@ -118,6 +120,9 @@ function TranscriptionModal({
     }
     if (!isAppleSilicon) {
       args.computeType = computeType
+      if (beamSize) {
+        args.beamSize = beamSize
+      }
     }
 
     const promise = window.electronAPI.startTranscription(args)
@@ -237,7 +242,7 @@ function TranscriptionModal({
             />
           </Group>
           {
-            isAppleSilicon ?
+            !isAppleSilicon ?
               <></> :
               <>
                 <Group wrap="nowrap" align="flex-end">
@@ -249,6 +254,16 @@ function TranscriptionModal({
                     onChange={(v) => setComputeType(v)}
                     checkIconPosition="right"
                     allowDeselect={false}
+                    size="sm"
+                    radius="sm"
+                  />
+                  <NumberInput
+                    label="ビームサイズ"
+                    id="beamsize"
+                    value={beamSize}
+                    onChange={(v) => setBeamSize(v as number)}
+                    min={1}
+                    max={10}
                     size="sm"
                     radius="sm"
                   />

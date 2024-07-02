@@ -26,6 +26,8 @@ YouTubeやHTML5ビデオ用字幕ファイルの出力に対応しており、�
 * OS
   * As new and stable as possible (Whether Windows or macOS)  
     なるべく新しくて安定してるやつ (WindowsでもmacOSでも)
+  * macOS >= 13.5 (with Apple Silicon)  
+    Apple Silicon搭載macの場合、macOS 13.5以上
 * CPU
   * As fast as possible  
     なるべく速いやつ

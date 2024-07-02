@@ -6,7 +6,7 @@ import { TranscriptionParams } from '../declare'
 import { isAppleSilicon, isRosetta } from 'is-apple-silicon'
 import log from 'electron-log/main'
 
-const currentProcesses: {[id: string]: ChildProcessWithoutNullStreams} = {}
+const currentProcesses: { [id: string]: ChildProcessWithoutNullStreams } = {}
 
 export const startTranscription = async (mainWindow: BrowserWindow, {
   filePath,
@@ -14,6 +14,7 @@ export const startTranscription = async (mainWindow: BrowserWindow, {
   language = 'en',
   model,
   computeType,
+  beamSize,
   initialPrompt,
   start,
   end,
@@ -45,10 +46,10 @@ export const startTranscription = async (mainWindow: BrowserWindow, {
     )
     leftover = ''
   }
-  return await transcribe(id, filePath, language, model, computeType, initialPrompt, start, end, onProgress)
+  return await transcribe(id, filePath, language, model, computeType, beamSize, initialPrompt, start, end, onProgress)
 }
 
-export const abortTranscription = (id :string) => {
+export const abortTranscription = (id: string) => {
   if (currentProcesses[id]) {
     currentProcesses[id].kill()
     delete currentProcesses[id]
@@ -56,7 +57,7 @@ export const abortTranscription = (id :string) => {
 }
 
 export const transcribe = async (
-  id: string, wavPath: string, lang?: string, model = 'medium', computeType = 'auto', initialPrompt= '', start?: number, end?: number, onProgress?: (data: string) => unknown,
+  id: string, wavPath: string, lang?: string, model = 'medium', computeType = 'auto', beamSize = 5, initialPrompt = '', start?: number, end?: number, onProgress?: (data: string) => unknown,
 ): Promise<void> => {
   return new Promise((resolve) => {
     const args = [
@@ -79,8 +80,13 @@ export const transcribe = async (
     }
     if (isAppleSilicon() && !isRosetta()) {
       args.push('-x')
-    } else if (computeType) {
-      args.push('-c', computeType)
+    } else {
+      if (computeType) {
+        args.push('-c', computeType)
+      }
+      if (beamSize) {
+        args.push('-b', beamSize.toString())
+      }
     }
 
     const currentProcess = spawn(
