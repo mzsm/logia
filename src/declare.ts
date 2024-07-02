@@ -8,7 +8,7 @@ export interface TranscriptionText extends TimelineAction {
   }[]
 }
 
-export interface TranscriptionRow extends TimelineRow {
+export interface TranscriptionSequence extends TimelineRow {
   name: string,
   actions: TranscriptionText[]
 }
@@ -27,7 +27,7 @@ export interface TranscriptionParams {
 
 export interface ProjectFileFormat {
   media: string,
-  timelineData: TranscriptionRow[]
+  sequenceData: TranscriptionSequence[]
 }
 
 export interface ContentStatus {

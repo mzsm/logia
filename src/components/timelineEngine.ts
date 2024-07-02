@@ -1,13 +1,13 @@
 import { TimelineEngine } from 'react-timeline-editor'
 import { MutableRefObject } from 'react'
-import { TranscriptionRow } from '../declare'
+import { TranscriptionSequence } from '../declare'
 
 export default class VideoEngine extends TimelineEngine {
   constructor(private mediaTag: MutableRefObject<HTMLMediaElement>) {
     super()
   }
 
-  set data(data: TranscriptionRow[]) {
+  set data(data: TranscriptionSequence[]) {
     this._dealData(data);
     this._dealClear();
     this._dealEnter(this._currentTime);

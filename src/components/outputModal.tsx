@@ -8,7 +8,7 @@ import {
   OUTPUT_FORMATS,
   TEXT_ENCODINGS,
 } from '../const'
-import { TranscriptionRow } from '../declare'
+import { TranscriptionSequence } from '../declare'
 import { exportCCFile, TextOptions, CsvOptions } from '../features/output'
 
 const formats: { label: string, value: OUTPUT_FORMAT_TYPES }[] = OUTPUT_FORMATS.map(([value, label]) => {
@@ -58,16 +58,16 @@ const newlines = [
 ]
 
 interface Props {
-  timelineData: TranscriptionRow[]
-  selectedRowId: string,
+  sequenceData: TranscriptionSequence[]
+  selectedSequenceId: string,
   opened: boolean
   onClose: () => unknown
 }
 
-function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
-  const [timelines, setTimelines] = useState([])
+function OutputModal({sequenceData, selectedSequenceId, opened, onClose}: Props) {
+  const [sequences, setSequences] = useState([])
   const [target, setTarget] = useState<string>(null)
-  const _target = useRef<TranscriptionRow>(null)
+  const _target = useRef<TranscriptionSequence>(null)
   const [outputFormat, setOutputFormat] = useState<OUTPUT_FORMAT_TYPES>(formats[0].value)
   // settings for CSV
   const [csvFormat, setCsvFormat] = useState<CSV_PRESET_TYPES>(csvFormats[0].value)
@@ -83,17 +83,21 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
   const [textOmitTimestamps, setTextOmitTimestamps] = useState<boolean>(false)
 
   useEffect(() => {
+    setTarget(selectedSequenceId)
+  }, [opened])
+
+  useEffect(() => {
     let found = false
-    timelineData.map((timeline) => {
-      if (timeline.id == selectedRowId) {
-        _target.current = timeline
+    sequenceData.map((sequence) => {
+      if (sequence.id == target) {
+        _target.current = sequence
         found = true
       }
     })
     if (!found) {
       _target.current = null
     }
-  }, [target, timelines])
+  }, [target])
 
   const _setOutputFormat = (value: OUTPUT_FORMAT_TYPES) => {
     setOutputFormat(value)
@@ -140,16 +144,16 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
   }
 
   useEffect(() => {
-    setTimelines(() => {
-      return timelineData.map((_timeline) => {
-        return {label: _timeline.name, value: _timeline.id}
+    setSequences(() => {
+      return sequenceData.map((_sequence) => {
+        return {label: _sequence.name, value: _sequence.id}
       })
     })
-  }, [timelineData])
+  }, [sequenceData])
 
   useEffect(() => {
-    setTarget(selectedRowId)
-  }, [selectedRowId])
+    setTarget(selectedSequenceId)
+  }, [selectedSequenceId])
 
   return (
     <Modal
@@ -177,9 +181,9 @@ function OutputModal({timelineData, selectedRowId, opened, onClose}: Props) {
             />
           </Group>
           <Select
-            label="出力対象"
+            label="出力対象シーケンス"
             id="target"
-            data={timelines}
+            data={sequences}
             value={target}
             onChange={(v) => setTarget(v)}
             checkIconPosition="right"

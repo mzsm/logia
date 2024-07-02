@@ -45,12 +45,12 @@ import {
 } from '@tabler/icons-react'
 import TranscriptionModal from './components/transcriptionModal'
 import VideoEngine from './components/timelineEngine'
-import TimelineTable from './components/timelineTable'
+import SequenceTable from './components/sequenceTable'
 import TextEditArea from './components/textEditArea'
 import { Timeline, TimelineEngine, TimelineState } from 'react-timeline-editor'
 import { FfmpegMediaInfo } from './features/file'
 import { formatTime } from './utils'
-import { TranscriptionRow, TranscriptionText } from './declare'
+import { TranscriptionSequence, TranscriptionText } from './declare'
 import './App.css'
 import MediaInfo from './components/mediaInfo'
 import OutputModal from './components/outputModal'
@@ -89,9 +89,9 @@ function App() {
     open: openLoader,
     close: closeLoader,
   }] = useDisclosure(false)
-  const [timelineData, setTimelineData] = useState<TranscriptionRow[]>([])
-  const [selectedRowId, setSelectedRowId] = useState<string | null>(null)
-  const [selectedRow, setSelectedRow] = useState<TranscriptionRow>(null)
+  const [sequenceData, setSequenceData] = useState<TranscriptionSequence[]>([])
+  const [selectedSequenceId, setSelectedSequenceId] = useState<string | null>(null)
+  const [selectedSequence, setSelectedSequence] = useState<TranscriptionSequence>(null)
   // const [selectedTextList, setSelectedTextList] = useState<TranscriptionText[]>([])
   const [activeTextId, setActiveTextId] = useState<string>(null)
   const [activeText, setActiveText] = useState<TranscriptionText>(null)
@@ -148,23 +148,23 @@ function App() {
 
   useEffect(() => {
     let found = false
-    timelineData.map((timeline) => {
-      if (timeline.id == selectedRowId) {
-        setSelectedRow(timeline)
+    sequenceData.map((sequence) => {
+      if (sequence.id == selectedSequenceId) {
+        setSelectedSequence(sequence)
         found = true
       }
     })
     if (!found) {
-      setSelectedRow(null)
+      setSelectedSequence(null)
     }
     _scale.current = scale
-  }, [selectedRowId, timelineData])
+  }, [selectedSequenceId, sequenceData])
 
   useEffect(() => {
-    for (let i = 0; i < timelineData.length; i++) {
-      const _timeline = timelineData[i]
-      for (let l = 0; l < _timeline.actions.length; l++) {
-        const text = _timeline.actions[l]
+    for (let i = 0; i < sequenceData.length; i++) {
+      const _sequence = sequenceData[i]
+      for (let l = 0; l < _sequence.actions.length; l++) {
+        const text = _sequence.actions[l]
         if (activeTextId == text.id) {
           setActiveText(text)
           return
@@ -172,7 +172,7 @@ function App() {
       }
     }
     setActiveText(null)
-  }, [timelineData, activeTextId])
+  }, [sequenceData, activeTextId])
 
   // パネルの幅・高さを保存する
   useEffect(() => {
@@ -212,9 +212,9 @@ function App() {
     engine?.setTime(0)
     timelineState.current?.setTime(0)
     timelineState.current?.setScrollLeft(0)
-    setTimelineData([])
+    setSequenceData([])
     setActiveTextId(null)
-    setSelectedRowId(null)
+    setSelectedSequenceId(null)
     setProjectFilePath(null)
     videoTag.current.src = null
   }
@@ -255,7 +255,7 @@ function App() {
     await openMedia(_projectData.media, true)
     setProjectFilePath(filePath)
     closeLoader()
-    setTimelineData(_projectData.timelineData)
+    setSequenceData(_projectData.sequenceData)
   }
 
   const setTime = (time: number) => {
@@ -277,12 +277,12 @@ function App() {
   const onTimeUpdate = () => {
     setCurrentTime(videoTag.current.currentTime)
 
-    if (selectedRow) {
-      for (let i = 0; i < selectedRow.actions.length; i++) {
-        if (selectedRow.actions[i].start <= currentTime && currentTime <= selectedRow.actions[i].end) {
-          setCurrentTextId(selectedRow.actions[i].id)
+    if (selectedSequence) {
+      for (let i = 0; i < selectedSequence.actions.length; i++) {
+        if (selectedSequence.actions[i].start <= currentTime && currentTime <= selectedSequence.actions[i].end) {
+          setCurrentTextId(selectedSequence.actions[i].id)
           return
-        } else if (currentTime <= selectedRow.actions[i].start) {
+        } else if (currentTime <= selectedSequence.actions[i].start) {
           return
         }
       }
@@ -298,13 +298,13 @@ function App() {
   const removeActiveText = () => {
     setActiveTextId(null)
 
-    setTimelineData((_timelineData) => {
-      _timelineData.forEach((_timeline) => {
-        _timeline.actions = _timeline.actions.filter((text) => {
+    setSequenceData((_sequenceData) => {
+      _sequenceData.forEach((_sequence) => {
+        _sequence.actions = _sequence.actions.filter((text) => {
           return activeTextId !== text.id
         })
       })
-      return structuredClone(_timelineData)
+      return structuredClone(_sequenceData)
     })
   }
 
@@ -329,13 +329,13 @@ function App() {
     window.electronAPI.saveProjectFile().then((dest) => {
       if (dest) {
         setProjectFilePath(dest)
-        saveProjectFile(dest, mediaFilePath, timelineData)
+        saveProjectFile(dest, mediaFilePath, sequenceData)
       }
     })
   }
 
   const projectOverwrite = () => {
-    saveProjectFile(projectFilePath, mediaFilePath, timelineData)
+    saveProjectFile(projectFilePath, mediaFilePath, sequenceData)
   }
   const onClickProjectSave = () => {
     if (projectFilePath) {
@@ -352,7 +352,7 @@ function App() {
       name: name,
       actions,
     }
-    setTimelineData(timelineData.concat([row]))
+    setSequenceData(sequenceData.concat([row]))
     setProcessingTranscriptions((v) => {
       return Object.assign({[id]: promise}, v)
     })
@@ -362,7 +362,7 @@ function App() {
         delete v[id]
         return Object.assign({}, v)
       })
-      updateTimelineData()
+      updateSequenceData()
     })
   }
 
@@ -372,28 +372,28 @@ function App() {
     }
   }
 
-  const addEmptyTimeline = () => {
-    setTimelineData((_timelineData) => {
-      const timelineNames = _timelineData.map((_timeline) => _timeline.name)
+  const addEmptySequence = () => {
+    setSequenceData((_sequenceData) => {
+      const sequenceNames = _sequenceData.map((_sequence) => _sequence.name)
       let name = ''
       let suffix = 0
       do {
-        name = `無題のタイムライン${suffix ? ` (${suffix})` : ''}`
+        name = `無題のシーケンス${suffix ? ` (${suffix})` : ''}`
         suffix++
-      } while (timelineNames.includes(name))
-      _timelineData = _timelineData.concat([{
+      } while (sequenceNames.includes(name))
+      _sequenceData = _sequenceData.concat([{
         id: new Date().getTime().toString(),
         name: name,
         actions: [],
-      } as TranscriptionRow])
-      return structuredClone(_timelineData)
+      } as TranscriptionSequence])
+      return structuredClone(_sequenceData)
     })
   }
 
-  const removeTimeline = (id: string) => {
+  const removeSequence = (id: string) => {
 
-    setTimelineData((_timelineData) => {
-      return structuredClone(_timelineData.filter((_timeline) => _timeline.id !== id))
+    setSequenceData((_sequenceData) => {
+      return structuredClone(_sequenceData.filter((_sequence) => _sequence.id !== id))
     })
   }
 
@@ -418,8 +418,8 @@ function App() {
     setSideVerticalGridRatio(sizes)
   }
 
-  const updateTimelineData = () => {
-    setTimelineData((c) => structuredClone(c))
+  const updateSequenceData = () => {
+    setSequenceData((c) => structuredClone(c))
   }
 
   useEffect(() => {
@@ -443,7 +443,7 @@ function App() {
       window.electronAPI.onOpenMedia(openMedia)
       window.electronAPI.onOpenProjectFile(openProject)
       window.electronAPI.onSaveProjectFile((dest) => {
-        saveProjectFile(dest, mediaFilePath, timelineData)
+        saveProjectFile(dest, mediaFilePath, sequenceData)
       })
       window.electronAPI.onShowTranscriptionDialog(() => {
         _engine.pause()
@@ -451,13 +451,13 @@ function App() {
       })
 
       window.electronAPI.onTranscriptionProgress(({id, data}) => {
-        setTimelineData((timelineData) => {
-          const _timeline = timelineData.filter(({id: _id}) => _id === id)
-          if (_timeline.length === 0) {
-            return timelineData
+        setSequenceData((sequenceData) => {
+          const _sequence = sequenceData.filter(({id: _id}) => _id === id)
+          if (_sequence.length === 0) {
+            return sequenceData
           }
-          const timeline = _timeline.shift()
-          timeline.actions = timeline.actions.concat(
+          const sequence = _sequence.shift()
+          sequence.actions = sequence.actions.concat(
             data
               .filter((line) => line.type === 1)
               .map((line) => {
@@ -470,7 +470,7 @@ function App() {
                 }
               }),
           ).sort((a, b) => a.start - b.start)
-          return timelineData.slice()
+          return sequenceData.slice()
         })
         // setLatestTranscript(data as {type: number; begin: number; end: number; text: string })
       })
@@ -573,7 +573,7 @@ function App() {
         <ActionIcon
           size="lg"
           radius="sm"
-          disabled={timelineData.length === 0}
+          disabled={sequenceData.length === 0}
           onClick={() => {
             engine.pause()
             openExportDialog()
@@ -812,7 +812,8 @@ function App() {
                             size="md"
                             radius="sm"
                             color="gray"
-                            onClick={addEmptyTimeline}
+                            onClick={addEmptySequence}
+                            title="空のシーケンスを追加"
                           >
                             <IconPlus size={16} stroke={1.5}/>
                           </ActionIcon>
@@ -836,8 +837,8 @@ function App() {
                         <SegmentedControl
                           orientation="vertical"
                           fullWidth
-                          value={selectedRowId}
-                          onChange={setSelectedRowId}
+                          value={selectedSequenceId}
+                          onChange={setSelectedSequenceId}
                           transitionDuration={0}
                           color="blue"
                           styles={{
@@ -848,7 +849,7 @@ function App() {
                             },
                           }}
                           data={
-                            timelineData.map((item: TranscriptionRow) => {
+                            sequenceData.map((item: TranscriptionSequence) => {
                               return {
                                 value: item.id,
                                 label: (
@@ -886,7 +887,7 @@ function App() {
                                             size="sm"
                                             radius="sm"
                                             title="削除"
-                                            onClick={() => removeTimeline(item.id)}
+                                            onClick={() => removeSequence(item.id)}
                                           >
                                             <IconX size={16} stroke={1.5}/>
                                           </ActionIcon>
@@ -907,9 +908,9 @@ function App() {
                       <div style={{width: '100%'}}>
                         <Timeline
                           ref={timelineState}
-                          editorData={timelineData}
+                          editorData={sequenceData}
                           engine={engine}
-                          onChange={() => updateTimelineData()}
+                          onChange={() => updateSequenceData()}
                           effects={{}}
                           scaleSplitCount={10}
                           minScaleCount={Math.ceil(Math.max(duration, 1) / scale)}
@@ -938,19 +939,19 @@ function App() {
                                 effectId: null,
                               },
                             ].sort((a, b) => a.start - b.start)
-                            updateTimelineData()
+                            updateSequenceData()
                           }}
                           // onClickActionOnly={(e, {row, action}) => {
                           // }}
                           onDoubleClickAction={(e, {action}: {
-                            row: TranscriptionRow,
+                            row: TranscriptionSequence,
                             action: TranscriptionText,
                             time: number
                           }) => {
                             setActiveTextId(action.id)
                           }}
-                          onActionMoveEnd={updateTimelineData}
-                          onActionResizeEnd={updateTimelineData}
+                          onActionMoveEnd={updateSequenceData}
+                          onActionResizeEnd={updateSequenceData}
                           getActionRender={(action: TranscriptionText) => {
                             return <div className="prompt">{action.text}</div>
                           }}
@@ -1029,9 +1030,9 @@ function App() {
                 style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0}}
               >
                 {
-                  selectedRow ?
-                    <TimelineTable
-                      timeline={selectedRow}
+                  selectedSequence ?
+                    <SequenceTable
+                      sequence={selectedSequence}
                       currentTextId={currentTextId}
                       parentHeight={sideTop.current.clientHeight}
                       parentWidth={sideTop.current.scrollWidth}
@@ -1042,7 +1043,7 @@ function App() {
                         setTime(time)
                         playMedia()
                       }}
-                      onChange={updateTimelineData}
+                      onChange={updateSequenceData}
                     /> :
                     <></>
                 }
@@ -1054,7 +1055,7 @@ function App() {
                 activeText ?
                   <TextEditArea
                     text={activeText}
-                    onChange={updateTimelineData}
+                    onChange={updateSequenceData}
                     onRemove={removeActiveText}
                   /> :
                   <></>
@@ -1072,8 +1073,8 @@ function App() {
         isAppleSilicon={isAppleSilicon}
       />
       <OutputModal
-        timelineData={timelineData}
-        selectedRowId={selectedRowId}
+        sequenceData={sequenceData}
+        selectedSequenceId={selectedSequenceId}
         opened={isOpenedExportDialog}
         onClose={closeExportDialog}
       />

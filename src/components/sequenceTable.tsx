@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActionIcon, Group, Stack, Text, TextInput } from '@mantine/core'
+import { ActionIcon, Group, Stack, TextInput } from '@mantine/core'
 import { IconArrowBigDownLines, IconPlayerPlay } from '@tabler/icons-react'
 import {
   MantineReactTable,
@@ -9,14 +9,14 @@ import {
   useMantineReactTable,
 } from 'mantine-react-table'
 import { MRT_Localization_JA } from 'mantine-react-table/locales/ja/index.cjs'
-import { TranscriptionRow, TranscriptionText } from '../declare'
+import { TranscriptionSequence, TranscriptionText } from '../declare'
 import { formatTime } from '../utils'
 
 const TIME_WIDTH = 110
 const ACTION_WIDTH = 40
 
 interface Props {
-  timeline: TranscriptionRow
+  sequence: TranscriptionSequence
   currentTextId: string
   parentHeight: number
   parentWidth: number
@@ -25,10 +25,10 @@ interface Props {
   onChange?: () => unknown
 }
 
-function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onClick, onSetTime, onChange}: Props) {
+function SequenceTable({sequence, currentTextId, parentHeight, parentWidth, onClick, onSetTime, onChange}: Props) {
   const nameInput = useRef(null)
-  const [timelineName, setTimelineName] = useState<string>('')
-  const [timelineNameTemp, setTimelineNameTemp] = useState<string>('')
+  const [sequenceName, setSequenceName] = useState<string>('')
+  const [sequenceNameTemp, setSequenceNameTemp] = useState<string>('')
   const [autoScroll, setAutoScroll] = useState<boolean>(false)
   const rowVirtualizerInstanceRef = useRef<MRT_RowVirtualizer>(null)
 
@@ -37,8 +37,8 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
   }
 
   useEffect(() => {
-    setTimelineName(timeline.name)
-  }, [timeline])
+    setSequenceName(sequence.name)
+  }, [sequence])
 
   const columns = useMemo<MRT_ColumnDef<TranscriptionText>[]>(
     () =>
@@ -84,7 +84,7 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
     if (!autoScroll) {
       return
     }
-    const index = timeline.actions.findIndex((_text) => _text.id === currentTextId)
+    const index = sequence.actions.findIndex((_text) => _text.id === currentTextId)
     if (index > -1) {
       rowVirtualizerInstanceRef.current.scrollToIndex(index, {align: 'start', behavior: 'smooth'})
     }
@@ -92,7 +92,7 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
 
   const table = useMantineReactTable({
     columns,
-    data: timeline.actions,
+    data: sequence.actions,
     enableBottomToolbar: false,
     enableRowVirtualization: true,
     rowVirtualizerInstanceRef,
@@ -137,21 +137,21 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
           <TextInput
             variant="filled"
             ref={nameInput}
-            value={timelineName}
+            value={sequenceName}
             onChange={(e) => {
-              setTimelineName(e.currentTarget.value)
+              setSequenceName(e.currentTarget.value)
             }}
             onFocus={() => {
-              setTimelineNameTemp(timelineName)
+              setSequenceNameTemp(sequenceName)
             }}
             onBlur={() => {
               let valid = true
-              if (timelineName.length === 0) {
-                alert('タイムラインの名称を設定してください')
+              if (sequenceName.length === 0) {
+                alert('シーケンスの名称を設定してください')
                 valid = false
-                setTimelineName(timelineNameTemp)
+                setSequenceName(sequenceNameTemp)
               } else {
-                timeline.name = timelineName
+                sequence.name = sequenceName
               }
               if (valid) {
                 _onChange()
@@ -209,4 +209,4 @@ function TimelineTable({timeline, currentTextId, parentHeight, parentWidth, onCl
   return <MantineReactTable table={table}/>
 }
 
-export default TimelineTable
+export default SequenceTable
