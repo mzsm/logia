@@ -7,6 +7,8 @@
 Transcription and subtitling support app for video creators.  
 動画クリエイターのための文字起こし・字幕制作支援アプリ
 
+***[DOWNLOAD HERE](https://github.com/mzsm/logia/releases)***
+
 ## What Can This App Do For You? / 何ができるの？
 
 Transcribes video / audio files automatically with speech recognition.  
