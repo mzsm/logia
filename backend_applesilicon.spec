@@ -12,6 +12,7 @@ a = Analysis(
     ],
     hiddenimports=[
      'backends', 'mlx._reprlib_fix', 'mlx._os_warning',
+     'scipy._lib.array_api_compat.numpy.fft', 'scipy.special._special_ufuncs',
     ],
     hookspath=[],
     hooksconfig={},
