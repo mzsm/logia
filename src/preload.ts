@@ -6,6 +6,8 @@ import { OUTPUT_FORMAT_TYPES } from './const'
 import { ContentStatus, TranscriptionParams } from './declare'
 
 contextBridge.exposeInMainWorld('electronAPI', {
+  isMac: () => process.platform === 'darwin',
+
   // Main <= Renderer
   contentReady: () =>
     ipcRenderer.invoke('contentReady'),

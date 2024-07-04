@@ -3,6 +3,7 @@ import { OUTPUT_FORMAT_TYPES } from './const'
 import { ContentStatus, ProjectFileFormat, TranscriptionParams } from './declare'
 
 export interface IElectronAPI {
+  isMac: () => boolean,
   // Main <= Renderer
   contentReady: () => void,
   contentStatus: (status: ContentStatus) => void,

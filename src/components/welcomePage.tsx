@@ -1,5 +1,6 @@
 import { Button, Divider, Group, Modal, noop, Stack, Text, Title } from '@mantine/core'
 import { IconFileMusic, IconFolderOpen } from '@tabler/icons-react'
+const CTRL_OR_COMMAND = window.electronAPI.isMac() ? '⌘' : 'Ctrl'
 
 interface Props {
   opened: boolean
@@ -17,6 +18,7 @@ function WelcomePage({opened, onClickMediaOpen, onClickProjectOpen}: Props) {
       closeOnEscape={false}
       size="xl"
       overlayProps={{blur: 1}}
+      trapFocus={false}
     >
       <Stack>
         <Title order={1} fw="normal">Welcome to Logia</Title>
@@ -27,7 +29,7 @@ function WelcomePage({opened, onClickMediaOpen, onClickProjectOpen}: Props) {
           <Button
             variant="subtle"
             leftSection={<IconFileMusic size={24} stroke={1.5}/>}
-            rightSection={' (⌘+O)'}
+            rightSection={` (${CTRL_OR_COMMAND}+O)`}
             onClick={onClickMediaOpen}
           >
             メディアファイルを開く...
@@ -38,7 +40,7 @@ function WelcomePage({opened, onClickMediaOpen, onClickProjectOpen}: Props) {
           <Button
             variant="subtle"
             leftSection={<IconFolderOpen size={24} stroke={1.5}/>}
-            rightSection={'(⌘+P)'}
+            rightSection={`(${CTRL_OR_COMMAND}+P)`}
             onClick={onClickProjectOpen}
           >
             プロジェクトファイルを開く...
