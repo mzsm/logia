@@ -59,7 +59,7 @@ export const abortTranscription = (id: string) => {
 export const transcribe = async (
   id: string, wavPath: string, lang?: string, model = 'medium', computeType = 'auto', beamSize = 5, initialPrompt = '', start?: number, end?: number, onProgress?: (data: string) => unknown,
 ): Promise<void> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const args = [
       'transcribe',
       wavPath,
@@ -97,10 +97,14 @@ export const transcribe = async (
           path.join(app.getAppPath(), '.venv', 'bin', 'python'),
       args,
     )
-    currentProcess.on('exit', () => {
-      // pass
-      log.info(`${id}: finished ${new Date().toISOString()}`)
-      resolve()
+    currentProcess.on('exit', (code) => {
+      if (code === 0) {
+        log.info(`${id}: finished`)
+        resolve()
+      } else {
+        log.info(`${id}: terminated (code: ${code})`)
+        reject()
+      }
     })
 
     currentProcess.stdout.setEncoding('utf-8')
@@ -115,7 +119,7 @@ export const transcribe = async (
     })
     currentProcesses[id] = currentProcess
     log.info(`${id}: ${wavPath} -l ${lang} -m ${model}`)
-    log.info(`${id}: started ${new Date().toISOString()}`)
+    log.info(`${id}: started`)
 
   })
 }

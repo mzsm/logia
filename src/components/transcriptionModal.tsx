@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
   Button,
+  Checkbox,
   Divider,
   Group,
   Input,
   Modal,
   NumberInput,
+  Radio,
   RangeSlider,
   ScrollArea,
   Select,
@@ -13,18 +15,19 @@ import {
   Stack,
   Text,
   Textarea,
+  TextInput,
 } from '@mantine/core'
 import { LANGUAGES } from '../const'
-import { TranscriptionParams } from '../declare'
+import { TranscriptionParams, TranscriptionSequence } from '../declare'
 import TimeStampInput from './timeStampInput'
 import { IconPlayerPlayFilled } from '@tabler/icons-react'
 
 const languages = LANGUAGES.map(([label, code]) => {
   return {label, value: code}
 })
-const languageLabels = LANGUAGES.reduce((obj: { [key: string]: string }, [label, code]: [string, string]) => {
-  return Object.assign(obj, {[code]: label.replace(/\s*\(.+?\)$/, '')})
-}, {})
+// const languageLabels = LANGUAGES.reduce((obj: { [key: string]: string }, [label, code]: [string, string]) => {
+//   return Object.assign(obj, {[code]: label.replace(/\s*\(.+?\)$/, '')})
+// }, {})
 const models = [
   {label: 'Base', value: 'base'},
   {label: 'Base(英語専用)', value: 'base.en'},
@@ -33,9 +36,9 @@ const models = [
   {label: 'Large-v2', value: 'large-v2'},
   {label: 'Large-v3', value: 'large-v3'},
 ]
-const modelLabels = models.reduce((obj: { [key: string]: string }, x) => {
-  return Object.assign(obj, {[x.value]: x.label})
-}, {})
+// const modelLabels = models.reduce((obj: { [key: string]: string }, x) => {
+//   return Object.assign(obj, {[x.value]: x.label})
+// }, {})
 
 const computeTypes = [
   {label: '自動 (推奨)', value: 'auto'},
@@ -54,7 +57,10 @@ interface Props {
   onClose: () => unknown
   mediaFilePath: string
   duration: number
-  onClickStartTranscription?: (id: string, promise: Promise<unknown>, name: string) => unknown
+  sequenceData: TranscriptionSequence[]
+  selectedSequenceId: string
+  onAddNewSequence: (name: string) => string
+  onClickEnqueue: (params: TranscriptionParams) => unknown
   isAppleSilicon: boolean
 }
 
@@ -63,10 +69,18 @@ function TranscriptionModal({
                               onClose,
                               mediaFilePath,
                               duration,
-                              onClickStartTranscription,
+                              sequenceData,
+                              selectedSequenceId,
+                              onAddNewSequence,
+                              onClickEnqueue,
                               isAppleSilicon,
                             }: Props) {
   const videoTag = useRef<HTMLVideoElement>(null)
+  const [addNewSequence, setAddNewSequence] = useState(true)
+  const [sequences, setSequences] = useState([])
+  const [placeholder, setPlaceholder] = useState('')
+  const [target, setTarget] = useState<string>(null)
+  const [removeExistingText, setRemoveExistingText] = useState(false)
   const [timeRange, setTimeRange] = useState<[number, number]>([0, duration])
   const [language, setLanguage] = useState<string>(navigator.language.split('-')[0])
   const [model, setModel] = useState<string>('medium')
@@ -74,6 +88,46 @@ function TranscriptionModal({
   const [computeType, setComputeType] = useState<string>('auto')
   const [beamSize, setBeamSize] = useState<number>(5)
 
+  useEffect(() => {
+    const sequenceNames = sequenceData.map((_sequence) => _sequence.name)
+    setPlaceholder(() => {
+      let name = ''
+      let suffix = 0
+      do {
+        name = `無題のシーケンス${suffix ? ` (${suffix})` : ''}`
+        suffix++
+      } while (sequenceNames.includes(name))
+      return name
+    })
+    if (sequenceData.length === 0) {
+      setAddNewSequence(true)
+    }
+  }, [opened, sequenceData])
+
+  useEffect(() => {
+    setTarget(() => {
+      if (selectedSequenceId) {
+        return selectedSequenceId
+      } else if (sequenceData.length) {
+        return sequenceData[0].id
+      }
+      return null
+    })
+  }, [opened, selectedSequenceId])
+
+  useEffect(() => {
+    setSequences(() => {
+      return sequenceData.map((_sequence) => {
+        return {label: _sequence.name, value: _sequence.id}
+      })
+    })
+  }, [sequenceData])
+
+  useEffect(() => {
+    setTimeRange([0, duration])
+  }, [duration])
+
+  // 出力対象範囲を変更
   const onChangeRangeSlider = (value: [number, number]) => {
     setTimeRange((prevValue) => {
       if (prevValue[0] !== value[0]) {
@@ -85,49 +139,50 @@ function TranscriptionModal({
     })
   }
 
+  // 状態を保存する値
   const _setLanguage = (value: string) => {
     setLanguage(value)
     if (value) {
-      window.electronAPI.setConfig({
-        language: value,
-      })
+      window.electronAPI.setConfig({language: value})
     }
   }
   const _setModel = (value: string) => {
     setModel(value)
     if (value) {
-      window.electronAPI.setConfig({
-        model: value,
-      })
+      window.electronAPI.setConfig({model: value})
     }
   }
 
-  const _onClickStartTranscription = () => {
-    const id = new Date().getTime().toString()
-    // 書き起こしを実行し、Promiseを変数に代入
-    const args: TranscriptionParams = {
+  const _onClickEnqueue = () => {
+    // 出力対象シーケンス
+    let _target: string = target
+    if (addNewSequence) {
+      // 新しいシーケンスを作る場合
+      _target = onAddNewSequence(placeholder)
+    }
+
+    // 書き起こしパラメーターを変数に代入
+    const params: TranscriptionParams = {
       filePath: mediaFilePath,
       language,
       model,
-      id,
+      id: _target,
       initialPrompt,
     }
     if (timeRange[0]) {
-      args.start = timeRange[0]
+      params.start = timeRange[0]
     }
     if (timeRange[1] !== duration) {
-      args.end = timeRange[1]
+      params.end = timeRange[1]
     }
     if (!isAppleSilicon) {
-      args.computeType = computeType
+      params.computeType = computeType
       if (beamSize) {
-        args.beamSize = beamSize
+        params.beamSize = beamSize
       }
     }
 
-    const promise = window.electronAPI.startTranscription(args)
-    const name = `自動文字起こし(${languageLabels[language]} ${modelLabels[model]})`
-    onClickStartTranscription && onClickStartTranscription(id, promise, name)
+    onClickEnqueue(params)
     onClose()
   }
 
@@ -139,11 +194,6 @@ function TranscriptionModal({
       setModel(value)
     })
   }, [])
-
-
-  useEffect(() => {
-    setTimeRange([0, duration])
-  }, [duration])
 
   return (
     <Modal
@@ -217,13 +267,56 @@ function TranscriptionModal({
               searchable
             />
           </SimpleGrid>
+          <Input.Wrapper label="出力先">
+            <Group mt="xs" mb="xs">
+              <Radio
+                label="新しいシーケンス"
+                checked={addNewSequence} onChange={() => setAddNewSequence(true)}
+              />
+              <Radio
+                label="既存のシーケンス"
+                checked={!addNewSequence} onChange={() => setAddNewSequence(false)}
+                disabled={sequenceData.length === 0}
+              />
+            </Group>
+            <Stack gap="xs" ml="lg">
+              {
+                addNewSequence ?
+                  <TextInput
+                    style={{flexGrow: 1}}
+                    disabled={!addNewSequence}
+                    placeholder={placeholder}
+                  /> :
+                  <>
+                    <Select
+                      style={{flexGrow: 1}}
+                      id="target"
+                      data={sequences}
+                      value={target}
+                      onChange={(v) => setTarget(v)}
+                      checkIconPosition="right"
+                      allowDeselect={false}
+                      disabled={addNewSequence}
+                      size="sm"
+                      radius="sm"
+                    />
+                    <Checkbox
+                      label="出力対象範囲に既にあるテキストを削除する"
+                      styles={{input: {cursor: 'pointer'}, label: {cursor: 'pointer'}}}
+                      checked={removeExistingText}
+                      onChange={(e) => setRemoveExistingText(e.currentTarget.checked)}
+                    />
+                  </>
+              }
+            </Stack>
+          </Input.Wrapper>
           <Group justify="right">
             <Button
               radius="sm"
-              onClick={_onClickStartTranscription}
+              onClick={_onClickEnqueue}
               leftSection={<IconPlayerPlayFilled size={16} stroke={1.5}/>}
             >
-              自動文字起こしを開始
+              自動文字起こしを開始/キューに追加
             </Button>
           </Group>
           <Divider/>
@@ -242,7 +335,7 @@ function TranscriptionModal({
             />
           </Group>
           {
-            !isAppleSilicon ?
+            isAppleSilicon ?
               <></> :
               <>
                 <Group wrap="nowrap" align="flex-end">

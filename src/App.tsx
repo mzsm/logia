@@ -9,6 +9,7 @@ import {
   Menu,
   Modal,
   noop,
+  Popover,
   SegmentedControl,
   Slider,
   Stack,
@@ -19,13 +20,13 @@ import {
   IconAbc,
   IconArrowBigRightLines,
   IconBadgeCc,
-  IconBan,
   IconChevronDown,
   IconClockPlay,
   IconDeviceFloppy,
   IconFileMusic,
   IconFileTextAi,
   IconFolderOpen,
+  IconListCheck,
   IconMovieOff,
   IconPencil,
   IconPlayerPause,
@@ -44,13 +45,14 @@ import {
   IconZoomOut,
 } from '@tabler/icons-react'
 import TranscriptionModal from './components/transcriptionModal'
+import TaskQueueTable from './components/taskQueueTable'
 import VideoEngine from './components/timelineEngine'
 import SequenceTable from './components/sequenceTable'
 import TextEditArea from './components/textEditArea'
 import { Timeline, TimelineEngine, TimelineState } from 'react-timeline-editor'
 import { FfmpegMediaInfo } from './features/file'
 import { formatTime } from './utils'
-import { TranscriptionSequence, TranscriptionText } from './declare'
+import { TranscriptionParams, TranscriptionSequence, TranscriptionTask, TranscriptionText } from './declare'
 import './App.css'
 import MediaInfo from './components/mediaInfo'
 import OutputModal from './components/outputModal'
@@ -102,7 +104,8 @@ function App() {
   const [scaleLevel, setScaleLevel] = useState(0)
   const [scale, setScale] = useState(1)
   const _scale = useRef(scale)
-  const [processingTranscriptions, setProcessingTranscriptions] = useState<{ [id: string]: Promise<unknown> }>({})
+  const [transcriptionTaskQueue, setTranscriptionTaskQueue] = useState<TranscriptionTask[]>([])
+  const [processingTranscriptions, setProcessingTranscriptions] = useState<string[]>([])
 
   const mainHorizontalGrid = useRef<ImperativePanelGroupHandle>(null)
   const [mainHorizontalGridRatio, setMainHorizontalGridRatio] = useState(null)
@@ -173,6 +176,45 @@ function App() {
     }
     setActiveText(null)
   }, [sequenceData, activeTextId])
+
+  const execNextTask = (queue: TranscriptionTask[]) => {
+    // 最初のタスクを実行
+    for (let i = 0; i < queue.length; i++) {
+      const _task = queue[i]
+      if (_task.status === 0) {
+        _task.promise = window.electronAPI.startTranscription(_task.params)
+        // タスクが完了したら次のタスクを実行
+        _task.promise.then((status: number) => {
+          // status 0: success 1: error
+          _task.status = status ? 3 : 2
+        }).then(() => {
+          setTranscriptionTaskQueue((_queue: TranscriptionTask[]) => {
+            execNextTask(_queue)
+            return _queue.slice()
+          })
+        })
+        _task.status = 1
+        break
+      }
+    }
+  }
+
+  // タスクキュー
+  useEffect(() => {
+    // 実行中のタスクが存在していたら何もしない
+    if (transcriptionTaskQueue.some((task) => task.status === 1)) {
+      return
+    }
+    execNextTask(transcriptionTaskQueue)
+  }, [transcriptionTaskQueue.length])
+
+  useEffect(() => {
+    setProcessingTranscriptions(
+      transcriptionTaskQueue
+        .filter((task) => task.status === 1)
+        .map((task) => task.params.id)
+    )
+  }, [transcriptionTaskQueue])
 
   // パネルの幅・高さを保存する
   useEffect(() => {
@@ -345,31 +387,29 @@ function App() {
     }
   }
 
-  const onClickStartTranscription = (id: string, promise: Promise<unknown>, name: string) => {
-    const actions: TranscriptionText[] = []
-    const row = {
-      id: id,
-      name: name,
-      actions,
+  const onClickEnqueue = (params: TranscriptionParams) => {
+    const task: TranscriptionTask = {
+      status: 0,
+      promise: null,
+      params,
     }
-    setSequenceData(sequenceData.concat([row]))
-    setProcessingTranscriptions((v) => {
-      return Object.assign({[id]: promise}, v)
-    })
-
-    promise.then(() => {
-      setProcessingTranscriptions((v) => {
-        delete v[id]
-        return Object.assign({}, v)
-      })
-      updateSequenceData()
+    setTranscriptionTaskQueue((queue) => {
+      queue.push(task)
+      return queue.slice()
     })
   }
 
-  const onClickAbortTranscription = (id: string) => {
-    if (confirm('進行中の自動文字起こしを中止してよろしいですか?')) {
-      window.electronAPI.abortTranscription(id)
-    }
+  const addNewSequence = (name: string) => {
+    const id = new Date().getTime().toString()
+    setSequenceData((_sequenceData) => {
+      _sequenceData = _sequenceData.concat([{
+        id,
+        name,
+        actions: [],
+      } as TranscriptionSequence])
+      return structuredClone(_sequenceData)
+    })
+    return id
   }
 
   const addEmptySequence = () => {
@@ -817,20 +857,56 @@ function App() {
                           >
                             <IconPlus size={16} stroke={1.5}/>
                           </ActionIcon>
-                          <Group>
-                            <ActionIcon
-                              variant="filled"
-                              disabled={!mediaFilePath}
-                              size="lg"
-                              radius="sm"
-                              onClick={() => {
-                                engine.pause()
-                                openTranscriptionDialog()
-                              }}
-                              title="自動文字起こし"
-                            >
-                              <IconFileTextAi size={24} stroke={1.5}/>
-                            </ActionIcon>
+                          <Group gap={0}>
+                            {
+                              processingTranscriptions.length ?
+                                <div className="loader">
+                                  <IconAbc className="abc" size={16} stroke={1.5}/>
+                                  <IconPencil className="pencil" size={16} stroke={1.5}/>
+                                  <IconRobot size={24} stroke={1}/>
+                                </div> :
+                                <></>
+                            }
+                            <ActionIcon.Group>
+                              <ActionIcon
+                                variant="filled"
+                                disabled={!mediaFilePath}
+                                size="lg"
+                                radius="sm"
+                                onClick={() => {
+                                  engine.pause()
+                                  openTranscriptionDialog()
+                                }}
+                                title="自動文字起こし"
+                              >
+                                <IconFileTextAi size={24} stroke={1.5}/>
+                              </ActionIcon>
+                              <Popover
+                                width="auto"
+                                position="top"
+                                offset={0}
+                                withArrow
+                                disabled={transcriptionTaskQueue.length === 0}
+                              >
+                                <Popover.Target>
+                                  <ActionIcon
+                                    variant="outline"
+                                    disabled={transcriptionTaskQueue.length === 0}
+                                    size="lg"
+                                    radius="sm"
+                                    title="タスクキュー"
+                                  >
+                                    <IconListCheck size={24} stroke={1.5}/>
+                                  </ActionIcon>
+                                </Popover.Target>
+                                <Popover.Dropdown p={0} style={{overflowY: 'auto'}}>
+                                  <TaskQueueTable
+                                    queue={transcriptionTaskQueue}
+                                    onUpdated={(queue) => setTranscriptionTaskQueue(queue.slice())}
+                                  />
+                                </Popover.Dropdown>
+                              </Popover>
+                            </ActionIcon.Group>
                           </Group>
                         </Group>
                         <Divider/>
@@ -862,24 +938,8 @@ function App() {
                                       {item.name}
                                     </div>
                                     {
-                                      processingTranscriptions[item.id] ?
-                                        <Group wrap="nowrap" gap="xs">
-                                          <div className="loader">
-                                            <IconAbc className="abc" size={16} stroke={1.5}/>
-                                            <IconPencil className="pencil" size={16} stroke={1.5}/>
-                                            <IconRobot size={24} stroke={1}/>
-                                          </div>
-                                          <ActionIcon
-                                            variant="outline"
-                                            color="red"
-                                            size="sm"
-                                            radius="sm"
-                                            title="自動文字起こしを中止"
-                                            onClick={() => onClickAbortTranscription(item.id)}
-                                          >
-                                            <IconBan size={16} stroke={1.5}/>
-                                          </ActionIcon>
-                                        </Group> :
+                                      processingTranscriptions.includes(item.id) ?
+                                        <></> :
                                         <div className="visible-on-hover">
                                           <ActionIcon
                                             variant="outline"
@@ -1069,7 +1129,10 @@ function App() {
         onClose={closeTranscriptionDialog}
         mediaFilePath={mediaFilePath}
         duration={duration}
-        onClickStartTranscription={onClickStartTranscription}
+        sequenceData={sequenceData}
+        selectedSequenceId={selectedSequenceId}
+        onAddNewSequence={addNewSequence}
+        onClickEnqueue={onClickEnqueue}
         isAppleSilicon={isAppleSilicon}
       />
       <OutputModal

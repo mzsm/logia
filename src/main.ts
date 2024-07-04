@@ -259,8 +259,9 @@ const createWindow = () => {
     ) => {
       try {
         await startTranscription(mainWindow, args)
-      } catch (e) {
-        // pass
+        return 0
+      } catch {
+        return 1
       }
     })
 

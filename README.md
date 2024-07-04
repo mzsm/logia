@@ -13,13 +13,15 @@ Transcribes video / audio files automatically with speech recognition.
 It supports about 100 languages, such as English, Japanese, Chinese, French, Korean, etc...  
 You can correct it manually if the result was wrong,   
 It supports to output subtitle files for YouTube and HTML5 videos, and you can add high-quality subtitles to your videos easily.  
-Also available to output CSV and plain text, you can use for a wide range of use cases, not only video creation.
+Also available to output CSV and plain text, you can use for a wide range of use cases, not only video creation.  
+FYI, speech recognition is processed on your machine, so the audio data is never sent outside.
 
 音声認識により自動で動画・音声ファイルの文字起こしを行います  
 英語や日本語、中国語、フランス語、韓国語など、約100の言語に対応しています  
 自動文字起こしの結果が間違っていた場合は、手動で内容を修正できます  
 YouTubeやHTML5ビデオ用字幕ファイルの出力に対応しており、動画に高品質な字幕を手軽に付与できます  
-また、CSVやプレーンテキストでの出力も可能なので、動画制作だけでなく幅広い用途で利用可能です
+また、CSVやプレーンテキストでの出力も可能なので、動画制作だけでなく幅広い用途で利用可能です  
+なお、音声認識処理はローカルマシン上で実行されるため、音声データが外部に送信されることはありません
 
 ## System Requirements / 動作環境
 
@@ -67,26 +69,26 @@ These are intended as a guide only.
   * Conversation of two / 2人の会話
 
 #### CPU Only
-| CPU           | Mem. | Model    | Time  | Speed |
-|---------------|------|----------|-------|-------|
+| CPU           | Mem. | Model    |  Time | Speed |
+|---------------|-----:|----------|------:|------:|
 | Ryzen 7 7840U | 32GB | Medium   | 12:14 | x1.63 |
 | Ryzen 7 7840U | 32GB | Large-v3 | 19:38 | x1.02 |
 
 #### with CUDA supported NVIDIA GPU
-| CPU            | GPU                 | Mem. | Model    | Time  | Speed  |
-|----------------|---------------------|------|----------|-------|--------|
-| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Medium   | 05:03 | x3.97  |
-| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Large-v3 | 08:13 | x2.44  |
+| CPU            | GPU                 | Mem. | Model    |  Time |  Speed |
+|----------------|---------------------|-----:|----------|------:|-------:|
+| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Medium   | 05:03 |  x3.97 |
+| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Large-v3 | 08:13 |  x2.44 |
 | Ryzen 7 7745HX | GeForce RTX 4090    | 64GB | Medium   | 01:14 | x16.45 |
 | Ryzen 7 7745HX | GeForce RTX 4090    | 64GB | Large-v3 | 01:27 | x13.86 |
 
 #### with Apple Silicon
-| CPU/GPU  | GPU Cores | Mem. | Model    | Time  | Speed |
-|----------|-----------|------|----------|-------|-------|
-| Apple M1 | 8         | 16GB | Medium   | 04:46 | x4.20 |
-| Apple M1 | 8         | 16GB | Large-v3 | 08:50 | x2.27 |
-| Apple M2 | 10        | 24GB | Medium   | 03:42 | x5.42 |
-| Apple M2 | 10        | 24GB | Large-v3 | 06:25 | x3.12 |
+| CPU/GPU  | GPU Cores | Mem. | Model    |  Time | Speed |
+|----------|----------:|-----:|----------|------:|------:|
+| Apple M1 |         8 | 16GB | Medium   | 04:46 | x4.20 |
+| Apple M1 |         8 | 16GB | Large-v3 | 08:50 | x2.27 |
+| Apple M2 |        10 | 24GB | Medium   | 03:42 | x5.42 |
+| Apple M2 |        10 | 24GB | Large-v3 | 06:25 | x3.12 |
 
 ### Sample #2
 * Lang / 言語
@@ -97,26 +99,26 @@ These are intended as a guide only.
   * Solo speech / 1人によるスピーチ
 
 #### CPU Only
-| CPU           | Mem. | Model    | Time  | Speed |
-|---------------|------|----------|-------|-------|
+| CPU           | Mem. | Model    |  Time | Speed |
+|---------------|-----:|----------|------:|------:|
 | Ryzen 7 7840U | 32GB | Medium   | 10:59 | x1.91 |
 | Ryzen 7 7840U | 32GB | Large-v3 | 15:04 | x1.39 |
 
 #### with CUDA supported NVIDIA GPU
-| CPU            | GPU                 | Mem. | Model    | Time  | Speed  |
-|----------------|---------------------|------|----------|-------|--------|
-| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Medium   | 05:05 | x4.14  |
-| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Large-v3 | 06:21 | x3.31  |
+| CPU            | GPU                 | Mem. | Model    |  Time |  Speed |
+|----------------|---------------------|-----:|----------|------:|-------:|
+| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Medium   | 05:05 |  x4.14 |
+| i7-6700K       | GeForce GTX 1070 Ti | 32GB | Large-v3 | 06:21 |  x3.31 |
 | Ryzen 7 7745HX | GeForce RTX 4090    | 64GB | Medium   | 01:04 | x19.76 |
 | Ryzen 7 7745HX | GeForce RTX 4090    | 64GB | Large-v3 | 01:18 | x16.37 |
 
 #### with Apple Silicon
 | CPU/GPU  | GPU Cores | Mem. | Model    | Time  | Speed |
-|----------|-----------|------|----------|-------|-------|
-| Apple M1 | 8         | 16GB | Medium   | 04:28 | x4.72 |
-| Apple M1 | 8         | 16GB | Large-v3 | 08:08 | x2.59 |
-| Apple M2 | 10        | 24GB | Medium   | 03:19 | x6.37 |
-| Apple M2 | 10        | 24GB | Large-v3 | 05:55 | x3.56 |
+|----------|----------:|-----:|----------|-------|-------|
+| Apple M1 |         8 | 16GB | Medium   | 04:28 | x4.72 |
+| Apple M1 |         8 | 16GB | Large-v3 | 08:08 | x2.59 |
+| Apple M2 |        10 | 24GB | Medium   | 03:19 | x6.37 |
+| Apple M2 |        10 | 24GB | Large-v3 | 05:55 | x3.56 |
 
 ## Dependencies / 依存ライブラリー
 

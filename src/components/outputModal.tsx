@@ -59,7 +59,7 @@ const newlines = [
 
 interface Props {
   sequenceData: TranscriptionSequence[]
-  selectedSequenceId: string,
+  selectedSequenceId: string
   opened: boolean
   onClose: () => unknown
 }
@@ -84,7 +84,15 @@ function OutputModal({sequenceData, selectedSequenceId, opened, onClose}: Props)
 
   useEffect(() => {
     setTarget(selectedSequenceId)
-  }, [opened])
+  }, [selectedSequenceId])
+
+  useEffect(() => {
+    setSequences(() => {
+      return sequenceData.map((_sequence) => {
+        return {label: _sequence.name, value: _sequence.id}
+      })
+    })
+  }, [sequenceData])
 
   useEffect(() => {
     let found = false
@@ -142,18 +150,6 @@ function OutputModal({sequenceData, selectedSequenceId, opened, onClose}: Props)
       }
     })
   }
-
-  useEffect(() => {
-    setSequences(() => {
-      return sequenceData.map((_sequence) => {
-        return {label: _sequence.name, value: _sequence.id}
-      })
-    })
-  }, [sequenceData])
-
-  useEffect(() => {
-    setTarget(selectedSequenceId)
-  }, [selectedSequenceId])
 
   return (
     <Modal

@@ -25,6 +25,12 @@ export interface TranscriptionParams {
   beamSize?: number
 }
 
+export interface TranscriptionTask {
+  status: number
+  promise: Promise<unknown> | null
+  params: TranscriptionParams
+}
+
 export interface ProjectFileFormat {
   media: string,
   sequenceData: TranscriptionSequence[]
