@@ -10,8 +10,9 @@ class WhisperModel(Original):
     initial_prompt_tokens = None
 
     def generate_segments(self, features, tokenizer, options, encoder_output=None) -> Iterable[Segment]:
-        initial_prompt = " " + options.initial_prompt.strip()
-        self.initial_prompt_tokens = tokenizer.encode(initial_prompt)
+        if options.initial_prompt:
+            initial_prompt = " " + options.initial_prompt.strip()
+            self.initial_prompt_tokens = tokenizer.encode(initial_prompt)
         return super().generate_segments(features, tokenizer, options, encoder_output)
 
     def get_prompt(self, tokenizer, previous_tokens, without_timestamps=False, prefix=None, hotwords=None) -> List[int]:
@@ -23,7 +24,6 @@ def transcribe(media_file, model_path='medium', device='auto', compute_type='def
 
     segments, info = model.transcribe(
         os.path.abspath(media_file),
-        beam_size=5,
         word_timestamps=True,
         **kwargs
     )
