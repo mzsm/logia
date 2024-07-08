@@ -72,9 +72,8 @@ if __name__ == '__main__':
         else:
             from backends import general
 
-            if sys.platform == 'win32':
-                # なんとかしたい
-                os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+            # なんとかしたい
+            os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
             generator = general.transcribe(Path(args.media_file).absolute(),
                                            model_path=args.model,
