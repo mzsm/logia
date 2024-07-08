@@ -11,6 +11,7 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
     "build:python:applesilicon": ".venv/bin/pyinstaller backend_applesilicon.spec --noconfirm",
+    "build:python:intel_mac": ".venv/bin/pyinstaller backend_intel_mac.spec --noconfirm",
     "build:python:windows": ".venv/Scripts/pyinstaller.exe backend_windows.spec --noconfirm"
   },
   "devDependencies": {
