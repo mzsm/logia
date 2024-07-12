@@ -274,7 +274,11 @@ const createWindow = () => {
 
   ipcMain.handle('contentReady', async () => {
     if (fileTemp) {
-      mainWindow.webContents.send('open_media', fileTemp)
+      if (fileTemp.endsWith('.logia')) {
+        mainWindow.webContents.send('open_project', fileTemp)
+      } else {
+        mainWindow.webContents.send('open_media', fileTemp)
+      }
       fileTemp = undefined
     }
   })

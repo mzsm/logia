@@ -242,7 +242,11 @@ function App() {
   const onFileDrop = (e: DragEvent) => {
     if (e.dataTransfer.files.length) {
       const _file = e.dataTransfer.files[0]
-      openMedia(_file.path).then()
+      if (_file.path.endsWith('.logia')) {
+        openProject(_file.path).then()
+      } else {
+        openMedia(_file.path).then()
+      }
     }
     e.preventDefault()
   }
@@ -1155,7 +1159,11 @@ function App() {
           <Text size="sm">プロジェクトファイルを開いています しばらくお待ちください…</Text>
         </Group>
       </Modal>
-      <WelcomePage opened={!mediaFilePath} onClickMediaOpen={onClickMediaOpen} onClickProjectOpen={onClickProjectOpen}/>
+      <WelcomePage
+        opened={!mediaFilePath && !isOpenedLoader}
+        onClickMediaOpen={onClickMediaOpen}
+        onClickProjectOpen={onClickProjectOpen}
+      />
     </div>
   )
 }
